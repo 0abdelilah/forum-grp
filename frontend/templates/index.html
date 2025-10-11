@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechDev</title>
+<link rel="stylesheet" href="../static/css/index.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-left">
+            <div class="logo">TD</div>
+            <div class="platform-name">TechDev</div>
+        </div>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <div class="header-buttons">
+            <a href="login.html">Login</a>
+            <a href="register.html">Register</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Left Sidebar -->
+        <aside class="sidebar-left">
+            <h2>About TechDev</h2>
+            <p>
+Join the TechDev Community! Connect with like-minded tech enthusiasts, participate in engaging discussions, and chat in real-time with other members. 🎤 Share your ideas, 🗨️ get instant feedback, and 📰 stay updated with the latest posts and comments. Be part of a vibrant tech network and never miss out on important conversations!
+            </p>
+            <h2>User Info</h2>
+            <p>hassan<br>@hassan<br>Member since Oct 2025</p>
+        </aside>
+
+        <!-- Center Feed -->
+        <main class="feed">
+            <div class="create-post">
+                <button  onclick="createPost()">Make Post</button>
+            </div>
+            <div class="post">
+                <div class="post-header">
+                    <h3>soukayna </h3>
+                </div>
+                <p>Excited to share my latest adventure!</p>
+                <img src="../static/programming-languages-1.avif" alt="Post Image">
+                <div class="post-actions">
+                    <button><span>👍</span> Like</button>
+                    <button><span>💬</span> Comment</button>
+                    <button><span>#</span>Cybersecurity</button>
+                </div>
+            </div>
+            <div class="post">
+                <div class="post-header">
+                    <h3>3issam  sirajdin </h3>
+                </div>
+                <p>Just finished a great book!</p>
+                <img src="https://via.placeholder.com/500x300" alt="Post Image">
+                <div class="post-actions">
+                    <button><span>👍</span> Like</button>
+                    <button><span>💬</span> Comment</button>
+                    <button><span>#</span>Web Development</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="sidebar-right">
+            <h2>Categories</h2>
+            <ul>
+                <li><a href="#all">All Posts</a></li>
+                <li><a href="#tech">Programming</a></li>
+                <li><a href="#Cybersecurity">Cybersecurity</a></li>
+                <li><a href="Gadgets & Hardware">Gadgets & Hardware</a></li>
+                <li><a href="Web Development">Web Development</a></li>
+            </ul>
+        </aside>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 TechDev. made with ❤️ and  ☕.</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.querySelector('.header-buttons');
+            menu.classList.toggle('active');
+        }
+
+        function createPost() {
+            // Placeholder for post creation functionality
+            console.log("Create Post button clicked! Add modal or redirect logic here.");
+        }
+    </script>
+</body>
+</html>
