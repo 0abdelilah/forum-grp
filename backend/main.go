@@ -12,6 +12,8 @@ func main() {
 
 	mux.HandleFunc("GET /", home.HomeHandler)
 
+	mux.HandleFunc("GET /static/", home.StaticHandler)
+
 	fmt.Println("Listening on http://localhost:8080")
 	http.ListenAndServe(":8080", mux)
 }
