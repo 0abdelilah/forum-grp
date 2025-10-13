@@ -109,7 +109,7 @@ header {
     margin-bottom: 1rem;
     color: #1a73e8;
 }
-
+.programmers p,
 .sidebar-left p,
 .sidebar-right ul {
     color: #adb5bd;
@@ -117,14 +117,17 @@ header {
     font-size: 0.95rem;
 }
 
+.programmers ul,
 .sidebar-right ul {
     list-style: none;
 }
 
+.programmers li,
 .sidebar-right li {
     margin: 0.75rem 0;
 }
 
+.programmers a,
 .sidebar-right a {
     text-decoration: none;
     color: #1a73e8;
@@ -132,11 +135,13 @@ header {
     transition: color 0.2s ease, padding-left 0.2s ease;
 }
 
+.programmers a:hover,
 .sidebar-right a:hover {
     color: #0d47a1;
     padding-left: 0.3rem;
 }
 
+.programmers a:focus,
 .sidebar-right a:focus {
     outline: 2px solid #1a73e8;
     outline-offset: 2px;

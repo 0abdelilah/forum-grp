@@ -6,7 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechDev</title>
     <link rel="stylesheet" href="/static/css/index.css">
+    <script src="/static/js/comments.js"></script>
 </head>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.querySelector('.header-buttons');
+            menu.classList.toggle('active');
+        }
+
+        function createPost() {
+            // Placeholder for post creation functionality
+            console.log("Create Post button clicked! Add modal or redirect logic here.");
+        }
+    </script>
 
 <body>
     <!-- Header -->
@@ -15,7 +28,6 @@
             <div class="logo">TD</div>
             <div class="platform-name">TechDev</div>
         </div>
-        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
         <div class="header-buttons">
             <a href="login.html">Login</a>
             <a href="register.html">Register</a>
@@ -33,8 +45,14 @@
                 and 📰 stay updated with the latest posts and comments. Be part of a vibrant tech network and never miss
                 out on important conversations!
             </p>
-            <h2>User Info</h2>
-            <p>hassan<br>@hassan<br>Member since Oct 2025</p>
+            <h2>Lmobrmijin</h2>
+
+            <aside class="programmers">
+                <ul>
+                    <li><a href="https://github.com/0abdelilah">Abelkhadir</a></li>
+                </ul>
+            </aside>
+
         </aside>
 
         <!-- Center Feed -->
@@ -47,23 +65,10 @@
                     <h3>soukayna </h3>
                 </div>
                 <p>Excited to share my latest adventure!</p>
-                <img src="../static/programming-languages-1.avif" alt="Post Image">
                 <div class="post-actions">
                     <button><span>👍</span> Like</button>
-                    <button><span>💬</span> Comment</button>
+                    <button onclick="openComments()"><span>💬</span> Comment</button>
                     <button><span>#</span>Cybersecurity</button>
-                </div>
-            </div>
-            <div class="post">
-                <div class="post-header">
-                    <h3>3issam sirajdin </h3>
-                </div>
-                <p>Just finished a great book!</p>
-                <img src="https://via.placeholder.com/500x300" alt="Post Image">
-                <div class="post-actions">
-                    <button><span>👍</span> Like</button>
-                    <button><span>💬</span> Comment</button>
-                    <button><span>#</span>Web Development</button>
                 </div>
             </div>
         </main>
@@ -86,17 +91,7 @@
         <p>&copy; 2025 TechDev. made with ❤️ and ☕.</p>
     </footer>
 
-    <script>
-        function toggleMenu() {
-            const menu = document.querySelector('.header-buttons');
-            menu.classList.toggle('active');
-        }
 
-        function createPost() {
-            // Placeholder for post creation functionality
-            console.log("Create Post button clicked! Add modal or redirect logic here.");
-        }
-    </script>
 </body>
 
 </html>
