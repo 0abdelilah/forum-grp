@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"forum/internal/comments"
 	"forum/internal/database"
 	"forum/internal/home"
 )
@@ -22,6 +23,10 @@ func main() {
 	mux.HandleFunc("GET /", home.HomeHandler)
 
 	mux.HandleFunc("GET /static/", home.StaticHandler)
+
+	mux.HandleFunc("POST /api/comment", comments.SaveCommentHandler)
+
+	mux.HandleFunc("GET /api/comments", comments.GetCommentsHandler)
 
 	fmt.Println("Listening on http://localhost:8080")
 	http.ListenAndServe(":8080", mux)

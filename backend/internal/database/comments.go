@@ -1,37 +1,35 @@
 package database
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 type Comment struct {
 	PostId  string `json:"postid"`
-	Author  string `json:"author"`
+	UserId  string `json:"userid"`
 	Content string `json:"content"`
 }
 
-func CreateCommentsTable() {
-	stmt := `
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        postid TEXT NOT NULL,
-        author TEXT NOT NULL,
-        content TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );`
+func GetComments(PostId string) ([]Comment, error) {
+	rows, err := Db.Query("SELECT * FROM comments WHERE post_id = ?", PostId)
 
-	_, err := db.Exec(stmt)
-	if err != nil {
-		log.Fatal("Failed to create table:", err)
+	for rows.Next() {
+		var id int
+		var author, content string
+		if err := rows.Scan(&id, &author, &content); err != nil {
+			log.Println(err)
+		}
+		fmt.Println(id, author, content)
 	}
+
+	return nil, err
 }
 
-func GetComments(postid, author, comment string) ([]Comment, error) {
-	// Stmt := "SELECT comments FROM posts where postid = ?"
+func SaveComment(PostId, UserId, content string) error {
+	_, err := Db.Exec(
+		"INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)", PostId, UserId, content,
+	)
 
-	return nil, nil
-}
-
-func SaveComment(postid, author, comment string) error {
-	Stmt := "INSERT comments FROM posts where postid = ?"
-
-	return nil
+	return err
 }
