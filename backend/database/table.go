@@ -29,7 +29,9 @@ func InitSchema(db *sql.DB) error {
 	if err := CreateCommentsTable(db); err != nil {
 		return err
 	}
-
+	if err := CreateLikesTable(db); err != nil {
+		return err
+	}
 	if err := CreateSessionsTable(db); err != nil {
 		return err
 	}
@@ -119,7 +121,20 @@ CREATE TABLE IF NOT EXISTS comments (
 	return execSQL(db, stmt)
 }
 
-
+func CreateLikesTable(db *sql.DB) error {
+	stmt := `
+CREATE TABLE IF NOT EXISTS likes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    target_type TEXT NOT NULL CHECK(target_type IN ('post','comment')),
+    target_id INTEGER NOT NULL,
+    value INTEGER NOT NULL CHECK(value IN (1, -1)),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, target_type, target_id),
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);`
+	return execSQL(db, stmt)
+}
 
 func CreateSessionsTable(db *sql.DB) error {
 	stmt := `
