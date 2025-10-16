@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	handlers "forum/internal/auth"
 	"forum/internal/comments"
 	"forum/internal/database"
 	"forum/internal/home"
@@ -21,6 +22,10 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", home.HomeHandler)
+
+	mux.HandleFunc("/register", handlers.RegisterHandler)
+
+	mux.HandleFunc("/login", handlers.LoginHandler)
 
 	mux.HandleFunc("GET /static/", home.StaticHandler)
 
