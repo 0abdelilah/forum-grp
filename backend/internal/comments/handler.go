@@ -44,8 +44,6 @@ func SaveCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(comment.PostId, userid, comment.Content)
-
 	// Get comments from db
 	err = database.SaveComment(comment.PostId, userid, comment.Content)
 	if err != nil {
@@ -75,10 +73,16 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	comments, err := database.GetComments(postId)
 	if err != nil {
 		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"success": "false",
+			"error":   "Database error",
+		})
 		return
 	}
 
 	// return success true and comments
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success":  "true",
 		"comments": comments,

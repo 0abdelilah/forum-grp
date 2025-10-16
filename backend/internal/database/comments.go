@@ -1,28 +1,32 @@
 package database
 
-import (
-	"fmt"
-	"log"
-)
-
 type Comment struct {
 	PostId  string `json:"postid"`
+	UserId  string `json:"userid"`
 	Content string `json:"content"`
 }
 
 func GetComments(PostId string) ([]Comment, error) {
-	rows, err := Db.Query("SELECT * FROM comments WHERE post_id = ?", PostId)
+	rows, err := Db.Query("SELECT user_id, content, created_at FROM comments WHERE post_id = ?", PostId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []Comment
 
 	for rows.Next() {
-		var id int
-		var author, content string
-		if err := rows.Scan(&id, &author, &content); err != nil {
-			log.Println(err)
+		var user_id, content, created_at string
+		if err := rows.Scan(&user_id, &content, &created_at); err != nil {
+			return nil, err
 		}
-		fmt.Println(id, author, content)
+		comments = append(comments, Comment{UserId: user_id, Content: content})
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
-	return nil, err
+	return comments, nil
 }
 
 func SaveComment(PostId, UserId, content string) error {
