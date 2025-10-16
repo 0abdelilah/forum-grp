@@ -71,8 +71,9 @@ func CreateCommentsTable() error {
 	stmt := `
 CREATE TABLE IF NOT EXISTS comments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-	post_id INTEGER NOT NULL,
-    content TEXT NOT NULL CHECK(length(content) > 0),
+	post_id TEXT NOT NULL,
+	user_id TEXT NOT NULL,
+    content TEXT NOT NULL,
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );`
 	return execSQL(stmt)

@@ -9,18 +9,6 @@
     <script src="/static/js/comments.js"></script>
 </head>
 
-    <script>
-        function toggleMenu() {
-            const menu = document.querySelector('.header-buttons');
-            menu.classList.toggle('active');
-        }
-
-        function createPost() {
-            // Placeholder for post creation functionality
-            console.log("Create Post button clicked! Add modal or redirect logic here.");
-        }
-    </script>
-
 <body>
     <!-- Header -->
     <header>
@@ -60,17 +48,32 @@
             <div class="create-post">
                 <button onclick="createPost()">Make Post</button>
             </div>
-            <div class="post">
-                <div class="post-header">
-                    <h3>soukayna </h3>
+            
+            <div data-id="123" class="post_comments">
+                <div class="post">
+                    <div class="post-header">
+                        <h3>soukayna </h3>
+                    </div>
+                    <p>Excited to share my latest adventure!</p>
+                    <div class="post-actions">
+                        <button><span>👍</span> Like</button>
+                        <button onclick="ShowComments(this.closest('.post_comments').dataset.id)"><span>💬</span>
+                            Comments</button>
+
+                        <button><span>#</span>Cybersecurity</button>
+                    </div>
                 </div>
-                <p>Excited to share my latest adventure!</p>
-                <div class="post-actions">
-                    <button><span>👍</span> Like</button>
-                    <button onclick="openComments()"><span>💬</span> Comment</button>
-                    <button><span>#</span>Cybersecurity</button>
+                <div id="overlay" onclick="closePopup()"></div>
+                <div id="popup">
+                    <p>Comment 1</p>
+                    <p>Comment 2</p>
+                    <textarea id="cmntarea" placeholder="Enter your comment..."></textarea>
+                    
+                    <button onclick="CreateComment(this)">Submit</button>
+                    <button onclick="closePopup()">Close</button>
                 </div>
             </div>
+
         </main>
 
         <!-- Right Sidebar -->

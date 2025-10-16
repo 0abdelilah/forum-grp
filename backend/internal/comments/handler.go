@@ -21,10 +21,33 @@ func SaveCommentHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	// TODO: verify all feilds exist
+
+	cookie, err := r.Cookie("userid")
+	userid := cookie.Value
+	if err != nil || userid == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{
+			"success": "false",
+			"error":   "Unauthenticated",
+		})
+		fmt.Println("Unauthenticated")
+		return
+	}
+
+	// verify all feilds exist
+	if comment.PostId == "" || comment.Content == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"success": "false",
+			"error":   "Missing required fields",
+		})
+		return
+	}
+
+	fmt.Println(comment.PostId, userid, comment.Content)
 
 	// Get comments from db
-	err = database.SaveComment(comment.PostId, comment.UserId, comment.Content)
+	err = database.SaveComment(comment.PostId, userid, comment.Content)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -37,11 +60,9 @@ func SaveCommentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCommentsHandler(w http.ResponseWriter, r *http.Request) {
-	var comment database.Comment
+	postId := r.URL.Query().Get("postId")
 
-	// Get args from the request: postid, author, comment
-	err := json.NewDecoder(r.Body).Decode(&comment)
-	if err != nil {
+	if postId == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"success": "false",
@@ -51,7 +72,7 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get comments from db
-	comments, err := database.GetComments(comment.PostId)
+	comments, err := database.GetComments(postId)
 	if err != nil {
 		fmt.Println(err)
 		return
