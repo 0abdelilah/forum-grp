@@ -48,7 +48,7 @@
             <div class="create-post">
                 <button onclick="createPost()">Make Post</button>
             </div>
-            
+
             <div data-id="123" class="post_comments">
                 <div class="post">
                     <div class="post-header">
@@ -65,12 +65,26 @@
                 </div>
                 <div id="overlay" onclick="closePopup()"></div>
                 <div id="popup">
-                    <p>Comment 1</p>
-                    <p>Comment 2</p>
-                    <textarea id="cmntarea" placeholder="Enter your comment..."></textarea>
-                    
-                    <button onclick="CreateComment(this)">Submit</button>
-                    <button onclick="closePopup()">Close</button>
+
+                    <div class="comments">
+                        <div class="comment">
+                            <img src="./static/icon.png">
+                            <div class="author_content">
+                                <h5>abdelilah</h5>
+                                <p>hii</p>
+                            </div>
+                        </div>
+                        <div class="comment">
+                            <img src="./static/icon.png">
+                            <div class="author_content">
+                                <h5>abdelilah</h5>
+                                <p>hii</p>
+                            </div>
+                        </div>
+                        <textarea id="cmntarea" placeholder="Write a comment..."></textarea>
+                        <button onclick="CreateComment(this)">Submit</button>
+                    </div>
+
                 </div>
             </div>
 

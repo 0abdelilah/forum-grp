@@ -377,11 +377,45 @@ footer {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: #252728;
     padding: 20px;
     border: 1px solid #333;
     z-index: 1000;
 }
-#popup p {
-    color: black;
+
+.comments {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comments button {
+    box-shadow: none;
+    border-radius: 6px;
+    padding: 6px;
+    background-color: #616161;
+}
+
+.comment {
+    flex-direction: row;
+    display: flex;
+    gap: 1.5%
+}
+
+.comment img {
+    width: 10%;
+    height: 10%;
+    border-radius: 50%;
+}
+
+.author_content {
+    padding: 10px;
+    border-radius: 7%;
+    background-color: #333334;
+}
+
+#cmntarea {
+    background-color: #333334;
+    resize: none;
+    padding: 6px;
 }
