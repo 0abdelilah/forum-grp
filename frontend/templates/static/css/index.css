@@ -206,6 +206,7 @@ header {
 }
 
 .post-header {
+    gap: 10px;
     display: flex;
     align-items: center;
     margin-bottom: 0.75rem;
@@ -390,7 +391,7 @@ footer {
 }
 
 .comments button {
-    box-shadow: none;
+    box-shadow: non;
     border-radius: 6px;
     padding: 6px;
     background-color: #616161;
@@ -402,7 +403,7 @@ footer {
     gap: 1.5%
 }
 
-.comment img {
+.post-header, .comment img {
     width: 10%;
     height: 10%;
     border-radius: 50%;

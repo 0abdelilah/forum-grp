@@ -1,0 +1,41 @@
+{
+    "posts": [
+        {
+            "id": 1,
+            "title": "Getting Started with Bug Bounty",
+            "author": "Gadr",
+            "content": "Learn how to find your first vulnerability and report it responsibly.",
+            "comments": 4,
+            "reactions": {
+                "likes": [
+                    "abelkhadir",
+                    "iallaoui"
+                ],
+                "dislikes": [
+                    "nabil"
+                ]
+            },
+            "category": "cybersecurity",
+            "created_at": "2025-10-13T18:00:00Z"
+        },
+        {
+            "id": 2,
+            "title": "Top 5 Tools for Web Pentesting",
+            "author": "sokayna",
+            "content": "A quick overview of the most effective tools for modern web app pentesting.",
+            "comments": 3,
+            "reactions": {
+                "likes": [
+                    "abelkhadir",
+                    "iallaoui"
+                ],
+                "dislikes": [
+                    "nabil"
+                ]
+            },
+            "category": "programming",
+            "created_at": "2025-10-12T16:30:00Z"
+        }
+    ],
+    "success": "true"
+}

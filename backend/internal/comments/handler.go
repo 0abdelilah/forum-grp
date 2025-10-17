@@ -68,7 +68,7 @@ func SaveCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// return success true and comments
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	json.NewEncoder(w).Encode(map[string]any{
 		"success": "true",
 	})
 }

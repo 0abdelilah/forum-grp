@@ -7,6 +7,7 @@
     <title>TechDev</title>
     <link rel="stylesheet" href="/static/css/index.css">
     <script src="/static/js/comments.js"></script>
+    <script src="/static/js/posts.js"></script>
 </head>
 
 <body>
@@ -49,45 +50,49 @@
                 <button onclick="createPost()">Make Post</button>
             </div>
 
-            <div data-id="123" class="post_comments">
-                <div class="post">
-                    <div class="post-header">
-                        <h3>soukayna </h3>
-                    </div>
-                    <p>Excited to share my latest adventure!</p>
-                    <div class="post-actions">
-                        <button><span>👍</span> Like</button>
-                        <button onclick="ShowComments(this.closest('.post_comments').dataset.id)"><span>💬</span>
-                            Comments</button>
+            <div class="posts">
 
-                        <button><span>#</span>Cybersecurity</button>
-                    </div>
-                </div>
-                <div id="overlay" onclick="closePopup()"></div>
-                <div id="popup">
-
-                    <div class="comments">
-                        <div class="comment">
+                <div data-id="123" class="post_comments">
+                    <div class="post">
+                        <div class="post-header">
                             <img src="./static/icon.png">
-                            <div class="author_content">
-                                <h5>abdelilah</h5>
-                                <p>hii</p>
-                            </div>
+                            <h3>soukayna</h3>
                         </div>
-                        <div class="comment">
-                            <img src="./static/icon.png">
-                            <div class="author_content">
-                                <h5>abdelilah</h5>
-                                <p>hii</p>
-                            </div>
-                        </div>
-                        <textarea id="cmntarea" placeholder="Write a comment..."></textarea>
-                        <button onclick="CreateComment(this)">Submit</button>
-                    </div>
 
+                        <div class="post-content">
+                            <h3>Title here</h3>
+                            <p>Excited to share my latest adventure!</p>
+                        </div>
+
+                        <div class="post-actions">
+                            <button><span>👍</span> Like</button>
+                            <button onclick="ShowComments(this.closest('.post_comments').dataset.id)"><span>💬</span>Comments</button>
+                            <button><span>#</span>Cybersecurity</button>
+                        </div>
+                    </div>
+                    <div id="overlay" onclick="closePopup()"></div>
+                    <div id="popup">
+                        <div class="comments">
+                            <div class="comment">
+                                <img src="./static/icon.png">
+                                <div class="author_content">
+                                    <h5>abdelilah</h5>
+                                    <p>hii</p>
+                                </div>
+                            </div>
+                            <div class="comment">
+                                <img src="./static/icon.png">
+                                <div class="author_content">
+                                    <h5>abdelilah</h5>
+                                    <p>hii</p>
+                                </div>
+                            </div>
+                            <textarea id="cmntarea" placeholder="Write a comment..."></textarea>
+                            <button onclick="CreateComment(this)">Submit</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-
         </main>
 
         <!-- Right Sidebar -->
@@ -103,11 +108,12 @@
         </aside>
     </div>
 
+    <script>loadPosts()</script>
+
     <!-- Footer -->
     <footer>
         <p>&copy; 2025 TechDev. made with ❤️ and ☕.</p>
     </footer>
-
 
 </body>
 

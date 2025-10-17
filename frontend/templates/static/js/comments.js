@@ -28,7 +28,7 @@ function CreateComment(btn) {
         .catch(err => console.error(err));
 }
 
-function closePopup() {
-    document.getElementById('popup').style.display = 'none';
-    document.getElementById('overlay').style.display = 'none';
+function closePopup(id) {
+    document.getElementById('popup_' + id).style.display = 'none';
+    document.getElementById('overlay_' + id).style.display = 'none';
 }

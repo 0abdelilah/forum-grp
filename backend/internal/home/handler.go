@@ -7,6 +7,14 @@ import (
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
+
+	/*
+		if r.URL.Path != "/" {
+			w.Write([]byte("Page not found"))
+			return
+		}
+
+	*/
 	tmpt, err := template.ParseFiles("../frontend/templates/index.html")
 	if err != nil {
 		fmt.Println(err)
