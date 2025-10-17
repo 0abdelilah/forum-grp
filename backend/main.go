@@ -9,6 +9,7 @@ import (
 	"forum/internal/comments"
 	"forum/internal/database"
 	"forum/internal/home"
+	"forum/internal/posts"
 )
 
 func main() {
@@ -23,19 +24,23 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", home.HomeHandler)
 
-	mux.HandleFunc("GET /register/", handlers.RegisterHandlerGet)
+	// Authentication
+	mux.HandleFunc("GET /register", handlers.RegisterHandlerGet)
+	mux.HandleFunc("POST /api/register", handlers.RegisterHandlerPost)
 
-	mux.HandleFunc("POST /register/", handlers.RegisterHandlerPost)
+	mux.HandleFunc("GET  /login", handlers.LoginHandlerGet)
+	mux.HandleFunc("POST  /api/login", handlers.LoginHandlerPost)
 
-	mux.HandleFunc("GET  /login/", handlers.LoginHandlerGet)
-
-	mux.HandleFunc("POST  /login/", handlers.LoginHandlerPost)
-
-	mux.HandleFunc("GET /static/", home.StaticHandler)
-
+	// Comments
 	mux.HandleFunc("POST /api/comment", comments.SaveCommentHandler)
-
 	mux.HandleFunc("GET /api/comments", comments.GetCommentsHandler)
+
+	// Posts
+	mux.HandleFunc("GET /api/posts", posts.LoadPostsHandler)
+	//mux.HandleFunc("POST /api/create_post", posts.CreatePostsHandler)
+
+	// static files
+	mux.HandleFunc("GET /static/", home.StaticHandler)
 
 	fmt.Println("Listening on http://localhost:8081")
 	if err := http.ListenAndServe(":8081", mux); err != nil {

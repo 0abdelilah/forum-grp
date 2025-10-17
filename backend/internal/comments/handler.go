@@ -8,6 +8,22 @@ import (
 	"forum/internal/database"
 )
 
+// GetUserIDFromCookies retrieves the user_id associated with the session_token cookie.
+func GetUserIDFromCookies(r *http.Request) (int, error) {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return 0, err // no cookie or other error
+	}
+
+	var userID int
+	err = database.Db.QueryRow(`SELECT user_id FROM sessions WHERE id = ? AND expires_at > datetime('now')`, cookie.Value).Scan(&userID)
+	if err != nil {
+		return 0, err // invalid or expired session
+	}
+
+	return userID, nil
+}
+
 func SaveCommentHandler(w http.ResponseWriter, r *http.Request) {
 	var comment database.Comment
 
@@ -22,9 +38,9 @@ func SaveCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie, err := r.Cookie("userid")
-	userid := cookie.Value
-	if err != nil || userid == "" {
+	// add logic
+	_, err = GetUserIDFromCookies(r)
+	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]string{
 			"success": "false",
@@ -45,7 +61,7 @@ func SaveCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get comments from db
-	err = database.SaveComment(comment.PostId, userid, comment.Content)
+	err = database.SaveComment(comment.PostId, "UserId", comment.Content)
 	if err != nil {
 		fmt.Println(err)
 		return
