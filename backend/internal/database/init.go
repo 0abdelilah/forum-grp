@@ -29,6 +29,9 @@ func Init() (*sql.DB, error) {
 	if err := CreateLikesTable(); err != nil {
 		return nil, err
 	}
+	if err := CreateSessionsTablee(); err != nil {
+		return nil, err
+	}
 
 	return Db, nil
 }
@@ -86,6 +89,18 @@ CREATE TABLE IF NOT EXISTS likes (
     user_id INTEGER NOT NULL,
 	title TEXT NOT NULL CHECK(length(title) > 0),
     content TEXT NOT NULL CHECK(length(content) > 0)
+);`
+	return execSQL(stmt)
+}
+func CreateSessionsTablee() error {
+	stmt := `
+CREATE TABLE IF NOT EXISTS sessions (
+    id TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CHECK(expires_at > created_at)
 );`
 	return execSQL(stmt)
 }

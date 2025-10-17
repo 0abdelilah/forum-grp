@@ -35,7 +35,7 @@ func InitSchema(db *sql.DB) error {
 	if err := CreateSessionsTable(db); err != nil {
 		return err
 	}
-	
+
 	// indexes
 	if err := CreateIndexes(db); err != nil {
 		return err
@@ -44,7 +44,6 @@ func InitSchema(db *sql.DB) error {
 	if err := SeedCategories(db); err != nil {
 		return err
 	}
-	
 
 	return nil
 }
@@ -148,7 +147,6 @@ CREATE TABLE IF NOT EXISTS sessions (
 );`
 	return execSQL(db, stmt)
 }
-
 
 // ---------- Indexes ----------
 
