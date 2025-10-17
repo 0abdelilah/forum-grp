@@ -25,11 +25,11 @@ func main() {
 	mux.HandleFunc("GET /", home.HomeHandler)
 
 	// Authentication
-	mux.HandleFunc("GET /register", handlers.RegisterHandlerGet)
-	mux.HandleFunc("POST /api/register", handlers.RegisterHandlerPost)
+	mux.HandleFunc("GET /register/", handlers.RegisterHandlerGet)
+	mux.HandleFunc("POST /register/", handlers.RegisterHandlerPost)
 
-	mux.HandleFunc("GET  /login", handlers.LoginHandlerGet)
-	mux.HandleFunc("POST  /api/login", handlers.LoginHandlerPost)
+	mux.HandleFunc("GET  /login/", handlers.LoginHandlerGet)
+	mux.HandleFunc("POST  /login/", handlers.LoginHandlerPost)
 
 	// Comments
 	mux.HandleFunc("POST /api/comment", comments.SaveCommentHandler)
