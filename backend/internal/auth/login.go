@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"fmt"
-	"forum/internal/database"
 	"log"
 	"net/http"
 	"time"
+
+	"forum/database"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -35,7 +36,6 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 		`SELECT id, password_hash FROM users WHERE username = ?`,
 		username,
 	).Scan(&userID, &storedHash)
-
 	if err != nil {
 		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		log.Println("Login failed (user not found):", err)
@@ -56,7 +56,6 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 		INSERT INTO sessions(id, user_id, created_at, expires_at)
 		VALUES (?, ?, ?, ?)
 	`, sessionID, userID, createdAt, expiresAt)
-
 	if err != nil {
 		http.Error(w, "Could not create session", http.StatusInternalServerError)
 		log.Println("Error inserting session:", err)

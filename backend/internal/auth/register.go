@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"forum/internal/database"
+	"forum/database"
 	"log"
 	"net/http"
 	"regexp"

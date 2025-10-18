@@ -1,27 +1,24 @@
 package home
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
+
+	"forum/database"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-
-	/*
-		if r.URL.Path != "/" {
-			w.Write([]byte("Page not found"))
-			return
-		}
-
-	*/
 	tmpt, err := template.ParseFiles("../frontend/templates/index.html")
 	if err != nil {
-		fmt.Println(err)
+		http.Error(w, "Page not found", http.StatusInternalServerError)
 		return
 	}
-
-	tmpt.Execute(w, nil)
+	if r.URL.Path != "/" {
+		http.Error(w, "Page not found", http.StatusNotFound)
+		return
+	}
+	PageData := database.ALlPageData(r, "HomeData")
+	tmpt.Execute(w, PageData)
 }
 
 func StaticHandler(w http.ResponseWriter, r *http.Request) {
