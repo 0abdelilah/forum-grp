@@ -39,6 +39,8 @@ func main() {
 	mux.HandleFunc("GET /api/posts", posts.LoadPostsHandler)
 	//mux.HandleFunc("POST /api/create_post", posts.CreatePostsHandler)
 
+	//Posts content 
+	mux.HandleFunc("GET /post-detail", posts.SeePostdetail)
 	// static files
 	mux.HandleFunc("GET /static/", home.StaticHandler)
 

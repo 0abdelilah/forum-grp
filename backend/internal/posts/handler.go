@@ -2,7 +2,10 @@ package posts
 
 import (
 	"encoding/json"
+	"forum/internal/models"
+	"log"
 	"net/http"
+	"text/template"
 )
 
 var jsonExample = `
@@ -36,27 +39,10 @@ var jsonExample = `
 ]
 `
 
-type Reactions struct {
-	Likes    []string `json:"likes"`
-	Dislikes []string `json:"dislikes"`
-}
-
-type Post struct {
-	Id          int       `json:"id"`
-	Title       string    `json:"title"`
-	Author      string    `json:"author"`
-	Content     string    `json:"content"`
-	CommentsNum int       `json:"comments"`
-	Reactions   Reactions `json:"reactions"`
-	Category    string    `json:"category"`
-	CreatedAt   string    `json:"created_at"`
-}
-
 func LoadPostsHandler(w http.ResponseWriter, r *http.Request) {
-
 	// SELECT id, title, author, content, comments, created_at FROM posts
 
-	var Posts []Post
+	var Posts []models.Post
 
 	// example
 	err := json.Unmarshal([]byte(jsonExample), &Posts)
@@ -76,6 +62,10 @@ func LoadPostsHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
-
+func SeePostdetail(w http.ResponseWriter, r *http.Request) {
+	PostsTemplete, err := template.ParseFiles("../frontend/templates/post-detail.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	PostsTemplete.Execute(w,nil)
 }

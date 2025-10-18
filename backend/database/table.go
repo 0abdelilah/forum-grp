@@ -1,4 +1,3 @@
-// database/schema.go
 package database
 
 import (
@@ -8,6 +7,7 @@ import (
 
 // InitSchema runs all create statements (tables, triggers, indexes, view, seed).
 // Call this once at startup (or when you want to initialize the DB).
+
 func InitSchema(db *sql.DB) error {
 	// ensure foreign keys ON
 	if _, err := db.Exec(`PRAGMA foreign_keys = ON;`); err != nil {

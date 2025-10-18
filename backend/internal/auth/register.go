@@ -10,7 +10,6 @@ import (
 )
 
 func RegisterHandlerGet(w http.ResponseWriter, r *http.Request) {
-
 	http.ServeFile(w, r, "../frontend/templates/register.html")
 
 }
