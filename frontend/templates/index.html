@@ -18,8 +18,13 @@
             <div class="platform-name">TechDev</div>
         </div>
         <div class="header-buttons">
+            {{if .IsLoggedIn}}
+            {{.Username}}
+            <a href="/logout">Logout</a>
+            {{else}}
             <a href="/login">Login</a>
             <a href="/register">Register</a>
+            {{end}}
         </div>
     </header>
 
@@ -66,7 +71,8 @@
 
                         <div class="post-actions">
                             <button><span>👍</span> Like</button>
-                            <button onclick="ShowComments(this.closest('.post_comments').dataset.id)"><span>💬</span>Comments</button>
+                            <button
+                                onclick="ShowComments(this.closest('.post_comments').dataset.id)"><span>💬</span>Comments</button>
                             <button><span>#</span>Cybersecurity</button>
                         </div>
                     </div>

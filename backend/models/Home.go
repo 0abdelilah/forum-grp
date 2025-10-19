@@ -1,8 +1,10 @@
 package models
 
 type PageData struct {
-	Categories     []Category
-	AllPosts       []Post
-	AllPostLikes   []Reactions
-	AllComments    []Comment
+	Username     string
+	IsLoggedIn   bool
+	Categories   []Category
+	AllPosts     []Post
+	AllPostLikes []Reactions
+	AllComments  []Comment
 }
