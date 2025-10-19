@@ -1,5 +1,5 @@
-RUN: - cd backend
-     - go run .
+RUN: go run ./cmd/main.go
+
 
 Person 1: Handles user authentication (login, registration).
 

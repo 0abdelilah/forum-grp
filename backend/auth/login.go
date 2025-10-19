@@ -1,12 +1,11 @@
-package handlers
+package auth
 
 import (
 	"fmt"
+	"forum/backend/database"
 	"log"
 	"net/http"
 	"time"
-
-	"forum/database"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"

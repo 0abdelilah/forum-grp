@@ -2,7 +2,7 @@ package posts
 
 import (
 	"encoding/json"
-	"forum/internal/models"
+	"forum/backend/models"
 	"log"
 	"net/http"
 	"text/template"
@@ -67,5 +67,5 @@ func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	PostsTemplete.Execute(w,nil)
+	PostsTemplete.Execute(w, nil)
 }

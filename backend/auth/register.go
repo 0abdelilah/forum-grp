@@ -1,7 +1,7 @@
-package handlers
+package auth
 
 import (
-	"forum/database"
+	"forum/backend/database"
 	"log"
 	"net/http"
 	"regexp"

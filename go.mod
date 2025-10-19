@@ -1,10 +1,9 @@
 module forum
 
-go 1.24.0
-
-require github.com/mattn/go-sqlite3 v1.14.32
+go 1.25.1
 
 require (
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/mattn/go-sqlite3 v1.14.32 // indirect
 	golang.org/x/crypto v0.43.0 // indirect
 )
