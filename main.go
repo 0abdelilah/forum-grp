@@ -13,19 +13,17 @@ import (
 )
 
 func main() {
-	//_, err := os.Stat("../frontend/templates/index.html")
-
 	database.Init()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", home.HomeHandler)
 
 	// Authentication
-	mux.HandleFunc("GET /register/", auth.RegisterHandlerGet)
-	mux.HandleFunc("POST /register/", auth.RegisterHandlerPost)
+	mux.HandleFunc("GET /register", auth.RegisterHandlerGet)
+	mux.HandleFunc("POST /api/register", auth.RegisterHandlerPost)
 
-	mux.HandleFunc("GET  /login/", auth.LoginHandlerGet)
-	mux.HandleFunc("POST  /login/", auth.LoginHandlerPost)
+	mux.HandleFunc("GET  /login", auth.LoginHandlerGet)
+	mux.HandleFunc("POST  /api/login", auth.LoginHandlerPost)
 
 	// Comments
 	mux.HandleFunc("POST /api/comment", comments.SaveCommentHandler)

@@ -1,7 +1,9 @@
 package auth
 
 import (
+	"fmt"
 	"forum/backend/database"
+	"html/template"
 	"log"
 	"net/http"
 	"regexp"
@@ -10,38 +12,50 @@ import (
 )
 
 func RegisterHandlerGet(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "../frontend/templates/register.html")
+	tmpt, err := template.ParseFiles("./frontend/templates/register.html")
 
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	tmpt.Execute(w, nil)
 }
+
 func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
+
+	tmpt, err := template.ParseFiles("./frontend/templates/register.html")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
 	Email := r.FormValue("email")
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 	confirmPassword := r.FormValue("confirmpassword")
 	if username == "" {
-		http.Error(w, "Username is required", http.StatusBadRequest)
+		tmpt.Execute(w, struct{ Error string }{Error: "Username is required"})
 		return
 	}
 
 	if password != confirmPassword {
-
-		http.Error(w, "Passwords do not match", http.StatusBadRequest)
+		tmpt.Execute(w, struct{ Error string }{Error: "Passwords do not match"})
 		return
 	}
 	if len(password) < 8 {
-		http.Error(w, "Password must be at least 8 characters long", http.StatusBadRequest)
+		tmpt.Execute(w, struct{ Error string }{Error: "Password must be at least 8 characters long"})
 		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		tmpt.Execute(w, struct{ Error string }{Error: "Internal server error, try again later"})
 		log.Println("Error hashing password:", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 	regex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	if matched := regexp.MustCompile(regex).MatchString(Email); !matched {
-		http.Error(w, "Invalid email format", http.StatusBadRequest)
+		tmpt.Execute(w, struct{ Error string }{Error: "Invalid email format"})
 		return
 	}
 
@@ -51,9 +65,10 @@ func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
 		Email, username, hashedPassword,
 	)
 	if err != nil {
-		http.Error(w, "Internal server error f", http.StatusInternalServerError)
+		tmpt.Execute(w, struct{ Error string }{Error: "Internal server error, try again later"})
+		fmt.Println(err)
 		return
 	}
 
-	http.Redirect(w, r, "/login/", http.StatusSeeOther)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }

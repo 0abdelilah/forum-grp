@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"fmt"
 	"forum/backend/database"
+	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -12,11 +12,23 @@ import (
 )
 
 func LoginHandlerGet(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "../frontend/templates/login.html")
+	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	tmpt.Execute(w, nil)
 }
 
 func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("dfs")
+
+	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
 	var (
 		userID     int
 		storedHash string
@@ -27,22 +39,22 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	if username == "" || password == "" {
-		http.Error(w, "Username and password are required", http.StatusBadRequest)
+		tmpt.Execute(w, struct{ Error string }{Error: "Username and password are required"})
 		return
 	}
 
-	err := database.Db.QueryRow(
+	err = database.Db.QueryRow(
 		`SELECT id, password_hash FROM users WHERE username = ?`,
 		username,
 	).Scan(&userID, &storedHash)
 	if err != nil {
-		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+		tmpt.Execute(w, struct{ Error string }{Error: "Invalid username or password"})
 		log.Println("Login failed (user not found):", err)
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password)); err != nil {
-		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+	if err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password)); err != nil {
+		tmpt.Execute(w, struct{ Error string }{Error: "Invalid username or password"})
 		log.Println("Login failed (wrong password):", err)
 		return
 	}
@@ -56,7 +68,7 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 		VALUES (?, ?, ?, ?)
 	`, sessionID, userID, createdAt, expiresAt)
 	if err != nil {
-		http.Error(w, "Could not create session", http.StatusInternalServerError)
+		tmpt.Execute(w, struct{ Error string }{Error: "Could not create session, try again later"})
 		log.Println("Error inserting session:", err)
 		return
 	}
