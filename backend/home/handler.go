@@ -1,8 +1,10 @@
 package home
 
 import (
+	"database/sql"
 	"forum/backend/database"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -23,32 +25,37 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	tmpl, err := template.ParseFiles("./frontend/templates/index.html")
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	IsLoggedIn := false
+	isLoggedIn := false
+	var username string
 
 	// Check if session cookie exists
 	cookie, err := r.Cookie("session_token")
 	if err == nil {
-		// Verify that session is valid and not expired
-		var userID int
-		err = database.Db.QueryRow(
-			`SELECT user_id FROM sessions WHERE id = ? AND expires_at > datetime('now')`,
-			cookie.Value,
-		).Scan(&userID)
+		// Validate session
+		err = database.Db.QueryRow(`
+			SELECT username FROM sessions WHERE id = ? AND expires_at > datetime('now')
+		`, cookie.Value).Scan(&username)
 
 		if err == nil {
-			IsLoggedIn = true
+			isLoggedIn = true
+		} else if err != sql.ErrNoRows {
+			// Log unexpected DB error
+			log.Printf("session lookup error: %v", err)
 		}
 	}
 
-	PageData := database.AllPageData(r, "HomeData")
-	PageData.IsLoggedIn = IsLoggedIn
-	PageData.Username = "Username"
+	pageData := database.AllPageData(r, "HomeData")
+	pageData.IsLoggedIn = isLoggedIn
+	pageData.Username = username
 
-	tmpl.Execute(w, PageData)
+	if err := tmpl.Execute(w, pageData); err != nil {
+		log.Printf("template execution error: %v", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
 }
 
 func StaticHandler(w http.ResponseWriter, r *http.Request) {

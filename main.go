@@ -25,6 +25,8 @@ func main() {
 	mux.HandleFunc("GET  /login", auth.LoginHandlerGet)
 	mux.HandleFunc("POST  /api/login", auth.LoginHandlerPost)
 
+	mux.HandleFunc("GET  /logout", auth.LogoutHandler)
+
 	// Comments
 	mux.HandleFunc("POST /api/comment", comments.SaveCommentHandler)
 	mux.HandleFunc("GET /api/comments", comments.GetCommentsHandler)

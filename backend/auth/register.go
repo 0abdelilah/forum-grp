@@ -1,12 +1,14 @@
 package auth
 
 import (
+	"database/sql"
 	"fmt"
 	"forum/backend/database"
 	"html/template"
 	"log"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -33,17 +35,11 @@ func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 	confirmPassword := r.FormValue("confirmpassword")
-	if username == "" {
-		tmpt.Execute(w, struct{ Error string }{Error: "Username is required"})
-		return
-	}
 
-	if password != confirmPassword {
-		tmpt.Execute(w, struct{ Error string }{Error: "Passwords do not match"})
-		return
-	}
-	if len(password) < 8 {
-		tmpt.Execute(w, struct{ Error string }{Error: "Password must be at least 8 characters long"})
+	err = validateValues(Email, username, password, confirmPassword)
+	if err != nil {
+		tmpt.Execute(w, struct{ Error string }{Error: strings.Title(err.Error())})
+		fmt.Println(err)
 		return
 	}
 
@@ -51,11 +47,6 @@ func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		tmpt.Execute(w, struct{ Error string }{Error: "Internal server error, try again later"})
 		log.Println("Error hashing password:", err)
-		return
-	}
-	regex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	if matched := regexp.MustCompile(regex).MatchString(Email); !matched {
-		tmpt.Execute(w, struct{ Error string }{Error: "Invalid email format"})
 		return
 	}
 
@@ -71,4 +62,51 @@ func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
+func validateValues(email, username, password, confirmPassword string) error {
+	// --- Check if email exists ---
+	var existingEmail string
+	err := database.Db.QueryRow(`SELECT email FROM users WHERE email = ?`, email).Scan(&existingEmail)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			fmt.Printf("email database error: %v\n", err)
+			return fmt.Errorf("internal server error, try later")
+		}
+	} else {
+		return fmt.Errorf("this email is already used")
+	}
+
+	// --- Validate email format ---
+	regex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	if matched := regexp.MustCompile(regex).MatchString(email); !matched {
+		return fmt.Errorf("invalid email format")
+	}
+
+	// --- Validate username ---
+	if len(username) < 4 || len(username) > 20 {
+		return fmt.Errorf("username must be between 4 and 20 characters")
+	}
+
+	// --- Check if username exists ---
+	var existingUsername string
+	err = database.Db.QueryRow(`SELECT username FROM users WHERE username = ?`, username).Scan(&existingUsername)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			fmt.Printf("username database error: %v\n", err)
+			return fmt.Errorf("internal server error, try later")
+		}
+	} else {
+		return fmt.Errorf("this username is already used")
+	}
+
+	// --- Validate password ---
+	if password != confirmPassword {
+		return fmt.Errorf("passwords do not match")
+	}
+	if len(password) < 8 || len(password) > 20 {
+		return fmt.Errorf("password must be between 8 and 20 characters")
+	}
+
+	return nil
 }
