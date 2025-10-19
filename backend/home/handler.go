@@ -7,7 +7,7 @@ import (
 )
 
 func PageNotFound(w http.ResponseWriter) {
-	tmpt, err := template.ParseFiles("../frontend/templates/not-found.html")
+	tmpt, err := template.ParseFiles("./frontend/templates/not-found.html")
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
@@ -21,7 +21,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpt, err := template.ParseFiles("../frontend/templates/index.html")
+	tmpt, err := template.ParseFiles("./frontend/templates/index.html")
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
@@ -31,7 +31,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func StaticHandler(w http.ResponseWriter, r *http.Request) {
-	path := "../frontend/templates/" + r.URL.Path
+	path := "./frontend/templates/" + r.URL.Path
 
 	// Serve the file directly
 	http.ServeFile(w, r, path)
