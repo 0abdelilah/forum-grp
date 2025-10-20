@@ -38,8 +38,8 @@ func main() {
 	// static files
 	mux.HandleFunc("GET /static/", home.StaticHandler)
 
-	fmt.Println("Listening on http://localhost:8081")
-	if err := http.ListenAndServe(":8081", mux); err != nil {
+	fmt.Println("Listening on http://localhost:3001")
+	if err := http.ListenAndServe(":3001", mux); err != nil {
 		log.Println(err)
 	}
 }

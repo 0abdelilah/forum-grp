@@ -1,9 +1,12 @@
 package home
 
 import (
-	"forum/backend/database"
+	"fmt"
 	"html/template"
 	"net/http"
+
+	"forum/backend/database"
+	"forum/backend/filters"
 )
 
 func PageNotFound(w http.ResponseWriter) {
@@ -43,8 +46,26 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			IsLoggedIn = true
 		}
 	}
-
 	PageData := database.AllPageData(r, "HomeData")
+	if r.Method!=http.MethodPost{
+		tmpl.Execute(w,PageData)
+		return 
+	}
+	//hna bax nfiltery bmethod post ghida nkamal  
+	r.ParseForm()
+	if r.Form["Category"] != nil {
+		PageData.AllPosts = filters.FelterbyCategory(PageData, r.Form["Category"][0])
+		for i := 0; i < len(PageData.CategoryChoice); i++ {
+			if PageData.CategoryChoice[i].Category == r.Form["Category"][0] {
+				PageData.CategoryChoice[i].Selected = "true"
+			}
+		}
+		fmt.Println(PageData)
+		tmpl.Execute(w, PageData)
+		return
+	}
+
+	PageData = database.AllPageData(r, "HomeData")
 	PageData.IsLoggedIn = IsLoggedIn
 	PageData.Username = "Username"
 

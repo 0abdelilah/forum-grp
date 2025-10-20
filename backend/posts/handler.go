@@ -2,10 +2,12 @@ package posts
 
 import (
 	"encoding/json"
-	"forum/backend/models"
 	"log"
 	"net/http"
 	"text/template"
+
+	"forum/backend/database"
+	"forum/backend/models"
 )
 
 var jsonExample = `
@@ -63,9 +65,15 @@ func LoadPostsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SeePostdetail(w http.ResponseWriter, r *http.Request) {
-	PostsTemplete, err := template.ParseFiles("../frontend/templates/post-detail.html")
+	PostsTemplete, err := template.ParseFiles("./frontend/templates/post-detail.html")
 	if err != nil {
 		log.Fatal(err)
 	}
-	PostsTemplete.Execute(w, nil)
+	if r.URL.Path != "/post-detail" {
+		http.Error(w, "Page Not Found ", http.StatusNotFound)
+		return
+	}
+	PostDatacontent := database.AllPageData(r, "postContent")
+	// fmt.Println("Data from Post",PostDatacontent)
+	PostsTemplete.Execute(w, PostDatacontent)
 }

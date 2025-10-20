@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"log"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -16,21 +17,24 @@ func Init() {
 		log.Fatal("Failed to open database:", err)
 	}
 
-	createTables()
-	insertFortrain()
+	 //CreateTables() //ila bghiti Tables from scrach
+	 //InsertInTables() // ila bghit tansirti 
 }
 
 // createTables runs all CREATE TABLE statements.
-func createTables() {
-	createUsersTable()
-	createCategoriesTable()
-	createPostsTable()
-	createCommentsTable()
-	createLikesTable()
-	createSessionsTable()
+func CreateTables() {
+	CreateUsersTable()
+	CreateCategoriesTable()
+	CreatePostsTable()
+	CreateCommentsTable()
+	CreateLikesTable()
+	CreateSessionsTable()
 }
-
-func createUsersTable() {
+func InsertInTables(){
+	InsertPost()
+	// InsetComment()
+}
+func CreateUsersTable() {
 	stmt := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,7 +47,7 @@ func createUsersTable() {
 	}
 }
 
-func createCategoriesTable() {
+func CreateCategoriesTable() {
 	stmt := `
 	CREATE TABLE IF NOT EXISTS categories (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,7 +65,7 @@ func createCategoriesTable() {
 	}
 }
 
-func createPostsTable() {
+func CreatePostsTable() {
 	stmt := `
 	CREATE TABLE IF NOT EXISTS posts (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -79,7 +83,7 @@ func createPostsTable() {
 	}
 }
 
-func createCommentsTable() {
+func CreateCommentsTable() {
 	stmt := `
 	CREATE TABLE IF NOT EXISTS comments (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -93,7 +97,7 @@ func createCommentsTable() {
 	}
 }
 
-func createLikesTable() {
+func CreateLikesTable() {
 	stmt := `
 	CREATE TABLE IF NOT EXISTS likes (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -106,7 +110,7 @@ func createLikesTable() {
 	}
 }
 
-func createSessionsTable() {
+func CreateSessionsTable() {
 	stmt := `
 	CREATE TABLE IF NOT EXISTS sessions (
 		id TEXT PRIMARY KEY,
@@ -121,12 +125,22 @@ func createSessionsTable() {
 	}
 }
 
-func insertFortrain() {
+func InsertPost() {
 	_, err := Db.Exec(`
 	INSERT INTO posts (user_id, title, content, created_at, likes_count, comments_count)
 	VALUES (?, ?, ?, ?, ?, ?)
-	`, 1, "dev", "The Fourth of July is the United States' celebration of independence.", "createdAt", 2, 9)
+	`, 1, "Cybersecurity", "Thank god.", "2025-12-5", 2, 9)
 	if err != nil {
 		log.Println("Skipping training insert:", err)
+	}
+}
+
+func InsetComment() {
+	// db, _ := sql.Open("sqlite3", "./database/sqlite.db")
+	_, err := Db.Exec(`
+	INSERT INTO comments ( id ,post_id , user_id ,content ,created_at) VALUES(?,?,?,?,?)
+	`, 2, 3, 5, "I love you",time.Now().Format("2001-12-3"))
+	if err != nil {
+		log.Fatal("error in isert:", err)
 	}
 }

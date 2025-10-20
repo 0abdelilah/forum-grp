@@ -7,12 +7,22 @@
     <title>TechDev</title>
     <link rel="stylesheet" href="/static/css/index.css">
     <script src="/static/js/comments.js"></script>
-    <script src="/static/js/posts.js"></script>
+    <!-- <script src="/static/js/posts.js"></script> -->
 </head>
 
 <body>
     <!-- Header -->
-    <header>
+    <!-- <header>
+        <div class="header-left">
+            <div class="logo">TD</div>
+            <div class="platform-name">TechDev</div>
+        </div>
+        <div class="header-buttons">
+            <a href="/login/">Login</a>
+            <a href="/register/">Register</a>
+        </div>
+    </header> -->
+        <header>
         <div class="header-left">
             <div class="logo">TD</div>
             <div class="platform-name">TechDev</div>
@@ -52,30 +62,35 @@
         <!-- Center Feed -->
         <main class="feed">
             <div class="create-post">
-                <button onclick="createPost()">Make Post</button>
+                <a href="login">Make Post</a>
             </div>
 
             <div class="posts">
-
+                <a href="post-detail">
                 <div data-id="123" class="post_comments">
+                    {{range $Post:= .AllPosts}}
                     <div class="post">
                         <div class="post-header">
                             <img src="./static/icon.png">
-                            <h3>soukayna</h3>
+                            <h3></h3>
                         </div>
-
+                        
                         <div class="post-content">
-                            <h3>Title here</h3>
-                            <p>Excited to share my latest adventure!</p>
+                            <h3>{{$Post.Title }}</h3>
+                            <p>{{$Post.Content }}</p>
                         </div>
-
+                        <form method="post">  
                         <div class="post-actions">
-                            <button><span>👍</span> Like</button>
-                            <button
-                                onclick="ShowComments(this.closest('.post_comments').dataset.id)"><span>💬</span>Comments</button>
-                            <button><span>#</span>Cybersecurity</button>
+                            <button><span>👍</span> {{$Post.Likes}}Like</button>
+                            <button><span>👎</span> {{$Post.Dislikes}}Dislikes</button>
+                            <button><span>💬</span> {{$Post.CommentsNum}}Comments</button>
+                            <button><span>#</span>{{$Post.Category}}</button>
                         </div>
+                        </form>
+                        
                     </div>
+                          {{end}}
+                    </a>
                     <div id="overlay" onclick="closePopup()"></div>
                     <div id="popup">
                         <div class="comments">
@@ -103,14 +118,17 @@
 
         <!-- Right Sidebar -->
         <aside class="sidebar-right">
+        <aside class="sidebar-right">
             <h2>Categories</h2>
-            <ul>
-                <li><a href="#all">All Posts</a></li>
-                <li><a href="#tech">Programming</a></li>
-                <li><a href="#Cybersecurity">Cybersecurity</a></li>
-                <li><a href="Gadgets & Hardware">Gadgets & Hardware</a></li>
-                <li><a href="Web Development">Web Development</a></li>
-            </ul>
+            {{range $cat := .Categories}}
+            <form action="/" method="post">
+                <label for="{{$cat.Category}}" class="category">
+                    <input type="hidden" name="postId" value="{{$cat.Category}}" />
+                    <input type="submit" name="Category" value="{{$cat.Category}}"/>
+                </label>
+            </form>
+            {{end}}
+        </aside>
         </aside>
     </div>
 
