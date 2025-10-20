@@ -2,10 +2,13 @@ package home
 
 import (
 	"database/sql"
-	"forum/backend/database"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+
+	"forum/backend/database"
+	"forum/backend/filters"
 )
 
 func PageNotFound(w http.ResponseWriter) {
@@ -29,7 +32,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	isLoggedIn := false
+	IsLoggedIn := false
 	var username string
 
 	// Check if session cookie exists
@@ -41,18 +44,35 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		`, cookie.Value).Scan(&username)
 
 		if err == nil {
-			isLoggedIn = true
+			IsLoggedIn = true
 		} else if err != sql.ErrNoRows {
 			// Log unexpected DB error
 			log.Printf("session lookup error: %v", err)
 		}
 	}
+	PageData := database.AllPageData(r, "HomeData")
+	if r.Method != http.MethodPost {
+		tmpl.Execute(w, PageData)
+		return
+	}
+	//hna bax nfiltery bmethod post ghida nkamal
+	r.ParseForm()
+	if r.Form["Category"] != nil {
+		PageData.AllPosts = filters.FelterbyCategory(PageData, r.Form["Category"][0])
+		for i := 0; i < len(PageData.CategoryChoice); i++ {
+			if PageData.CategoryChoice[i].Category == r.Form["Category"][0] {
+				PageData.CategoryChoice[i].Selected = "true"
+			}
+		}
+		fmt.Println(PageData)
+		tmpl.Execute(w, PageData)
+		return
+	}
 
-	pageData := database.AllPageData(r, "HomeData")
-	pageData.IsLoggedIn = isLoggedIn
-	pageData.Username = username
+	PageData.IsLoggedIn = IsLoggedIn
+	PageData.Username = username
 
-	if err := tmpl.Execute(w, pageData); err != nil {
+	if err := tmpl.Execute(w, PageData); err != nil {
 		log.Printf("template execution error: %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
