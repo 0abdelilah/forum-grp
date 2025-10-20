@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"forum/backend/auth"
-	"forum/backend/comments"
 	"forum/backend/database"
 	"forum/backend/home"
 	"forum/backend/posts"
@@ -27,10 +26,6 @@ func main() {
 	mux.HandleFunc("POST  /api/login", auth.LoginHandlerPost)
 
 	mux.HandleFunc("GET  /logout", auth.LogoutHandler)
-
-	// Comments
-	mux.HandleFunc("POST /api/comment", comments.SaveCommentHandler)
-	mux.HandleFunc("GET /api/comments", comments.GetCommentsHandler)
 
 	// Posts
 	mux.HandleFunc("GET /api/posts", posts.LoadPostsHandler)

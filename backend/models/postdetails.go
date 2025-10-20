@@ -3,7 +3,7 @@ package models
 type Post struct {
 	Id          int        `json:"id"`
 	Title       string     `json:"title"`
-	UserId      int        `json:"author"`
+	Username    string     `json:"username"`
 	Content     string     `json:"content"`
 	CommentsNum int        `json:"comments"`
 	Likes       int        `json:"likes_count"`

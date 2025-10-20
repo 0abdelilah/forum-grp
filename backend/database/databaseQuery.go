@@ -36,7 +36,7 @@ func GetAllPosts() []models.Post {
 	var posts []models.Post
 
 	rows, err := Db.Query(`
-		SELECT id, user_id, title, content, created_at, 
+		SELECT id, title, username, content, created_at, 
 			   likes_count, dislikes_count, comments_count
 		FROM posts
 		ORDER BY created_at DESC
@@ -49,7 +49,7 @@ func GetAllPosts() []models.Post {
 
 	for rows.Next() {
 		var p models.Post
-		if err := rows.Scan(&p.Id, &p.UserId, &p.Title, &p.Content,
+		if err := rows.Scan(&p.Id, &p.Username, &p.Title, &p.Content,
 			&p.CreatedAt, &p.Likes, &p.Dislikes, &p.CommentsNum); err != nil {
 			log.Printf("error scanning post row: %v", err)
 			continue
@@ -63,11 +63,11 @@ func GetPostDetails(postId int) models.Post {
 	var post models.Post
 
 	err := Db.QueryRow(`
-		SELECT id, user_id, title, content, created_at,
+		SELECT id, username, title, content, created_at,
 			   likes_count, dislikes_count, comments_count
 		FROM posts
 		WHERE id = ?
-	`, postId).Scan(&post.Id, &post.UserId, &post.Title, &post.Content,
+	`, postId).Scan(&post.Id, &post.Username, &post.Title, &post.Content,
 		&post.CreatedAt, &post.Likes, &post.Dislikes, &post.CommentsNum)
 
 	if err != nil {

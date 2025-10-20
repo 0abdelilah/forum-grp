@@ -30,7 +30,7 @@ func Init() {
 
 		`CREATE TABLE IF NOT EXISTS posts (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			username TEXT NOT NULL,
 			title TEXT NOT NULL CHECK(length(title) > 0),
 			content TEXT NOT NULL CHECK(length(content) > 0),
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -52,7 +52,7 @@ func Init() {
 		`CREATE TABLE IF NOT EXISTS comments (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			post_id INTEGER NOT NULL,
-			user_id INTEGER NOT NULL,
+			username TEXT NOT NULL,
 			content TEXT NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
@@ -60,7 +60,7 @@ func Init() {
 		// Likes
 		`CREATE TABLE IF NOT EXISTS likes (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			user_id INTEGER NOT NULL,
+			username TEXT NOT NULL,
 			title TEXT NOT NULL,
 			content TEXT NOT NULL
 		);`,
@@ -68,7 +68,6 @@ func Init() {
 		// Sessions
 		`CREATE TABLE IF NOT EXISTS sessions (
 			id TEXT PRIMARY KEY,
-			user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 			username TEXT NOT NULL,
 			expires_at DATETIME NOT NULL CHECK(expires_at > created_at),
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -85,21 +84,10 @@ func Init() {
 	}
 }
 
-// Example inserts
-func InsertPost() {
-	_, err := Db.Exec(`
-	INSERT INTO posts (user_id, title, content, created_at, likes_count, comments_count)
-	VALUES (?, ?, ?, ?, ?, ?)
-	`, 1, "Cybersecurity", "Thank god.", "2025-12-5", 2, 9)
-	if err != nil {
-		log.Println("Skipping training insert:", err)
-	}
-}
-
 func InsetComment() {
 	_, err := Db.Exec(`
-	INSERT INTO comments ( id ,post_id , user_id ,content ,created_at) VALUES(?,?,?,?,?)
-	`, 2, 3, 5, "I love you", time.Now().Format("2001-12-3"))
+	INSERT INTO comments ( id, post_id, username ,content ,created_at) VALUES(?,?,?,?,?)
+	`, 2, "usern", 5, "I love you", time.Now().Format("2001-12-3"))
 	if err != nil {
 		log.Fatal("error in isert:", err)
 	}
