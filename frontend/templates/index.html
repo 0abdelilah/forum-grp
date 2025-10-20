@@ -7,28 +7,19 @@
     <title>TechDev</title>
     <link rel="stylesheet" href="/static/css/index.css">
     <script src="/static/js/comments.js"></script>
-    <!-- <script src="/static/js/posts.js"></script> -->
+    <script src="/static/js/posts.js"></script>
 </head>
 
 <body>
     <!-- Header -->
-    <!-- <header>
+
+    <header>
         <div class="header-left">
             <div class="logo">TD</div>
             <div class="platform-name">TechDev</div>
         </div>
         <div class="header-buttons">
-            <a href="/login/">Login</a>
-            <a href="/register/">Register</a>
-        </div>
-    </header> -->
-        <header>
-        <div class="header-left">
-            <div class="logo">TD</div>
-            <div class="platform-name">TechDev</div>
-        </div>
-        <div class="header-buttons">
-            {{if .IsLoggedIn}}
+            {{if .Username}}
             {{.Username}}
             <a href="/logout">Logout</a>
             {{else}}
@@ -62,77 +53,85 @@
         <!-- Center Feed -->
         <main class="feed">
             <div class="create-post">
-                <a href="login">Make Post</a>
+                <button onclick="openPopup()"><span></span>Create Post</button>
+            </div>
+            <div id="overlay" onclick="closePopup()"></div>
+            <div id="popup">
+                <div class="popup-content">
+                    <h2>Create Post</h2>
+                    <textarea name="title" placeholder="Title..."></textarea>
+                    <textarea name="content" placeholder="Content..."></textarea>
+                    <button onclick="createPost(); closePopup()">Submit</button>
+                
+                </div>
             </div>
 
             <div class="posts">
                 <a href="post-detail">
-                <div data-id="123" class="post_comments">
-                    {{range $Post:= .AllPosts}}
-                    <div class="post">
-                        <div class="post-header">
+                    <div data-id="123" class="post_comments">
+                        {{range $Post:= .AllPosts}}
+                        <div class="post">
+                            <div class="post-header">
+                                <img src="./static/icon.png">
+                                <h3></h3>
+                            </div>
+
+                            <div class="post-content">
+                                <h3>{{$Post.Title }}</h3>
+                                <p>{{$Post.Content }}</p>
+                            </div>
+                            <form method="post">
+                                <div class="post-actions">
+                                    <button><span>👍</span> {{$Post.Likes}}Like</button>
+                                    <button><span>👎</span> {{$Post.Dislikes}}Dislikes</button>
+                                    <button><span>💬</span> {{$Post.CommentsNum}}Comments</button>
+                                    <button><span>#</span>{{$Post.Category}}</button>
+                                </div>
+                            </form>
+
+                        </div>
+                        {{end}}
+                </a>
+                <div id="overlay" onclick="closePopup()"></div>
+                <div id="popup">
+                    <div class="comments">
+                        <div class="comment">
                             <img src="./static/icon.png">
-                            <h3></h3>
-                        </div>
-                        
-                        <div class="post-content">
-                            <h3>{{$Post.Title }}</h3>
-                            <p>{{$Post.Content }}</p>
-                        </div>
-                        <form method="post">  
-                        <div class="post-actions">
-                            <button><span>👍</span> {{$Post.Likes}}Like</button>
-                            <button><span>👎</span> {{$Post.Dislikes}}Dislikes</button>
-                            <button><span>💬</span> {{$Post.CommentsNum}}Comments</button>
-                            <button><span>#</span>{{$Post.Category}}</button>
-                        </div>
-                        </form>
-                        
-                    </div>
-                          {{end}}
-                    </a>
-                    <div id="overlay" onclick="closePopup()"></div>
-                    <div id="popup">
-                        <div class="comments">
-                            <div class="comment">
-                                <img src="./static/icon.png">
-                                <div class="author_content">
-                                    <h5>abdelilah</h5>
-                                    <p>hii</p>
-                                </div>
+                            <div class="author_content">
+                                <h5>abdelilah</h5>
+                                <p>hii</p>
                             </div>
-                            <div class="comment">
-                                <img src="./static/icon.png">
-                                <div class="author_content">
-                                    <h5>abdelilah</h5>
-                                    <p>hii</p>
-                                </div>
-                            </div>
-                            <textarea id="cmntarea" placeholder="Write a comment..."></textarea>
-                            <button onclick="CreateComment(this)">Submit</button>
                         </div>
+                        <div class="comment">
+                            <img src="./static/icon.png">
+                            <div class="author_content">
+                                <h5>abdelilah</h5>
+                                <p>hii</p>
+                            </div>
+                        </div>
+                        <textarea id="cmntarea" placeholder="Write a comment..."></textarea>
+                        <button onclick="CreateComment(this)">Submit</button>
                     </div>
                 </div>
             </div>
-        </main>
+    </div>
+    </main>
 
-        <!-- Right Sidebar -->
-        <aside class="sidebar-right">
+    <!-- Right Sidebar -->
+    <aside class="sidebar-right">
         <aside class="sidebar-right">
             <h2>Categories</h2>
             {{range $cat := .Categories}}
             <form action="/" method="post">
                 <label for="{{$cat.Category}}" class="category">
                     <input type="hidden" name="postId" value="{{$cat.Category}}" />
-                    <input type="submit" name="Category" value="{{$cat.Category}}"/>
+                    <input type="submit" name="Category" value="{{$cat.Category}}" />
                 </label>
             </form>
             {{end}}
         </aside>
-        </aside>
+    </aside>
     </div>
-
-    <script>loadPosts()</script>
 
     <!-- Footer -->
     <footer>

@@ -17,6 +17,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", home.HomeHandler)
+	mux.HandleFunc("POST /", home.PostHomeHandler)
 
 	// Authentication
 	mux.HandleFunc("GET /register", auth.RegisterHandlerGet)
@@ -33,7 +34,7 @@ func main() {
 
 	// Posts
 	mux.HandleFunc("GET /api/posts", posts.LoadPostsHandler)
-	// mux.HandleFunc("POST /api/create_post", posts.CreatePostsHandler)
+	mux.HandleFunc("POST /api/create_post", posts.CreatePostsHandler)
 
 	// Posts content
 	mux.HandleFunc("GET /post-detail", posts.SeePostdetail)

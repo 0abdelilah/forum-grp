@@ -20,6 +20,23 @@ func PageNotFound(w http.ResponseWriter) {
 	tmpt.Execute(w, nil)
 }
 
+func GetUsernameFromCookie(r *http.Request, cookie_name string) (string, error) {
+	c, err := r.Cookie(cookie_name)
+	if err != nil {
+		return "", err
+	}
+
+	var username string
+	err = database.Db.QueryRow("SELECT username FROM sessions WHERE id = ? AND expires_at > datetime('now')", c.Value).Scan(&username)
+	if err == sql.ErrNoRows {
+		return "", nil // no user found, not a fatal error
+	}
+	if err != nil {
+		return "", err
+	}
+	return username, nil
+}
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		PageNotFound(w)
@@ -32,29 +49,28 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	IsLoggedIn := false
-	var username string
-
-	// Check if session cookie exists
-	cookie, err := r.Cookie("session_token")
-	if err == nil {
-		// Validate session
-		err = database.Db.QueryRow(`
-			SELECT username FROM sessions WHERE id = ? AND expires_at > datetime('now')
-		`, cookie.Value).Scan(&username)
-
-		if err == nil {
-			IsLoggedIn = true
-		} else if err != sql.ErrNoRows {
-			// Log unexpected DB error
-			log.Printf("session lookup error: %v", err)
-		}
-	}
 	PageData := database.AllPageData(r, "HomeData")
-	if r.Method != http.MethodPost {
-		tmpl.Execute(w, PageData)
+	PageData.Username, err = GetUsernameFromCookie(r, "session_token")
+
+	if err != nil {
+		log.Printf("failed to get username from cookie: %v", err)
+	}
+
+	if err := tmpl.Execute(w, PageData); err != nil {
+		log.Printf("template execution error: %v", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
+}
+
+func PostHomeHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("./frontend/templates/index.html")
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
+
+	PageData := database.AllPageData(r, "HomeData")
+
 	//hna bax nfiltery bmethod post ghida nkamal
 	r.ParseForm()
 	if r.Form["Category"] != nil {
@@ -68,9 +84,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		tmpl.Execute(w, PageData)
 		return
 	}
-
-	PageData.IsLoggedIn = IsLoggedIn
-	PageData.Username = username
 
 	if err := tmpl.Execute(w, PageData); err != nil {
 		log.Printf("template execution error: %v", err)
