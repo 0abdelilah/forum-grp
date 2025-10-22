@@ -2,7 +2,7 @@ package comments
 
 import "forum/backend/models"
 
-func SaveComment(PostId, UserId, Content string) error {
+func SaveComment(PostId, Username, Content string) error {
 
 	return nil
 }

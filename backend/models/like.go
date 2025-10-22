@@ -6,3 +6,9 @@ type Likes struct {
 	Target_id   int
 	Value       int
 }
+type LikesID struct {
+	UserId    int
+	Value     int
+	Target_id string
+	Id        int
+}

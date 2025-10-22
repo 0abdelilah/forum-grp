@@ -1,0 +1,28 @@
+# 1️⃣ استخدم صورة رسمية لـ Go
+FROM golang:1.22-alpine AS builder
+
+# 2️⃣ إعداد المجلد داخل الحاوية
+WORKDIR /app
+
+# 3️⃣ نسخ ملفات المشروع
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# 4️⃣ بناء التطبيق
+RUN go build -o main .
+
+# 5️⃣ صورة نهائية صغيرة الحجم
+FROM alpine:latest
+
+WORKDIR /app
+
+# نسخ الملف التنفيذي من مرحلة البناء
+COPY --from=builder /app/main .
+
+# تعيين المنفذ (باش يعرف docker expose)
+EXPOSE 8080
+
+# الأمر اللي يشغل السيرفر
+CMD ["./main"]

@@ -64,8 +64,8 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 	expiresAt := createdAt.Add(24 * time.Hour)
 
 	_, err = database.Db.Exec(`
-		INSERT INTO sessions(id, user_id, username, created_at, expires_at)
-		VALUES (?, ?, ?, ?, ?)
+		INSERT INTO sessions(id, username, created_at, expires_at)
+		VALUES (?, ?, ?, ?)
 	`, sessionID, userID, username, createdAt, expiresAt)
 	if err != nil {
 		tmpt.Execute(w, struct{ Error string }{Error: "Could not create session, try again later"})
