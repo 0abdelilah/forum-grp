@@ -2,11 +2,10 @@ package database
 
 import (
 	"database/sql"
+	"forum/backend/models"
 	"log"
 	"net/http"
 	"strconv"
-
-	"forum/backend/models"
 )
 
 func AllPageData(r *http.Request, handle string) models.PageData {
@@ -108,8 +107,78 @@ func GetAllCategories() []models.Category {
 	return categories
 }
 
-func GetAlllike() {
+func GetAlllike(db *sql.DB, target string, userID int) ([]models.Likes, error) {
+
+	rows, err := db.Query(`
+        SELECT id, user_id, target_id, value
+        FROM likes
+        WHERE user_id = ?
+		WHERE target_type = ?
+        ORDER BY created_at ASC
+    `, userID, target)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var likes []models.Likes
+	for rows.Next() {
+		var l models.Likes
+		if err := rows.Scan(&l.UserId, &l.Target_id, &l.Target_type, &l.Value); err != nil {
+			return nil, err
+
+		}
+		likes = append(likes, l)
+
+	}
+	return likes, nil
+
+}
+func GetCommentsByuserID(db *sql.DB, userID int) ([]models.Comment, error) {
+
+	rows, err := db.Query(`
+        SELECT id, post_id, post_id, content, created_at
+        FROM comments
+        WHERE user_id = ?
+        ORDER BY created_at ASC
+    `, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []models.Comment
+	for rows.Next() {
+		var c models.Comment
+		if err := rows.Scan(&c.Id, &c.PostId, &c.UserId, &c.Content, &c.Created); err != nil {
+			return nil, err
+		}
+		comments = append(comments, c)
+	}
+
+	return comments, nil
 }
 
-func GetAllcomment(postId int) {
+func GetCommentsByPostID(db *sql.DB, postID int) ([]models.Comment, error) {
+	rows, err := db.Query(`
+        SELECT id, post_id, user_id, content, created_at
+        FROM comments
+        WHERE post_id = ?
+        ORDER BY created_at ASC
+    `, postID)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []models.Comment
+	for rows.Next() {
+		var c models.Comment
+		if err := rows.Scan(&c.Id, &c.PostId, &c.UserId, &c.Content, &c.Created); err != nil {
+			return nil, err
+		}
+		comments = append(comments, c)
+	}
+
+	return comments, nil
 }

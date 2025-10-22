@@ -6,7 +6,7 @@ type PageData struct {
 	Categories     []Category
 	CategoryChoice []Category
 	AllPosts       []Post
-	AllPostLikes   []Reactions
+	AllPostLikes   []Likes
 	AllComments    []Comment
 	Postcontent    Post
 }

@@ -1,6 +1,8 @@
 package models
 
-type Reactions struct {
-	Likes    int `json:"likes"`
-	Dislikes int `json:"dislikes"`
+type Likes struct {
+	UserId      int
+	Target_type string
+	Target_id   int
+	Value       int
 }
