@@ -20,9 +20,10 @@ func AllPageData(r *http.Request, handle string) models.PageData {
 	case "HomeData":
 		posts := GetAllPosts()
 		categories := GetAllCategories()
+
 		return models.PageData{AllPosts: posts, Categories: categories}
 
-	case "Post":
+	case "postContent":
 		post := GetPostDetails(postId)
 		return models.PageData{Postcontent: post}
 
@@ -134,14 +135,14 @@ func GetAlllike(db *sql.DB, target string, userID int) ([]models.Likes, error) {
 
 }
 
-func GetAllliketarget(db *sql.DB,  Target_id int) ([]models.LikesID, error) {
+func GetAllliketarget(db *sql.DB, Target_id int) ([]models.LikesID, error) {
 
 	rows, err := db.Query(`
         SELECT user_id, target_id, value,id
         FROM likes
       WHERE target_id = ?
         ORDER BY created_at ASC
-    `,  Target_id)
+    `, Target_id)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +150,7 @@ func GetAllliketarget(db *sql.DB,  Target_id int) ([]models.LikesID, error) {
 	var likes []models.LikesID
 	for rows.Next() {
 		var l models.LikesID
-		if err := rows.Scan(&l.UserId, &l.Target_id, &l.Value,&l.Id); err != nil {
+		if err := rows.Scan(&l.UserId, &l.Target_id, &l.Value, &l.Id); err != nil {
 			return nil, err
 
 		}

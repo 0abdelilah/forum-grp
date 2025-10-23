@@ -3,7 +3,6 @@ package posts
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"text/template"
 
@@ -18,15 +17,18 @@ func LoadPostsHandler(w http.ResponseWriter, r *http.Request) {
 func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 	PostsTemplete, err := template.ParseFiles("./frontend/templates/post-detail.html")
 	if err != nil {
-		log.Fatal(err)
+		home.PageNotFound(w)
+		fmt.Println(err)
 	}
-	if r.URL.Path != "/post-detail" {
-		http.Error(w, "Page Not Found ", http.StatusNotFound)
+
+	PageData := database.AllPageData(r, "postContent")
+	if PageData.Postcontent.Id == 0 {
+		fmt.Println("No Post with such Id")
+		PostsTemplete.Execute(w, struct{ Error string }{Error: "No Post with such Id"})
 		return
 	}
-	PostDatacontent := database.AllPageData(r, "postContent")
-	// fmt.Println("Data from Post",PostDatacontent)
-	PostsTemplete.Execute(w, PostDatacontent)
+
+	PostsTemplete.Execute(w, PageData)
 }
 
 func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +44,7 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 			"success": "false",
 			"error":   "Unauthenticated",
 		})
-		log.Fatal(err)
+		fmt.Println(err)
 		return
 	}
 	err = json.NewDecoder(r.Body).Decode(&PostData)
@@ -52,7 +54,7 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 			"success": "false",
 			"error":   "Invalid JSON",
 		})
-		log.Fatal(err)
+		fmt.Println(err)
 		return
 	}
 
@@ -81,13 +83,11 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 			"success": "false",
 			"error":   "Internal Server error, try later",
 		})
-		log.Fatal(err)
+		fmt.Println(err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]any{
-		"success": "true",
-	})
+	home.HomeHandler(w, r)
 }
 
 func InsertPost(username, title, content string) error {

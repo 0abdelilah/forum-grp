@@ -434,6 +434,20 @@ footer {
     </style>
 </head>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechDev - Post</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Postcontent.Title}} | TechDev</title>
+</head>
 <body>
     <!-- Header -->
     <header>
@@ -441,9 +455,15 @@ footer {
             <div class="logo">TD</div>
             <div class="platform-name">TechDev</div>
         </div>
+
         <div class="header-buttons">
-            <a href="/login/">Login</a>
-            <a href="/register/">Register</a>
+            {{if .IsLoggedIn}}
+                <span class="username">👋 {{.Username}}</span>
+                <a href="/logout">Logout</a>
+            {{else}}
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            {{end}}
         </div>
     </header>
 
@@ -453,62 +473,90 @@ footer {
         <aside class="sidebar-left">
             <h2>About TechDev</h2>
             <p>
-                Join the TechDev Community! Connect with like-minded tech enthusiasts, participate in engaging
-                discussions, and chat in real-time with other members. 🎤 Share your ideas, 🗨️ get instant feedback,
-                and 📰 stay updated with the latest posts and comments. Be part of a vibrant tech network and never miss
-                out on important conversations!
+                Join the TechDev Community! Connect with like-minded tech enthusiasts, participate in discussions,
+                and stay updated with the latest posts and comments. ☕
             </p>
-            <h2>Lmobrmijin</h2>
 
-            <aside class="programmers">
-                <ul>
-                    <li><a href="https://github.com/0abdelilah">Abelkhadir</a></li>
-                </ul>
-            </aside>
-
+            <h2>Contributors</h2>
+            <ul>
+                <li><a href="https://github.com/0abdelilah">Abdelkhadir</a></li>
+            </ul>
         </aside>
 
-        <!-- Center Feed -->
+        <!-- Center: Post Detail -->
         <main class="feed">
-            {{with $Post := .Postcontent}}
-            <div class="postcontent">
-                <img>
-                <h3>{{$Post.Title}}</h3>
-                <h3>{{$Post.UserId}}</h3>
-                <p>{{$Post.Content}}</p>
-                <button><span>👍</span> {{$Post.Likes}}Like</button>
-                <button><span>👎</span>  {{$Post.Dislikes}}Dislikes</button>
-                <button><span>#</span>{{$Post.Category}}</button>
-            </div>
-            <div class="comments">
-                <h2>Comments {{$Post.CommentsNum}}</h2>
-                <div>
-                    <h3>created by:</h3>
-                    <span>at:</span>
-                    <p>comment content</p>
+            <article class="post-detail">
+                <h1>{{.Postcontent.Title}}</h1>
+                <p><strong>By:</strong> {{.Postcontent.Username}}</p>
+                <p><strong>Posted on:</strong> {{.Postcontent.CreatedAt}}</p>
+
+                <div class="post-body">
+                    <p>{{.Postcontent.Content}}</p>
                 </div>
-            </div>
-            {{end}}
-        </main> 
+
+                <div class="post-actions">
+                    <form action="/like-post" method="post" style="display:inline;">
+                        <input type="hidden" name="postId" value="{{.Postcontent.Id}}">
+                        <button type="submit">👍 {{.Postcontent.Likes}}</button>
+                    </form>
+
+                    <form action="/dislike-post" method="post" style="display:inline;">
+                        <input type="hidden" name="postId" value="{{.Postcontent.Id}}">
+                        <button type="submit">👎 {{.Postcontent.Dislikes}}</button>
+                    </form>
+
+                    <span class="category-tag">#{{.Postcontent.Category}}</span>
+                </div>
+
+                <hr>
+
+                <!-- Comments Section -->
+                <section id="comments">
+                    <h2>Comments ({{.Postcontent.CommentsNum}})</h2>
+
+                    {{if .Postcontent.Comments}}
+                        {{range $comment := .Postcontent.Comments}}
+                            <div class="comment">
+                                <p><strong>{{$comment.Username}}</strong>: {{$comment.Content}}</p>
+                                <p><small>{{$comment.CreatedAt}}</small></p>
+                            </div>
+                        {{end}}
+                    {{else}}
+                        <p>No comments yet. Be the first to comment!</p>
+                    {{end}}
+
+                    {{if .IsLoggedIn}}
+                    <form action="/add-comment" method="post">
+                        <input type="hidden" name="postId" value="{{.Postcontent.Id}}">
+                        <textarea name="content" placeholder="Write a comment..." required></textarea>
+                        <button type="submit">Post Comment</button>
+                    </form>
+                    {{else}}
+                        <p><a href="/login">Login</a> to leave a comment.</p>
+                    {{end}}
+                </section>
+            </article>
+        </main>
 
         <!-- Right Sidebar -->
-         <aside class="sidebar-right">
+        <aside class="sidebar-right">
             <h2>Categories</h2>
-            <ul>
-                <li><a href="#all">All Posts</a></li>
-                <li><a href="#tech">Programming</a></li>
-                <li><a href="#Cybersecurity">Cybersecurity</a></li>
-                <li><a href="Gadgets & Hardware">Gadgets & Hardware</a></li>
-                <li><a href="Web Development">Web Development</a></li>
-            </ul>
-        </aside> 
+            {{if .Categories}}
+                {{range $cat := .Categories}}
+                <form action="/" method="post" class="category-form">
+                    <input type="hidden" name="category" value="{{$cat.Category}}">
+                    <button type="submit" class="category-button">{{$cat.Category}}</button>
+                </form>
+                {{end}}
+            {{else}}
+                <p>No categories found.</p>
+            {{end}}
+        </aside>
     </div>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 TechDev. made with ❤️ and ☕.</p>
+        <p>&copy; 2025 TechDev. Made with ❤️ and ☕.</p>
     </footer>
-
 </body>
-
 </html>

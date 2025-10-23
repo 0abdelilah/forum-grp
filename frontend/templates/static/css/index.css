@@ -195,12 +195,22 @@ header {
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     transition: transform 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.post-link {
+    text-decoration: none;
+    color: inherit;
 }
 
 .post:hover {
     transform: translateY(-4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 }
+
 
 .post-header {
     gap: 10px;
@@ -235,6 +245,7 @@ header {
     gap: 1.5rem;
     margin-top: 0.75rem;
 }
+
 
 .post-actions button {
     background: none;
@@ -446,7 +457,6 @@ footer {
     cursor: pointer;
     transition: transform 0.2s ease, background 0.3s ease;
 }
-
 
 .popup-content button:hover {
     background: linear-gradient(135deg, #0d47a1 0%, #083a8c 100%);

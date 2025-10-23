@@ -9,10 +9,8 @@
     <script src="/static/js/comments.js"></script>
     <script src="/static/js/posts.js"></script>
 </head>
-
 <body>
     <!-- Header -->
-
     <header>
         <div class="header-left">
             <div class="logo">TD</div>
@@ -40,14 +38,13 @@
                 and 📰 stay updated with the latest posts and comments. Be part of a vibrant tech network and never miss
                 out on important conversations!
             </p>
-            <h2>Lmobrmijin</h2>
 
+            <h2>Lmobrmijin</h2>
             <aside class="programmers">
                 <ul>
                     <li><a href="https://github.com/0abdelilah">Abelkhadir</a></li>
                 </ul>
             </aside>
-
         </aside>
 
         <!-- Center Feed -->
@@ -55,6 +52,7 @@
             <div class="create-post">
                 <button onclick="openPopup()"><span></span>Create Post</button>
             </div>
+
             <div id="overlay" onclick="closePopup()"></div>
             <div id="popup">
                 <div class="popup-content">
@@ -62,63 +60,36 @@
                     <textarea name="title" placeholder="Title..."></textarea>
                     <textarea name="content" placeholder="Content..."></textarea>
                     <button onclick="createPost(); closePopup()">Submit</button>
-                
                 </div>
             </div>
 
             <div class="posts">
-                <a href="post-detail">
-                    <div data-id="123" class="post_comments">
-                        {{range $Post:= .AllPosts}}
-                        <div class="post">
-                            <div class="post-header">
-                                <img src="./static/icon.png">
-                                <h3></h3>
-                            </div>
+                {{range $Post := .AllPosts}}
+                <a href="/post-detail?postid={{$Post.Id}}" class="post-link">
+                    <div class="post">
+                        <div class="post-header">
+                            <img src="./static/icon.png" alt="User Icon">
+                            <h3></h3>
+                        </div>
 
-                            <div class="post-content">
-                                <h3>{{$Post.Title }}</h3>
-                                <p>{{$Post.Content }}</p>
-                            </div>
-                            <form method="post">
-                                <div class="post-actions">
-                                    <button><span>👍</span> {{$Post.Likes}}Like</button>
-                                    <button><span>👎</span> {{$Post.Dislikes}}Dislikes</button>
-                                    <button><span>💬</span> {{$Post.CommentsNum}}Comments</button>
-                                    <button><span>#</span>{{$Post.Category}}</button>
-                                </div>
-                            </form>
+                        <div class="post-content">
+                            <h3>{{$Post.Title}}</h3>
+                            <p>{{$Post.Content}}</p>
+                        </div>
 
+                        <div class="post-actions">
+                            <button type="button"><span>👍</span> {{$Post.Likes}} Like</button>
+                            <button type="button"><span>👎</span> {{$Post.Dislikes}} Dislikes</button>
+                            <button type="button"><span>💬</span> {{$Post.CommentsNum}} Comments</button>
+                            <button type="button"><span>#</span> {{$Post.Category}}</button>
                         </div>
-                        {{end}}
-                </a>
-                <div id="overlay" onclick="closePopup()"></div>
-                <div id="popup">
-                    <div class="comments">
-                        <div class="comment">
-                            <img src="./static/icon.png">
-                            <div class="author_content">
-                                <h5>abdelilah</h5>
-                                <p>hii</p>
-                            </div>
-                        </div>
-                        <div class="comment">
-                            <img src="./static/icon.png">
-                            <div class="author_content">
-                                <h5>abdelilah</h5>
-                                <p>hii</p>
-                            </div>
-                        </div>
-                        <textarea id="cmntarea" placeholder="Write a comment..."></textarea>
-                        <button onclick="CreateComment(this)">Submit</button>
                     </div>
-                </div>
+                </a>
+                {{end}}
             </div>
-    </div>
-    </main>
+        </main>
 
-    <!-- Right Sidebar -->
-    <aside class="sidebar-right">
+        <!-- Right Sidebar -->
         <aside class="sidebar-right">
             <h2>Categories</h2>
             {{range $cat := .Categories}}
@@ -130,14 +101,10 @@
             </form>
             {{end}}
         </aside>
-    </aside>
     </div>
 
     <!-- Footer -->
     <footer>
         <p>&copy; 2025 TechDev. made with ❤️ and ☕.</p>
     </footer>
-
 </body>
-
-</html>

@@ -32,7 +32,7 @@ func main() {
 	mux.HandleFunc("POST /api/create_post", posts.CreatePostsHandler)
 
 	// Posts content
-	mux.HandleFunc("GET /post-detail", posts.SeePostdetail)
+	mux.HandleFunc("GET /post-detail/", posts.SeePostdetail)
 	// static files
 	mux.HandleFunc("GET /static/", home.StaticHandler)
 
