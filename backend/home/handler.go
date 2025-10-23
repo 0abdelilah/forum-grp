@@ -46,14 +46,14 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("./frontend/templates/index.html")
 	if err != nil {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
+		fmt.Println(err)
 		return
 	}
 
 	PageData := database.AllPageData(r, "HomeData")
 	PageData.Username, err = GetUsernameFromCookie(r, "session_token")
-
 	if err != nil {
-		log.Printf("failed to get username from cookie: %v", err)
+		fmt.Println(err)
 	}
 
 	if err := tmpl.Execute(w, PageData); err != nil {

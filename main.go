@@ -28,7 +28,6 @@ func main() {
 	mux.HandleFunc("GET  /logout", auth.LogoutHandler)
 
 	// Posts
-	mux.HandleFunc("GET /api/posts", posts.LoadPostsHandler)
 	mux.HandleFunc("POST /api/create_post", posts.CreatePostsHandler)
 
 	// Posts content

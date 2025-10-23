@@ -4,29 +4,33 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"text/template"
 
 	"forum/backend/database"
 	"forum/backend/home"
 )
 
-func LoadPostsHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Not used anymore")
-}
-
 func SeePostdetail(w http.ResponseWriter, r *http.Request) {
+	postStr := r.URL.Query().Get("postid")
+	n, err := strconv.Atoi(postStr)
+	if n == 0 || err != nil {
+		home.PageNotFound(w)
+	}
 	PostsTemplete, err := template.ParseFiles("./frontend/templates/post-detail.html")
+
 	if err != nil {
 		home.PageNotFound(w)
 		fmt.Println(err)
 	}
 
 	PageData := database.AllPageData(r, "postContent")
-	if PageData.Postcontent.Id == 0 {
-		fmt.Println("No Post with such Id")
-		PostsTemplete.Execute(w, struct{ Error string }{Error: "No Post with such Id"})
+	if PageData.PostContent.Id == 0 {
+		home.PageNotFound(w)
 		return
 	}
+
+	PageData.Username, _ = home.GetUsernameFromCookie(r, "session_token")
 
 	PostsTemplete.Execute(w, PageData)
 }

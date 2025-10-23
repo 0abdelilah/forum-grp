@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func AllPageData(r *http.Request, handle string) models.PageData {
@@ -25,7 +26,7 @@ func AllPageData(r *http.Request, handle string) models.PageData {
 
 	case "postContent":
 		post := GetPostDetails(postId)
-		return models.PageData{Postcontent: post}
+		return models.PageData{PostContent: post}
 
 	default:
 		return models.PageData{}
@@ -54,8 +55,13 @@ func GetAllPosts() []models.Post {
 			log.Printf("error scanning post row: %v", err)
 			continue
 		}
+
+		t, _ := time.Parse(time.RFC3339, "2025-10-23T12:34:22Z")
+		p.CreatedAt = (t.Format("Mon, Jan 2 2006 • 15:04 MST"))
+
 		posts = append(posts, p)
 	}
+
 	return posts
 }
 
