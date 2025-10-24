@@ -8,6 +8,7 @@ import (
 	"forum/backend/auth"
 	"forum/backend/database"
 	"forum/backend/home"
+	"forum/backend/likes"
 	"forum/backend/posts"
 )
 
@@ -30,8 +31,12 @@ func main() {
 	// Posts
 	mux.HandleFunc("POST /api/create_post", posts.CreatePostsHandler)
 
+	mux.HandleFunc("POST /api/like_post", likes.LikeHandler)
+	mux.HandleFunc("POST /api/dislike_post", likes.DislikeHandler)
+
 	// Posts content
 	mux.HandleFunc("GET /post-detail/", posts.SeePostdetail)
+
 	// static files
 	mux.HandleFunc("GET /static/", home.StaticHandler)
 
