@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"forum/backend/auth"
+	"forum/backend/comments"
 	"forum/backend/database"
 	"forum/backend/home"
 	"forum/backend/likes"
@@ -33,6 +34,8 @@ func main() {
 
 	mux.HandleFunc("POST /api/like", likes.LikeHandler)
 	mux.HandleFunc("POST /api/dislike", likes.DislikeHandler)
+
+	mux.HandleFunc("POST /api/comment", comments.CreateCommentHandler)
 
 	// Posts content
 	mux.HandleFunc("GET /post-detail/", posts.SeePostdetail)

@@ -8,8 +8,11 @@ import (
 
 func LikeHandler(w http.ResponseWriter, r *http.Request) {
 	postid := r.URL.Query().Get("postid")
-	currentPath := "/post-detail/?postid=" + postid
-	// TODO (abdelilah): use another parameter "?page=postdetails or ?page=homepage" for redirecting
+	page := r.URL.Query().Get("page")
+	path := "/"
+	if page == "postdetails" {
+		path = "/post-detail/?postid=" + postid
+	}
 
 	username, err := home.GetUsernameFromCookie(r, "session_token")
 	if err != nil {
@@ -24,11 +27,16 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, currentPath, http.StatusSeeOther)
+	http.Redirect(w, r, path, http.StatusSeeOther)
 }
 
 func DislikeHandler(w http.ResponseWriter, r *http.Request) {
 	postid := r.URL.Query().Get("postid")
+	page := r.URL.Query().Get("page")
+	path := "/"
+	if page == "postdetails" {
+		path = "/post-detail/?postid=" + postid
+	}
 
 	username, err := home.GetUsernameFromCookie(r, "session_token")
 	if err != nil {
@@ -44,5 +52,5 @@ func DislikeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, path, http.StatusSeeOther)
 }

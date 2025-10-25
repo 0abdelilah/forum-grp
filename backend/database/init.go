@@ -57,6 +57,22 @@ func Init() {
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
 
+		// Comment likes
+		`CREATE TABLE IF NOT EXISTS comment_likes (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			username TEXT NOT NULL,
+			comment_id INTEGER NOT NULL REFERENCES comments(id),
+			UNIQUE(username, comment_id)
+		);`,
+
+		// Comment dislikes
+		`CREATE TABLE IF NOT EXISTS comment_dislikes (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			username TEXT NOT NULL,
+			comment_id INTEGER NOT NULL REFERENCES comments(id),
+			UNIQUE(username, comment_id)
+		);`,
+
 		// Likes
 		`CREATE TABLE IF NOT EXISTS likes (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,

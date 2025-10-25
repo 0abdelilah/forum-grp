@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"forum/backend/models"
 	"log"
 	"net/http"
@@ -84,9 +85,35 @@ func GetPostDetails(postId int) models.Post {
 		log.Printf("error fetching post: %v", err)
 		return models.Post{}
 	}
+	comments, err := getComments(postId)
+	if err != nil {
+		fmt.Println("Error getting comments")
+	} else {
+		post.Comments = comments
+	}
 
-	post.Comments = []models.Comment{}
 	return post
+}
+
+func getComments(postID int) ([]models.Comment, error) {
+	rows, err := Db.Query(
+		`SELECT id, username, content, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC`,
+		postID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []models.Comment
+	for rows.Next() {
+		var c models.Comment
+		if err := rows.Scan(&c.Id, &c.Username, &c.Content, &c.CreatedAt); err != nil {
+			return nil, err
+		}
+		comments = append(comments, c)
+	}
+	return comments, rows.Err()
 }
 
 func GetAllCategories() []models.Category {
@@ -115,7 +142,6 @@ func GetAllCategories() []models.Category {
 }
 
 func GetAlllike(db *sql.DB, target string, userID int) ([]models.Likes, error) {
-
 	rows, err := db.Query(`
         SELECT id, user_id, target_id, value
         FROM likes
@@ -165,53 +191,4 @@ func GetAllliketarget(db *sql.DB, Target_id int) ([]models.LikesID, error) {
 	}
 	return likes, nil
 
-}
-func GetCommentsByuserID(db *sql.DB, userID int) ([]models.Comment, error) {
-
-	rows, err := db.Query(`
-        SELECT id, post_id, post_id, content, created_at
-        FROM comments
-        WHERE user_id = ?
-        ORDER BY created_at ASC
-    `, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var comments []models.Comment
-	for rows.Next() {
-		var c models.Comment
-		if err := rows.Scan(&c.Id, &c.PostId, &c.UserId, &c.Content, &c.Created); err != nil {
-			return nil, err
-		}
-		comments = append(comments, c)
-	}
-
-	return comments, nil
-}
-
-func GetCommentsByPostID(db *sql.DB, postID int) ([]models.Comment, error) {
-	rows, err := db.Query(`
-        SELECT id, post_id, user_id, content, created_at
-        FROM comments
-        WHERE post_id = ?
-        ORDER BY created_at ASC
-    `, postID)
-
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var comments []models.Comment
-	for rows.Next() {
-		var c models.Comment
-		if err := rows.Scan(&c.Id, &c.PostId, &c.UserId, &c.Content, &c.Created); err != nil {
-			return nil, err
-		}
-		comments = append(comments, c)
-	}
-
-	return comments, nil
 }

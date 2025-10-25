@@ -1,13 +1,38 @@
 package comments
 
-import "forum/backend/models"
+import (
+	"database/sql"
+	"fmt"
+	"forum/backend/database"
+)
 
-func SaveComment(PostId, Username, Content string) error {
-
-	return nil
+func insertComment(postID, username, content string) error {
+	_, err := database.Db.Exec(
+		`INSERT INTO comments (post_id, username, content) VALUES (?, ?, ?)`,
+		postID, username, content,
+	)
+	return err
 }
 
-func GetComments(PostId string) ([]models.Comment, error) {
+func insertCommentLike(commentID int, username string) error {
+	var exists int
+	err := database.Db.QueryRow(
+		`SELECT 1 FROM comment_likes WHERE comment_id = ? AND username = ?`,
+		commentID, username,
+	).Scan(&exists)
 
-	return nil, nil
+	if err == nil {
+		return fmt.Errorf("already liked")
+	}
+	if err != sql.ErrNoRows {
+		return err
+	}
+
+	_, err = database.Db.Exec(`INSERT INTO comment_likes (username, comment_id) VALUES (?, ?)`, username, commentID)
+	if err != nil {
+		return err
+	}
+
+	_, err = database.Db.Exec(`UPDATE comments SET likes_count = likes_count + 1 WHERE id = ?`, commentID)
+	return err
 }

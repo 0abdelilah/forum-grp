@@ -482,11 +482,11 @@
                 <div class="post-actions">
 
 
-                    <form action="/api/like?postid={{.PostContent.Id}}" method="post">
+                    <form action="/api/like?postid={{.PostContent.Id}}&page=postdetails" method="post">
                         <button type="submit"><span>👍</span> {{.PostContent.Likes }} Like</button>
                     </form>
 
-                    <form action="/api/dislike?postid={{.PostContent.Id}}" method="post">
+                    <form action="/api/dislike?postid={{.PostContent.Id}}&page=postdetails" method="post">
                         <button type="submit"><span>👎</span> {{.PostContent.Dislikes}} Dislikes</button>
                     </form>
 
@@ -510,11 +510,10 @@
                     <p>No comments yet. Be the first to comment!</p>
                     {{end}}
 
-                    {{if .IsLoggedIn}}
-                    <form action="/add-comment" method="post">
-                        <input type="hidden" name="postId" value="{{.PostContent.Id}}">
-                        <textarea name="content" placeholder="Write a comment..." required></textarea>
-                        <button type="submit">Post Comment</button>
+                    {{if .Username}}
+                    <form action="/api/comment?postid={{.PostContent.Id}}" method="post">
+                        <textarea name="content" id="content" placeholder="Enter your comment..."></textarea>
+                        <button type="submit">Submit</button>
                     </form>
                     {{else}}
                     <p><a href="/login">Login</a> to leave a comment.</p>
