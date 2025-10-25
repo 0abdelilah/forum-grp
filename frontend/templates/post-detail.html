@@ -480,14 +480,14 @@
                 </div>
 
                 <div class="post-actions">
-                    <form action="/api/like-post?postid={{.PostContent.Id}}" method="post" style="display:inline;">
-                        <input type="hidden" name="postId" value="{{.PostContent.Id}}">
-                        <button type="submit">👍 {{.PostContent.Likes}}</button>
+
+
+                    <form action="/api/like?postid={{.PostContent.Id}}" method="post">
+                        <button type="submit"><span>👍</span> {{.PostContent.Likes }} Like</button>
                     </form>
 
-                    <form action="/api/dislike-post?postid={{.PostContent.Id}}" method="post" style="display:inline;">
-                        <input type="hidden" name="postId" value="{{.PostContent.Id}}">
-                        <button type="submit">👎 {{.PostContent.Dislikes}}</button>
+                    <form action="/api/dislike?postid={{.PostContent.Id}}" method="post">
+                        <button type="submit"><span>👎</span> {{.PostContent.Dislikes}} Dislikes</button>
                     </form>
 
                     <span class="category-tag">#{{.PostContent.Category}}</span>

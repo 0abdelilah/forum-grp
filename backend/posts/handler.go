@@ -36,33 +36,24 @@ func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
-	var PostData struct {
-		Title   string `json:"title"`
-		Content string `json:"content"`
-	}
-
 	username, err := home.GetUsernameFromCookie(r, "session_token")
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(map[string]string{
-			"success": "false",
-			"error":   "Unauthenticated",
-		})
-		fmt.Println(err)
-		return
-	}
-	err = json.NewDecoder(r.Body).Decode(&PostData)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"success": "false",
-			"error":   "Invalid JSON",
-		})
-		fmt.Println(err)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		fmt.Println("Coulndt get user", err)
 		return
 	}
 
-	if len(PostData.Title) < 1 || len(PostData.Title) > 90 {
+	err = r.ParseForm()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintln(w, "Failed to parse form")
+		return
+	}
+
+	title := r.FormValue("title")
+	content := r.FormValue("content")
+
+	if len(title) < 1 || len(content) > 90 {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"success": "false",
@@ -71,7 +62,7 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(PostData.Content) < 1 || len(PostData.Content) > 300 {
+	if len(content) < 1 || len(content) > 300 {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"success": "false",
@@ -80,7 +71,7 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = InsertPost(username, PostData.Title, PostData.Content)
+	err = InsertPost(username, title, content)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{
@@ -91,7 +82,7 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	home.HomeHandler(w, r)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func InsertPost(username, title, content string) error {

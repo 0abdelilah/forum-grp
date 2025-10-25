@@ -61,8 +61,16 @@ func Init() {
 		`CREATE TABLE IF NOT EXISTS likes (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			username TEXT NOT NULL,
-			title TEXT NOT NULL,
-			content TEXT NOT NULL
+			post_id INTEGER NOT NULL REFERENCES posts(id),
+			UNIQUE(username, post_id)
+		);`,
+
+		// Disikes
+		`CREATE TABLE IF NOT EXISTS dislikes (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			username TEXT NOT NULL,
+			post_id INTEGER NOT NULL REFERENCES posts(id),
+			UNIQUE(username, post_id)
 		);`,
 
 		// Sessions

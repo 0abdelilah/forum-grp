@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechDev</title>
     <link rel="stylesheet" href="/static/css/index.css">
-    <script src="/static/js/comments.js"></script>
     <script src="/static/js/posts.js"></script>
 </head>
+
 <body>
     <!-- Header -->
     <header>
@@ -57,9 +57,11 @@
             <div id="popup">
                 <div class="popup-content">
                     <h2>Create Post</h2>
-                    <textarea name="title" placeholder="Title..."></textarea>
-                    <textarea name="content" placeholder="Content..."></textarea>
-                    <button onclick="createPost(); closePopup()">Submit</button>
+                    <form action="/api/create_post" method="post">
+                        <textarea name="title" placeholder="Title..."></textarea>
+                        <textarea name="content" placeholder="Content..."></textarea>
+                        <button type="submit">Submit</button>
+                    </form>
                 </div>
             </div>
 
@@ -78,10 +80,17 @@
                         </div>
 
                         <div class="post-actions">
-                            <button type="button"><span>👍</span> {{$Post.Likes}} Like</button>
-                            <button type="button"><span>👎</span> {{$Post.Dislikes}} Dislikes</button>
+
+                            <form action="/api/like?postid={{$Post.Id}}" method="post">
+                                <button type="submit"><span>👍</span> {{ $Post.Likes }} Like</button>
+                            </form>
+
+                            <form action="/api/dislike?postid={{$Post.Id}}" method="post">
+                                <button type="submit"><span>👎</span> {{$Post.Dislikes}} Dislikes</button>
+                            </form>
+
                             <button type="button"><span>💬</span> {{$Post.CommentsNum}} Comments</button>
-                            <button type="button"><span>#</span> {{$Post.Category}}</button>
+                            <span>#</span> {{$Post.Category}}</span>
                         </div>
                     </div>
                 </a>

@@ -29,7 +29,7 @@ func GetUsernameFromCookie(r *http.Request, cookie_name string) (string, error) 
 	var username string
 	err = database.Db.QueryRow("SELECT username FROM sessions WHERE id = ? AND expires_at > datetime('now')", c.Value).Scan(&username)
 	if err == sql.ErrNoRows {
-		return "", nil // no user found, not a fatal error
+		return "", err //
 	}
 	if err != nil {
 		return "", err

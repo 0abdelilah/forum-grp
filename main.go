@@ -31,8 +31,8 @@ func main() {
 	// Posts
 	mux.HandleFunc("POST /api/create_post", posts.CreatePostsHandler)
 
-	mux.HandleFunc("POST /api/like_post", likes.LikeHandler)
-	mux.HandleFunc("POST /api/dislike_post", likes.DislikeHandler)
+	mux.HandleFunc("POST /api/like", likes.LikeHandler)
+	mux.HandleFunc("POST /api/dislike", likes.DislikeHandler)
 
 	// Posts content
 	mux.HandleFunc("GET /post-detail/", posts.SeePostdetail)
