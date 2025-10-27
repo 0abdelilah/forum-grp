@@ -86,6 +86,7 @@
 }
 
 .create-post {
+    min-width: 400px;
     background-color: #212529;
     padding: 1.5rem;
     border-radius: 12px;
@@ -189,11 +190,12 @@
 
 
 /* Actions */
+.comment-actions,
 .post-actions {
     display: flex;
     justify-content: space-around;
 }
-
+.comment-actions button,
 .post-actions button {
     border: none;
     border-radius: 0.35rem;
@@ -206,12 +208,12 @@
     transition: background 0.2s ease, transform 0.2s ease;
 }
 
+.comment-actions button:hover,
 .post-actions button:hover {
     background: #1a73e8;
     color: #fff;
     transform: translateY(-2px);
 }
-
 
 /* Categories */
 .post_categories {
@@ -221,7 +223,6 @@
     color: #adb5bd;
     font-size: 0.85rem;
 }
-
 
 /* Responsive Design */
 @media (max-width: 768px) {

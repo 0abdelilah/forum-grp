@@ -31,7 +31,7 @@ func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = insertComment(postID, content, username)
+	err = insertComment(postID, username, content)
 	if err != nil {
 		home.PostPageError(w, r, "Internal server error, try later")
 		fmt.Println(err)

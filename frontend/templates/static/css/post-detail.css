@@ -134,3 +134,9 @@
     background: #0d47a1;
     transform: translateY(-2px);
 }
+
+.comment p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}

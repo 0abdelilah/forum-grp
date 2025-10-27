@@ -38,7 +38,7 @@
             <div class="post-header">
                 <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon">
             </div>
-            
+
             <p class="post-author"><strong>By:</strong> {{.PostContent.Username}}</p>
             <h1 class="post-title">{{.PostContent.Title}}</h1>
             <p class="post-date">{{.PostContent.CreatedAt}}</p>
@@ -68,9 +68,19 @@
             {{if .PostContent.Comments}}
             {{range $comment := .PostContent.Comments}}
             <div class="comment">
-                <p><strong>{{$comment.Username}}</strong></p>
+                <p class="post-author"><strong>By:</strong> {{$comment.Username}}</p>
                 <p>{{$comment.Content}}</p>
                 <small>{{$comment.CreatedAt}}</small>
+
+                <div class="comment-actions">
+                    <form action="/api/like_comment" method="post">
+                        <button type="submit"><span>👍</span> 0 Like</button>
+                    </form>
+                    <form action="/api/dislike_comment" method="post">
+                        <button type="submit"><span>👎</span> 0 Dislike</button>
+                    </form>
+                </div>
+
             </div>
             {{end}}
             {{else}}
