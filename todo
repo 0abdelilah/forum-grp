@@ -1,6 +1,9 @@
-better looking creation date 2025-10-25T23:11:31Z
+better looking creation date on posts 2025-10-25T23:11:31Z
 better looking create post popup
-re-clicking a like button removes it
+
 fix categories
+re-clicking a like & dislike buttons removes it
+
 make better looking /post_details
 add likes to comments
+CommentsNum isnt updated when a comment is created

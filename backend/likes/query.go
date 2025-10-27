@@ -2,12 +2,10 @@ package likes
 
 import (
 	"database/sql"
-	"fmt"
 	"forum/backend/database"
 )
 
 // insert like using postid, username
-
 func insertLike(postID, username string) error {
 	var exists int
 	err := database.Db.QueryRow(
@@ -16,7 +14,19 @@ func insertLike(postID, username string) error {
 	).Scan(&exists)
 
 	if err == nil {
-		return fmt.Errorf("user already liked")
+		// user already liked = remove like
+		_, err = database.Db.Exec(
+			`DELETE FROM likes WHERE post_id = ? AND username = ?`,
+			postID, username,
+		)
+		if err != nil {
+			return err
+		}
+		_, err = database.Db.Exec(
+			`UPDATE posts SET likes_count = likes_count - 1 WHERE id = ?`,
+			postID,
+		)
+		return err
 	}
 	if err != sql.ErrNoRows {
 		return err // real DB error
@@ -47,7 +57,19 @@ func insertDislike(postID, username string) error {
 	).Scan(&exists)
 
 	if err == nil {
-		return fmt.Errorf("user already liked")
+		// user already liked = remove like
+		_, err = database.Db.Exec(
+			`DELETE FROM dislikes WHERE post_id = ? AND username = ?`,
+			postID, username,
+		)
+		if err != nil {
+			return err
+		}
+		_, err = database.Db.Exec(
+			`UPDATE posts SET dislikes_count = dislikes_count - 1 WHERE id = ?`,
+			postID,
+		)
+		return err
 	}
 	if err != sql.ErrNoRows {
 		return err // real DB error

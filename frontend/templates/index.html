@@ -60,8 +60,19 @@
                     <form action="/api/create_post" method="post">
                         <textarea name="title" placeholder="Title..."></textarea>
                         <textarea name="content" placeholder="Content..."></textarea>
+
+                        <div>
+                            <label><input type="checkbox" name="categories" value="Programming"> Programming</label>
+                            <label><input type="checkbox" name="categories" value="Cybersecurity"> Cybersecurity</label>
+                            <label><input type="checkbox" name="categories" value="Gadgets & Hardware"> Gadgets &
+                                Hardware</label>
+                            <label><input type="checkbox" name="categories" value="Web Development"> Web
+                                Development</label>
+                        </div>
+
                         <button type="submit">Submit</button>
                     </form>
+
                 </div>
             </div>
 
@@ -70,8 +81,7 @@
                 <a href="/post-detail?postid={{$Post.Id}}" class="post-link">
                     <div class="post">
                         <div class="post-header">
-                            <img src="./static/icon.png" alt="User Icon">
-                            <h3></h3>
+                            <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon">
                         </div>
 
                         <div class="post-content">
@@ -82,16 +92,16 @@
                         <div class="post-actions">
 
                             <form action="/api/like?postid={{$Post.Id}}" method="post">
-                                <button type="submit"><span>👍</span> {{ $Post.Likes }} Like</button>
+                                <button type="submit"><span>👍 {{ $Post.Likes }} </span> Like</button>
                             </form>
 
                             <form action="/api/dislike?postid={{$Post.Id}}" method="post">
-                                <button type="submit"><span>👎</span> {{$Post.Dislikes}} Dislikes</button>
+                                <button type="submit"><span>👎 {{ $Post.Dislikes }} </span> Dislikes</button>
                             </form>
 
-                            <button type="button"><span>💬</span> {{$Post.CommentsNum}} Comments</button>
-                            <span>#</span> {{$Post.Category}}</span>
+                            <button type="submit"><span>💬 {{$Post.CommentsNum}} </span> Comments</button>
                         </div>
+                        <p id="post_categories">{{$Post.Categories2}}</p>
                     </div>
                 </a>
                 {{end}}
@@ -101,14 +111,13 @@
         <!-- Right Sidebar -->
         <aside class="sidebar-right">
             <h2>Categories</h2>
-            {{range $cat := .Categories}}
-            <form action="/" method="post">
-                <label for="{{$cat.Category}}" class="category">
-                    <input type="hidden" name="postId" value="{{$cat.Category}}" />
-                    <input type="submit" name="Category" value="{{$cat.Category}}" />
-                </label>
+            <form action="/" method="get">
+                <label><input type="checkbox" name="categories" value="Programming"> Programming</label>
+                <label><input type="checkbox" name="categories" value="Cybersecurity"> Cybersecurity</label>
+                <label><input type="checkbox" name="categories" value="Gadgets & Hardware"> Gadgets & Hardware</label>
+                <label><input type="checkbox" name="categories" value="Web Development"> Web Development</label>
+                <button type="submit">Filter</button>
             </form>
-            {{end}}
         </aside>
     </div>
 

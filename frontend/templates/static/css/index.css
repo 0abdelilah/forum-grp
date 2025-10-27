@@ -248,10 +248,13 @@ header {
 
 
 .post-actions button {
-    background: none;
     border: none;
-    color: #1a73e8;
+    border-radius: 7px;
+    padding: 5px 10px;
+    margin-right: 5px;
+    background: #13181d69;
     cursor: pointer;
+    color: #252728;
     font-size: 0.95rem;
     font-weight: 500;
     display: flex;
@@ -260,8 +263,28 @@ header {
     transition: color 0.2s ease, transform 0.2s ease;
 }
 
+.post-actions button {
+    border: none;
+    border-radius: 7px;
+    padding: 5px 10px;
+    margin-right: 5px;
+    background: #13181d69;
+    cursor: pointer;
+    color: #6e6e6e;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.post-actions span {
+color: #1a73e8;
+}
+
+
 .post-actions button:hover {
-    color: #0d47a1;
     transform: translateY(-2px);
 }
 
@@ -459,4 +482,10 @@ footer {
 .popup-content button:hover {
     background: linear-gradient(135deg, #0d47a1 0%, #083a8c 100%);
     transform: translateY(-2px);
+}
+
+p {
+    color: #252728;
+    margin-top: 1%;
+    font-size:small;
 }

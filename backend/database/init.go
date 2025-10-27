@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"log"
-	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -43,8 +42,7 @@ func Init() {
 
 		`CREATE TABLE IF NOT EXISTS categories (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			categories TEXT NOT NULL,
-			post_id INTEGER REFERENCES posts(id)
+			name TEXT UNIQUE NOT NULL
 		);`,
 
 		// Comments
@@ -55,6 +53,12 @@ func Init() {
 			username TEXT NOT NULL,
 			content TEXT NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);`,
+
+		`CREATE TABLE IF NOT EXISTS post_categories (
+			post_id INTEGER NOT NULL REFERENCES posts(id),
+			category_id INTEGER NOT NULL REFERENCES categories(id),
+			UNIQUE(post_id, category_id)
 		);`,
 
 		// Comment likes
@@ -104,15 +108,6 @@ func Init() {
 
 	defaults := []string{"All", "Programming", "Cybersecurity", "Gadgets & Hardware", "Web Development"}
 	for _, c := range defaults {
-		Db.Exec(`INSERT OR IGNORE INTO categories (categories) VALUES (?)`, c)
-	}
-}
-
-func InsetComment() {
-	_, err := Db.Exec(`
-	INSERT INTO comments ( id, post_id, username ,content ,created_at) VALUES(?,?,?,?,?)
-	`, 2, "usern", 5, "I love you", time.Now().Format("2001-12-3"))
-	if err != nil {
-		log.Fatal("error in isert:", err)
+		Db.Exec(`INSERT OR IGNORE INTO categories (name) VALUES (?)`, c)
 	}
 }

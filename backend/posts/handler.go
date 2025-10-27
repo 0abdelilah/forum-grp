@@ -50,8 +50,11 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	categories := r.Form["categories"]
 	title := r.FormValue("title")
 	content := r.FormValue("content")
+
+	fmt.Println(categories)
 
 	if len(title) < 1 || len(content) > 90 {
 		w.WriteHeader(http.StatusBadRequest)
@@ -71,7 +74,7 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = InsertPost(username, title, content)
+	err = InsertPost(username, title, content, categories)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{
@@ -85,13 +88,52 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func InsertPost(username, title, content string) error {
-	_, err := database.Db.Exec(`
-	INSERT INTO posts (username, title, content)
-	VALUES (?, ?, ?)
+func addPostCategory(postID, categoryID int) error {
+	_, err := database.Db.Exec(
+		`INSERT OR IGNORE INTO post_categories (post_id, category_id) VALUES (?, ?)`,
+		postID, categoryID,
+	)
+	return err
+}
+
+func getCategoryID(name string) (int, error) {
+	var id int
+	err := database.Db.QueryRow(`SELECT id FROM categories WHERE name = ?`, name).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func InsertPost(username, title, content string, categories []string) error {
+	res, err := database.Db.Exec(`
+		INSERT INTO posts (username, title, content)
+		VALUES (?, ?, ?)
 	`, username, title, content)
 	if err != nil {
 		return err
 	}
+
+	postID, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	// Add all categories
+	for _, catName := range categories {
+		catID, err := getCategoryID(catName)
+		if err != nil {
+			fmt.Println("Error getting category ID:", err)
+			continue
+		}
+
+		fmt.Println("Post ID:", postID, "Category ID:", catID)
+
+		err = addPostCategory(int(postID), catID) // working
+		if err != nil {
+			fmt.Println("Error adding category to post:", err)
+		}
+	}
+
 	return nil
 }

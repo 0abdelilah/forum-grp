@@ -11,6 +11,14 @@ func insertComment(postID, username, content string) error {
 		`INSERT INTO comments (post_id, username, content) VALUES (?, ?, ?)`,
 		postID, username, content,
 	)
+	if err != nil {
+		return err
+	}
+
+	_, err = database.Db.Exec(
+		`UPDATE posts SET comments_count = comments_count + 1 WHERE id = ?`,
+		postID,
+	)
 	return err
 }
 
