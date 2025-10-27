@@ -35,6 +35,29 @@ func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 	PostsTemplete.Execute(w, PageData)
 }
 
+func verifyCategories(categories []string) (bool, error) {
+	if len(categories) == 0 {
+		return false, fmt.Errorf("please choose at least one category")
+	}
+
+	defaults := []string{"All", "Programming", "Cybersecurity", "Gadgets & Hardware", "Web Development"}
+
+	for _, cat := range categories {
+		valid := false
+		for _, allowed := range defaults {
+			if cat == allowed {
+				valid = true
+				break
+			}
+		}
+		if !valid {
+			return false, fmt.Errorf("invalid category: %s", cat)
+		}
+	}
+
+	return true, nil
+}
+
 func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 	username, err := home.GetUsernameFromCookie(r, "session_token")
 	if err != nil {
@@ -70,6 +93,16 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{
 			"success": "false",
 			"error":   "Content must be between 1 and 300 characters",
+		})
+		return
+	}
+
+	// test if working
+	if valid, err := verifyCategories(categories); !valid {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]any{
+			"success": "false",
+			"error":   err,
 		})
 		return
 	}

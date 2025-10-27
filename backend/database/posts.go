@@ -41,7 +41,7 @@ func GetAllPosts() []models.Post {
 			continue
 		}
 
-		p.Categories2, err = getPostCategories(p.Id)
+		p.Categories, err = getPostCategories(p.Id)
 		if err != nil {
 			fmt.Println("Error getting categories")
 		}
@@ -136,7 +136,7 @@ func GetPostsByCategories(categoryNames []string) []models.Post {
 			&p.CreatedAt, &p.Likes, &p.Dislikes, &p.CommentsNum); err != nil {
 			continue
 		}
-		p.Categories2, _ = getPostCategories(p.Id)
+		p.Categories, _ = getPostCategories(p.Id)
 		posts = append(posts, p)
 	}
 

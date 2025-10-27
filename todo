@@ -1,7 +1,5 @@
-show createdAt in home page
 better looking create post popup
-better looking category filtering
 make better looking /post_details
 add likes to comments
 force choosing category on post creaion
-verify categories choosen
+show toast of error

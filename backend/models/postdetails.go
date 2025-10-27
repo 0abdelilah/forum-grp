@@ -10,7 +10,6 @@ type Post struct {
 	Dislikes    int    `json:"dislikes_count"`
 	Category    string `json:"category"`
 	CreatedAt   string `json:"created_at"`
-	Categories2 string
-	Categories  []Category `json:"Categories"`
+	Categories  string
 	Comments    []Comment
 }

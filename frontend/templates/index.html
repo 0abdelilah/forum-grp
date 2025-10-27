@@ -34,20 +34,14 @@
     <div class="main-content">
         <!-- Left Sidebar -->
         <aside class="sidebar-left">
-            <h2>About TechDev</h2>
-            <p>
-                Join the TechDev Community! Connect with like-minded tech enthusiasts, participate in engaging
-                discussions, and chat in real-time with other members. 🎤 Share your ideas, 🗨️ get instant feedback,
-                and 📰 stay updated with the latest posts and comments. Be part of a vibrant tech network and never miss
-                out on important conversations!
-            </p>
-
-            <h2>Lmobrmijin</h2>
-            <aside class="programmers">
-                <ul>
-                    <li><a href="https://github.com/0abdelilah">Abelkhadir</a></li>
-                </ul>
-            </aside>
+            <h2>Categories</h2>
+            <form action="/" method="get">
+                <label><input type="checkbox" name="categories" value="Programming"> Programming</label>
+                <label><input type="checkbox" name="categories" value="Cybersecurity"> Cybersecurity</label>
+                <label><input type="checkbox" name="categories" value="Gadgets & Hardware"> Gadgets & Hardware</label>
+                <label><input type="checkbox" name="categories" value="Web Development"> Web Development</label>
+                <button type="submit">Filter</button>
+            </form>
         </aside>
 
         <!-- Center Feed -->
@@ -55,6 +49,8 @@
             <div class="create-post">
                 <button onclick="openPopup()"><span></span>Create Post</button>
             </div>
+
+            <!-- Create post -->
 
             <div id="overlay" onclick="closePopup()"></div>
             <div id="popup">
@@ -79,53 +75,47 @@
                 </div>
             </div>
 
-            <div class="posts">
-                {{range $Post := .AllPosts}}
-                <a href="/post-detail?postid={{$Post.Id}}" class="post-link">
-                    <div class="post">
-                        <div class="post-header">
-                            <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon">
-                        </div>
-
-                        <div class="post-content">
-                            <h3>{{$Post.Title}}</h3>
-                            <p>{{$Post.Content}}</p>
-                        </div>
-
-                        <div class="post-actions">
-
-                            <form action="/api/like?postid={{$Post.Id}}" method="post">
-                                <button type="submit"><span>👍 {{ $Post.Likes }} </span> Like</button>
-                            </form>
-
-                            <form action="/api/dislike?postid={{$Post.Id}}" method="post">
-                                <button type="submit"><span>👎 {{ $Post.Dislikes }} </span> Dislikes</button>
-                            </form>
-
-                            <button type="submit"><span>💬 {{$Post.CommentsNum}} </span> Comments</button>
-                        </div>
-                        <p id="post_categories">{{$Post.Categories2}}</p>
+            
+            <!-- Posts -->
+            {{range $Post := .AllPosts}}
+            <a href="/post-detail?postid={{$Post.Id}}" class="post-link">
+                <div class="post">
+                    <div class="createdAt">
+                        <p style="color: #adb5bd;">{{$Post.CreatedAt}}</p>
                     </div>
-                </a>
-                {{end}}
-            </div>
-        </main>
 
-        <!-- Right Sidebar -->
-        <aside class="sidebar-right">
-            <h2>Categories</h2>
-            <form action="/" method="get">
-                <label><input type="checkbox" name="categories" value="Programming"> Programming</label>
-                <label><input type="checkbox" name="categories" value="Cybersecurity"> Cybersecurity</label>
-                <label><input type="checkbox" name="categories" value="Gadgets & Hardware"> Gadgets & Hardware</label>
-                <label><input type="checkbox" name="categories" value="Web Development"> Web Development</label>
-                <button type="submit">Filter</button>
-            </form>
-        </aside>
+                    <div class="post-header">
+                        <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon">
+                    </div>
+
+                    <div class="post-content">
+                        <h3>{{$Post.Title}}</h3>
+                        <p>{{$Post.Content}}</p>
+                    </div>
+
+                    <div class="post-actions">
+
+                        <form action="/api/like?postid={{$Post.Id}}" method="post">
+                            <button type="submit"><span>👍 {{ $Post.Likes }} </span> Like</button>
+                        </form>
+
+                        <form action="/api/dislike?postid={{$Post.Id}}" method="post">
+                            <button type="submit"><span>👎 {{ $Post.Dislikes }} </span> Dislikes</button>
+                        </form>
+
+                        <button type="submit"><span>💬 {{$Post.CommentsNum}} </span> Comments</button>
+                    </div>
+                    <div class="post_categories">
+                        <p>{{$Post.Categories}}</p>
+                    </div>
+                </div>
+            </a>
+            {{end}}
+        </main>
     </div>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 TechDev. made with ❤️ and ☕.</p>
+        <p style="color: white;">&copy; 2025 TechDev. made with ❤️ and ☕.</p>
     </footer>
 </body>

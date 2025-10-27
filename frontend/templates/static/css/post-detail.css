@@ -260,20 +260,6 @@ footer {
     font-size: 0.9rem;
 }
 
-/* Mobile Menu */
-.menu-toggle {
-    display: none;
-    font-size: 1.8rem;
-    background: none;
-    border: none;
-    color: #e8ecef;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.menu-toggle:hover {
-    transform: rotate(90deg);
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -308,10 +294,6 @@ footer {
         margin: 0;
         padding: 0.8rem;
         font-size: 1rem;
-    }
-
-    .menu-toggle {
-        display: block;
     }
 
     .post-actions button {
