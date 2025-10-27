@@ -21,8 +21,6 @@ func AllPageData(r *http.Request, handle string) models.PageData {
 	switch handle {
 	case "HomeData":
 		posts := GetPosts(categories)
-		//categories := GetAllCategories()
-
 		return models.PageData{AllPosts: posts}
 
 	case "postContent":

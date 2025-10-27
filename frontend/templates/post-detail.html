@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechDev</title>
     <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/shared.css">
     <link rel="stylesheet" href="/static/css/post-detail.css">
+</head>
+
 <body>
     <!-- Header -->
     <header>
@@ -28,60 +31,72 @@
         </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Center: Post Detail -->
-        <main class="feed">
-            <article class="post-detail">
-                <h1>{{.PostContent.Title}}</h1>
-                <p><strong>By:</strong> {{.PostContent.Username}}</p>
-                <div class="creation-date">{{.PostContent.CreatedAt}}</div>
+    <!-- Post Detail -->
+    <main class="post-detail">
+        <article class="post-card">
 
-                <div class="post-body">
-                    <p>{{.PostContent.Content}}</p>
-                </div>
+            <div class="post-header">
+                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon">
+            </div>
+            
+            <p class="post-author"><strong>By:</strong> {{.PostContent.Username}}</p>
+            <h1 class="post-title">{{.PostContent.Title}}</h1>
+            <p class="post-date">{{.PostContent.CreatedAt}}</p>
 
-                <div class="post-actions">
-                    <form action="/api/like?postid={{.PostContent.Id}}&page=postdetails" method="post">
-                        <button type="submit"><span>👍</span> {{.PostContent.Likes }} Like</button>
-                    </form>
+            <div class="post-body">
+                <p>{{.PostContent.Content}}</p>
+            </div>
 
-                    <form action="/api/dislike?postid={{.PostContent.Id}}&page=postdetails" method="post">
-                        <button type="submit"><span>👎</span> {{.PostContent.Dislikes}} Dislikes</button>
-                    </form>
+            <div class="post-actions">
+                <form action="/api/like?postid={{.PostContent.Id}}&page=postdetails" method="post">
+                    <button type="submit"><span>👍</span> {{.PostContent.Likes}} Like</button>
+                </form>
+                <form action="/api/dislike?postid={{.PostContent.Id}}&page=postdetails" method="post">
+                    <button type="submit"><span>👎</span> {{.PostContent.Dislikes}} Dislike</button>
+                </form>
+            </div>
 
-                    <span class="category-tag">#{{.PostContent.Category}}</span>
-                </div>
+            <div class="post-categories">
+                <p>{{.PostContent.Categories}}</p>
+            </div>
+        </article>
 
-                <hr>
+        <!-- Comments Section -->
+        <section id="comments">
+            <h2>Comments ({{.PostContent.CommentsNum}})</h2>
 
-                <!-- Comments Section -->
-                <section id="comments">
-                    <h2>Comments ({{.PostContent.CommentsNum}})</h2>
+            {{if .PostContent.Comments}}
+            {{range $comment := .PostContent.Comments}}
+            <div class="comment">
+                <p><strong>{{$comment.Username}}</strong></p>
+                <p>{{$comment.Content}}</p>
+                <small>{{$comment.CreatedAt}}</small>
+            </div>
+            {{end}}
+            {{else}}
+            <p>No comments yet. Be the first to comment!</p>
+            {{end}}
 
-                    {{if .PostContent.Comments}}
-                    {{range $comment := .PostContent.Comments}}
-                    <div class="comment">
-                        <p><strong>{{$comment.Username}}</strong>: {{$comment.Content}}</p>
-                        <p><small>{{$comment.CreatedAt}}</small></p>
-                    </div>
-                    {{end}}
-                    {{else}}
-                    <p>No comments yet. Be the first to comment!</p>
-                    {{end}}
+            {{if .Username}}
+            <form action="/api/comment?postid={{.PostContent.Id}}" method="post" class="comment-form">
+                <textarea name="content" placeholder="Write a comment..."></textarea>
+                <button type="submit">Submit</button>
+            </form>
+            {{else}}
+            <p><a href="/login">Login</a> to leave a comment.</p>
+            {{end}}
+        </section>
+    </main>
 
-                    {{if .Username}}
-                    <form action="/api/comment?postid={{.PostContent.Id}}" method="post">
-                        <textarea name="content" id="content" placeholder="Enter your comment..."></textarea>
-                        <button type="submit">Submit</button>
-                    </form>
-                    {{else}}
-                    <p><a href="/login">Login</a> to leave a comment.</p>
-                    {{end}}
-                </section>
-            </article>
-        </main>
-    </div>
+    {{if .Error}}
+    <div class="toast toast-error" id="toast">{{.Error}}</div>
+    <script>
+        setTimeout(() => {
+            const toast = document.getElementById('toast');
+            if (toast) toast.classList.add('hide');
+        }, 3000);
+    </script>
+    {{end}}
 
     <!-- Footer -->
     <footer>

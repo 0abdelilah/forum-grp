@@ -2,6 +2,7 @@ package likes
 
 import (
 	"fmt"
+	"forum/backend/auth"
 	"forum/backend/home"
 	"net/http"
 )
@@ -14,7 +15,7 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 		path = "/post-detail/?postid=" + postid
 	}
 
-	username, err := home.GetUsernameFromCookie(r, "session_token")
+	username, err := auth.GetUsernameFromCookie(r, "session_token")
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -22,8 +23,8 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = insertLike(postid, username)
 	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
 		fmt.Println(err)
+		home.PostPageError(w, r, "Internal server error, try later")
 		return
 	}
 
@@ -38,7 +39,7 @@ func DislikeHandler(w http.ResponseWriter, r *http.Request) {
 		path = "/post-detail/?postid=" + postid
 	}
 
-	username, err := home.GetUsernameFromCookie(r, "session_token")
+	username, err := auth.GetUsernameFromCookie(r, "session_token")
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -47,7 +48,7 @@ func DislikeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(postid)
 	err = insertDislike(postid, username)
 	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		home.PostPageError(w, r, "Internal server error, try later")
 		fmt.Println(err)
 		return
 	}

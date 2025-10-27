@@ -7,9 +7,12 @@
     <title>TechDev</title>
     <link rel="stylesheet" href="/static/css/index.css">
     <script src="/static/js/posts.js"></script>
+    <link rel="stylesheet" href="/static/css/shared.css">
 </head>
 
 <body>
+
+
     <!-- Header -->
     <header>
         <div class="header-left">
@@ -51,7 +54,6 @@
             </div>
 
             <!-- Create post -->
-
             <div id="overlay" onclick="closePopup()"></div>
             <div id="popup">
                 <div class="popup-content">
@@ -75,7 +77,6 @@
                 </div>
             </div>
 
-            
             <!-- Posts -->
             {{range $Post := .AllPosts}}
             <a href="/post-detail?postid={{$Post.Id}}" class="post-link">
@@ -113,6 +114,20 @@
             {{end}}
         </main>
     </div>
+
+
+    {{if .Error}}
+    <div class="toast toast-error" id="toast">
+        {{.Error}}
+    </div>
+    <script>
+        setTimeout(() => {
+            const toast = document.getElementById('toast');
+            if (toast) toast.classList.add('hide');
+        }, 3000); // hide after 2s
+    </script>
+    {{end}}
+
 
     <!-- Footer -->
     <footer>
