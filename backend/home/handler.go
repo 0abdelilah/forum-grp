@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"forum/backend/database"
-	"forum/backend/filters"
 )
 
 func PageNotFound(w http.ResponseWriter) {
@@ -62,38 +61,40 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func PostHomeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("./frontend/templates/index.html")
-	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	PageData := database.AllPageData(r, "HomeData")
-
-	//hna bax nfiltery bmethod post ghida nkamal
-	r.ParseForm()
-	if r.Form["Category"] != nil {
-		PageData.AllPosts = filters.FelterbyCategory(PageData, r.Form["Category"][0])
-		for i := 0; i < len(PageData.CategoryChoice); i++ {
-			if PageData.CategoryChoice[i].Category == r.Form["Category"][0] {
-				PageData.CategoryChoice[i].Selected = "true"
-			}
-		}
-		fmt.Println(PageData)
-		tmpl.Execute(w, PageData)
-		return
-	}
-
-	if err := tmpl.Execute(w, PageData); err != nil {
-		log.Printf("template execution error: %v", err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-	}
-}
-
 func StaticHandler(w http.ResponseWriter, r *http.Request) {
 	path := "./frontend/templates/" + r.URL.Path
 
 	// Serve the file directly
 	http.ServeFile(w, r, path)
 }
+
+/*
+	func PostHomeHandler(w http.ResponseWriter, r *http.Request) {
+		tmpl, err := template.ParseFiles("./frontend/templates/index.html")
+		if err != nil {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		PageData := database.AllPageData(r, "HomeData")
+
+		//hna bax nfiltery bmethod post ghida nkamal
+		r.ParseForm()
+		if r.Form["Category"] != nil {
+			PageData.AllPosts = filters.FelterbyCategory(PageData, r.Form["Category"][0])
+			for i := 0; i < len(PageData.CategoryChoice); i++ {
+				if PageData.CategoryChoice[i].Category == r.Form["Category"][0] {
+					PageData.CategoryChoice[i].Selected = "true"
+				}
+			}
+			fmt.Println(PageData)
+			tmpl.Execute(w, PageData)
+			return
+		}
+
+		if err := tmpl.Execute(w, PageData); err != nil {
+			log.Printf("template execution error: %v", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+	}
+*/

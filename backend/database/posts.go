@@ -46,8 +46,12 @@ func GetAllPosts() []models.Post {
 			fmt.Println("Error getting categories")
 		}
 
-		t, _ := time.Parse(time.RFC3339, "2025-10-23T12:34:22Z")
-		p.CreatedAt = (t.Format("Mon, Jan 2 2006 • 15:04 MST"))
+		t, err := time.Parse(time.RFC3339, p.CreatedAt)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			p.CreatedAt = t.Format("02 Jan 2006 15:04:05")
+		}
 
 		posts = append(posts, p)
 	}
@@ -74,12 +78,25 @@ func GetPostDetails(postId int) models.Post {
 		log.Printf("error fetching post: %v", err)
 		return models.Post{}
 	}
+
+	post.CreatedAt = PrettifyCreatedAt(post.CreatedAt)
+
 	post.Comments, err = getComments(postId)
 	if err != nil {
 		fmt.Println("Error getting comments")
 	}
 
 	return post
+}
+
+func PrettifyCreatedAt(createdAt string) string {
+	t, err := time.Parse(time.RFC3339, createdAt)
+	if err != nil {
+		fmt.Println(err)
+		return createdAt
+	} else {
+		return t.Format("02 Jan 2006 15:04:05")
+	}
 }
 
 func GetPostsByCategories(categoryNames []string) []models.Post {

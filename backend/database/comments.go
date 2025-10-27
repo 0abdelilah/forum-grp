@@ -18,6 +18,7 @@ func getComments(postID int) ([]models.Comment, error) {
 		if err := rows.Scan(&c.Id, &c.Username, &c.Content, &c.CreatedAt); err != nil {
 			return nil, err
 		}
+		c.CreatedAt = PrettifyCreatedAt(c.CreatedAt)
 		comments = append(comments, c)
 	}
 	return comments, rows.Err()

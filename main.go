@@ -8,7 +8,6 @@ import (
 	"forum/backend/auth"
 	"forum/backend/comments"
 	"forum/backend/database"
-	"forum/backend/filters"
 	"forum/backend/home"
 	"forum/backend/likes"
 	"forum/backend/posts"
@@ -19,7 +18,6 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", home.HomeHandler)
-	mux.HandleFunc("POST /", home.PostHomeHandler)
 
 	// Authentication
 	mux.HandleFunc("GET /register", auth.RegisterHandlerGet)
@@ -37,9 +35,6 @@ func main() {
 	mux.HandleFunc("POST /api/dislike", likes.DislikeHandler)
 
 	mux.HandleFunc("POST /api/comment", comments.CreateCommentHandler)
-
-	// filter
-	mux.HandleFunc("POST /api/filter", filters.FilterPostsHandler)
 
 	// Posts content
 	mux.HandleFunc("GET /post-detail/", posts.SeePostdetail)

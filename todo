@@ -1,9 +1,7 @@
-better looking creation date on posts 2025-10-25T23:11:31Z
+show createdAt in home page
 better looking create post popup
-
-fix categories
-re-clicking a like & dislike buttons removes it
-
+better looking category filtering
 make better looking /post_details
 add likes to comments
-CommentsNum isnt updated when a comment is created
+force choosing category on post creaion
+verify categories choosen
