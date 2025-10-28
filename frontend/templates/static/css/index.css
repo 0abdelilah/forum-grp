@@ -3,22 +3,22 @@
     display: flex;
     flex: 1;
     padding: 1.5rem;
-    max-width: 1280px;
+    max-width: 1400px; /* Increased from 1280px */
     margin: 0 auto;
-    gap: 1.5rem;
+    gap: 2rem; /* More breathing room */
 }
 
 /* Sidebar */
 .sidebar-left {
-    flex: 0 0 220px;
-    /* fixed width on larger screens */
+    flex: 0 0 280px; /* Increased from 220px */
     background-color: #212529;
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
     margin-bottom: 1.5rem;
-    max-height: 500px;
+    max-height: 600px; /* Slightly taller */
+    overflow-y: auto;
 }
 
 .sidebar-left:hover {
@@ -68,27 +68,44 @@
 
 /* Responsive placement */
 @media (max-width: 992px) {
+    .main-content {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
     .sidebar-left {
         flex: 1 1 100%;
         margin-left: 0;
         margin-right: 0;
+        max-height: none;
+        order: -1; /* Show sidebar on top */
+    }
+
+    .feed {
+        margin: 0;
+        min-width: auto;
+    }
+
+    .create-post {
+        min-width: auto;
     }
 }
 
 /* Center Feed */
 .feed {
-    margin-right: 10%;
-    margin-left: 0%;
-    flex: 2;
+    margin-right: 5%;   /* Reduced from 10% */
+    margin-left: 0;
+    flex: 3; /* Increased from 2 */
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    min-width: 500px; /* Prevent shrinking too much */
 }
 
 .create-post {
-    min-width: 400px;
+    min-width: 500px; /* Increased from 400px */
     background-color: #212529;
-    padding: 1.5rem;
+    padding: 1.8rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
@@ -130,13 +147,12 @@
 .post {
     position: relative;
     background: #1b1f23;
-    padding: 1.5rem;
+    padding: 1.8rem;
+    padding-bottom: 4rem; /* Extra space for categories */
     border-radius: 14px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    padding-bottom: 3.5rem;
-    /* gives space for categories */
 }
 
 .post:hover {
@@ -188,13 +204,13 @@
     margin-bottom: 1rem;
 }
 
-
 /* Actions */
 .comment-actions,
 .post-actions {
     display: flex;
     justify-content: space-around;
 }
+
 .comment-actions button,
 .post-actions button {
     border: none;
@@ -263,6 +279,11 @@
         font-size: 1rem;
         padding: 0.8rem;
     }
+
+    .create-post,
+    .post {
+        padding: 1.2rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -301,7 +322,6 @@
     border-radius: 7%;
     background-color: #333334;
 }
-
 
 #overlay {
     display: none;
@@ -424,7 +444,6 @@
         opacity: 0;
         transform: translate(-50%, -55%);
     }
-
     to {
         opacity: 1;
         transform: translate(-50%, -50%);
@@ -450,4 +469,23 @@
 .toast.hide {
     opacity: 0;
     transform: translateX(100%);
+}
+
+/* Optional: Ultra-wide screens */
+@media (min-width: 1600px) {
+    .main-content {
+        max-width: 1600px;
+    }
+
+    .sidebar-left {
+        flex: 0 0 320px;
+    }
+
+    .feed {
+        flex: 4;
+    }
+
+    .create-post {
+        min-width: 550px;
+    }
 }

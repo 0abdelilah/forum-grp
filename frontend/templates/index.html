@@ -26,11 +26,11 @@
             {{if .Username}}
             👋 {{.Username}}
             <a href="/logout">Logout</a>
+            <a href="/Profile/{{.Username}}">MyProfile</a>
             {{else}}
             <a href="/login">Login</a>
             <a href="/register">Register</a>
             {{end}}
-        </div>
     </header>
 
     <!-- Main Content -->

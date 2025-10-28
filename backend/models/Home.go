@@ -6,4 +6,5 @@ type PageData struct {
 	Categories  []Category
 	AllPosts    []Post
 	PostContent Post
+	Profile Profile
 }

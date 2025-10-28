@@ -142,3 +142,40 @@ func GetPostsByCategories(categoryNames []string) []models.Post {
 
 	return posts
 }
+func GetProfile(username string) models.Profile {
+	var posts []models.Post
+	rows, err := Db.Query(`
+		SELECT id, title, username, content, created_at, 
+			   likes_count, dislikes_count, comments_count
+		FROM posts
+		WHERE username = ?
+		ORDER BY created_at DESC
+	`, username)
+	if err != nil {
+		log.Printf("failed to query posts: %v", err)
+		return models.Profile{}
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var p models.Post
+		if err := rows.Scan(&p.Id, &p.Title, &p.Username, &p.Content,
+			&p.CreatedAt, &p.Likes, &p.Dislikes, &p.CommentsNum); err != nil {
+			log.Printf("error scanning post row: %v", err)
+			continue
+		}
+
+		p.Categories, err = getPostCategories(p.Id)
+		if err != nil {
+			fmt.Println("Error getting categories:", err)
+		}
+		posts = append(posts, p)
+	}
+
+	profile := models.Profile{
+		Username: username,
+		AllPosts:    posts,
+	}
+
+	return profile
+}
