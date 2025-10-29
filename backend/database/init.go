@@ -7,15 +7,17 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var Db *sql.DB
 
-func Init() {
+
+func Init() *sql.DB {
 	var err error
 	Db, err = sql.Open("sqlite3", "./backend/database/sqlite.db")
 	if err != nil {
 		log.Fatal("DB open error:", err)
 	}
-
+	return Db
+}
+func Users()
 	for _, stmt := range []string{
 		// Users
 		`CREATE TABLE IF NOT EXISTS users (
