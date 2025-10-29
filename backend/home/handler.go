@@ -3,10 +3,11 @@ package home
 import (
 	"database/sql"
 	"fmt"
-	databasecreate "forum/backend/database"
 	"html/template"
 	"log"
 	"net/http"
+
+	databasecreate "forum/backend/database"
 )
 
 func PageNotFound(w http.ResponseWriter) {
@@ -49,7 +50,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	PageData := database.AllPageData(r, "HomeData")
+	PageData := databasecreate.AllPageData(r, "HomeData")
 	PageData.Username, err = GetUsernameFromCookie(r, "session_token")
 	if err != nil {
 		fmt.Println(err)

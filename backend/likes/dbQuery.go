@@ -2,13 +2,14 @@ package likes
 
 import (
 	"database/sql"
-	"forum/backend/database"
+
+	databasecreate "forum/backend/database"
 )
 
 // insert like using postid, username
 func insertLike(postID, username string) error {
-	Db:=databasecreate.Open()
 	var exists int
+	Db := databasecreate.Open()
 	err := Db.QueryRow(
 		`SELECT 1 FROM likes WHERE post_id = ? AND username = ?`,
 		postID, username,
@@ -51,8 +52,8 @@ func insertLike(postID, username string) error {
 }
 
 func insertDislike(postID, username string) error {
-	Db:=databasecreate.Open()
 	var exists int
+	Db := databasecreate.Open()
 	err := Db.QueryRow(
 		`SELECT 1 FROM dislikes WHERE post_id = ? AND username = ?`,
 		postID, username,

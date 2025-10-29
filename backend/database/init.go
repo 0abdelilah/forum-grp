@@ -15,6 +15,7 @@ func Open() *sql.DB {
 	if err != nil {
 		log.Fatal("DB open error:", err)
 	}
+	defer Db.Close()
 	return Db
 }
 
@@ -26,7 +27,6 @@ func Init() {
 	Createlikes()
 	CreatePostCategories()
 	Creatsessions()
-
 }
 
 func ERR(err error) {

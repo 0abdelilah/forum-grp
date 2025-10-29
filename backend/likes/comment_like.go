@@ -1,0 +1,85 @@
+package likes
+
+import (
+	"database/sql"
+	"fmt"
+	"net/http"
+
+	"forum/backend/auth"
+	databasecreate "forum/backend/database"
+	"forum/backend/home"
+)
+
+func AddCommentLikeHandler(w http.ResponseWriter, r *http.Request) {
+	username, err := auth.GetUsernameFromCookie(r, "session_token")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		home.PostPageError(w, r, "Failed to parse form")
+		return
+	}
+
+	postid := r.FormValue("postid")
+	cmntid := r.FormValue("cmntid")
+
+	path := "/post-detail/?postid=" + postid
+
+	err = addCmntLike(cmntid, username)
+	if err != nil {
+		home.PostPageError(w, r, "Internal server error, try later")
+		fmt.Println(err)
+		return
+	}
+
+	http.Redirect(w, r, path, http.StatusSeeOther)
+}
+
+func addCmntLike(cmntId, username string) error {
+	Db := databasecreate.Open()
+	var exists int
+	fmt.Println(cmntId, username)
+	err := Db.QueryRow(
+		`SELECT 1 FROM comment_likes WHERE comment_id = ? AND username = ?`,
+		cmntId, username,
+	).Scan(&exists)
+
+	// If user already liked → remove it
+	if err == nil {
+		_, err = Db.Exec(
+			`DELETE FROM comment_likes WHERE comment_id = ? AND username = ?`,
+			cmntId, username,
+		)
+		if err != nil {
+			return err
+		}
+		_, err = Db.Exec(
+			`UPDATE comments SET likes_count = MAX(likes_count - 1, 0) WHERE id = ?`,
+			cmntId,
+		)
+		return err
+	}
+
+	// If other error (not just "no rows")
+	if err != sql.ErrNoRows {
+		return err
+	}
+
+	// Add new like
+	_, err = Db.Exec(
+		`INSERT INTO comment_likes (username, comment_id) VALUES (?, ?)`,
+		username, cmntId,
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = Db.Exec(
+		`UPDATE comments SET likes_count = likes_count + 1 WHERE id = ?`,
+		cmntId,
+	)
+	return err
+}
