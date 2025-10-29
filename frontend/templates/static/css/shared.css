@@ -1,0 +1,88 @@
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: #181a1b;
+    min-height: 100vh;
+    color: #e8ecef;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+/* Header */
+header {
+    background: linear-gradient(135deg, #2a3eb1 0%, #1c2526 100%);
+    color: #e8ecef;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.header-left a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    background: #1a73e8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1);
+}
+
+.platform-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #e8ecef;
+    letter-spacing: -0.02em;
+}
+
+.header-buttons a {
+    text-decoration: none;
+    color: #e8ecef;
+    margin-left: 1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+    transition: transform 0.2s ease, background 0.3s ease;
+    font-weight: 500;
+}
+
+.header-buttons a:hover {
+    background: linear-gradient(135deg, #0d47a1 0%, #083a8c 100%);
+    transform: translateY(-2px);
+}
+
+.header-buttons a:focus {
+    outline: 2px solid #1a73e8;
+    outline-offset: 2px;
+}
+
+
+/* Footer */
+footer {
+    background-color: #1c2526;
+    color: #adb5bd;
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto;
+    font-size: 0.9rem;
+}

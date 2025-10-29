@@ -1,0 +1,142 @@
+/* Post Detail Card */
+.post-detail {
+    width: 700px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+.post-card {
+    background: #1b1f23;
+    padding: 2.5rem;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+/* Title + Info */
+.post-title {
+    font-size: 1.8rem;
+    color: #f8f9fa;
+    margin-bottom: 0.5rem;
+}
+
+.post-author {
+    color: #adb5bd;
+    font-size: 0.95rem;
+}
+
+.post-date {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 0.85rem;
+    color: #868e96;
+}
+
+/* Body */
+.post-body {
+    margin-top: 1rem;
+    line-height: 1.7;
+    color: #cdd2d7;
+}
+
+/* Actions */
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
+
+.post-actions button {
+    flex: 1;
+    margin: 0 5px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 8px;
+    background: #2a2f35;
+    color: #ccc;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.post-actions button:hover {
+    background: #1a73e8;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* Categories */
+.post-categories {
+    margin-top: 1rem;
+    color: #1a73e8;
+    font-size: 0.9rem;
+}
+
+/* Comments */
+#comments {
+    margin-top: 2rem;
+    background: #1b1f23;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+#comments h2 {
+    color: #1a73e8;
+    margin-bottom: 1rem;
+}
+
+.comment {
+    background: #2a2f35;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.comment strong {
+    color: #f8f9fa;
+}
+
+.comment small {
+    color: #868e96;
+    font-size: 0.8rem;
+}
+
+/* Comment form */
+.comment-form {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.comment-form textarea {
+    background: #2a2f35;
+    border: 1px solid #3a3d42;
+    border-radius: 6px;
+    color: #e8ecef;
+    padding: 10px;
+    resize: vertical;
+}
+
+.comment-form button {
+    align-self: flex-end;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #1a73e8;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.comment-form button:hover {
+    background: #0d47a1;
+    transform: translateY(-2px);
+}
+
+.comment p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}

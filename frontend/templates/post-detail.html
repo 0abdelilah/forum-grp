@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechDev</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/shared.css">
+    <link rel="stylesheet" href="/static/css/post-detail.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-left">
+            <a href="/">
+                <div class="logo">TD</div>
+                <div class="platform-name">TechDev</div>
+            </a>
+        </div>
+
+        <div class="header-buttons">
+            {{if .Username}}
+            <span class="username">👋 {{.Username}}</span>
+            <a href="/logout">Logout</a>
+            <a href="/">Home</a>
+
+            {{else}}
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            {{end}}
+        </div>
+    </header>
+
+    <!-- Post Detail -->
+    <main class="post-detail">
+        <article class="post-card">
+
+            <div class="post-header">
+                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon">
+            </div>
+
+            <p class="post-author"><strong>By:</strong> {{.PostContent.Username}}</p>
+            <h1 class="post-title">{{.PostContent.Title}}</h1>
+            <p class="post-date">{{.PostContent.CreatedAt}}</p>
+
+            <div class="post-body">
+                <p>{{.PostContent.Content}}</p>
+            </div>
+
+            <div class="post-actions">
+                <form action="/api/like?postid={{.PostContent.Id}}&page=postdetails" method="post">
+                    <button type="submit"><span>👍</span> {{.PostContent.Likes}} Like</button>
+                </form>
+                <form action="/api/dislike?postid={{.PostContent.Id}}&page=postdetails" method="post">
+                    <button type="submit"><span>👎</span> {{.PostContent.Dislikes}} Dislike</button>
+                </form>
+            </div>
+
+            <div class="post-categories">
+                <p>{{.PostContent.Categories}}</p>
+            </div>
+        </article>
+
+        <!-- Comments Section -->
+        <section id="comments">
+            <h2>Comments ({{.PostContent.CommentsNum}})</h2>
+
+            {{$post := .PostContent}} <!-- ✅ Save reference before the loop -->
+
+            {{if $post.Comments}}
+            {{range $comment := $post.Comments}}
+            <div class="comment">
+                <p class="post-author"><strong>By:</strong> {{$comment.Username}}</p>
+                <p>{{$comment.Content}}</p>
+                <small>{{$comment.CreatedAt}}</small>
+
+                <div class="comment-actions">
+                    <form action="/api/like_comment" method="post">
+                        <input type="hidden" name="cmntid" value="{{$comment.Id}}">
+                        <input type="hidden" name="postid" value="{{$post.Id}}">
+                        <button type="submit"><span>👍</span> {{$comment.Likes}} Like</button>
+                    </form>
+                    <form action="/api/dislike_comment" method="post">
+                        <input type="hidden" name="cmntid" value="{{$comment.Id}}">
+                        <input type="hidden" name="postid" value="{{$post.Id}}">
+                        <button type="submit"><span>👎</span> {{$comment.Dislikes}} Dislike</button>
+                    </form>
+                </div>
+            </div>
+            {{end}}
+            {{else}}
+            <p>No comments yet. Be the first to comment!</p>
+            {{end}}
+
+            <form action="/api/comment?postid={{$post.Id}}" method="post" class="comment-form">
+                <textarea name="content" placeholder="Write a comment..."></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+
+    </main>
+
+    {{if .Error}}
+    <div class="toast toast-error" id="toast">{{.Error}}</div>
+    <script>
+        setTimeout(() => {
+            const toast = document.getElementById('toast');
+            if (toast) toast.classList.add('hide');
+        }, 3000);
+    </script>
+    {{end}}
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 TechDev. Made with ❤️ and ☕.</p>
+    </footer>
+</body>
+
+</html>
