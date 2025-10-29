@@ -37,6 +37,9 @@ func main() {
 
 	mux.HandleFunc("POST /api/comment", comments.CreateCommentHandler)
 
+	mux.HandleFunc("POST /api/like_comment", likes.AddCommentLikeHandler)
+	mux.HandleFunc("POST /api/dislike_comment", likes.AddCommentDislikeHandler)
+
 	// Posts content
 	mux.HandleFunc("GET /post-detail/", posts.SeePostdetail)
 

@@ -24,6 +24,8 @@
             {{if .Username}}
             <span class="username">👋 {{.Username}}</span>
             <a href="/logout">Logout</a>
+            <a href="/">Home</a>
+
             {{else}}
             <a href="/login">Login</a>
             <a href="/register">Register</a>
@@ -65,8 +67,10 @@
         <section id="comments">
             <h2>Comments ({{.PostContent.CommentsNum}})</h2>
 
-            {{if .PostContent.Comments}}
-            {{range $comment := .PostContent.Comments}}
+            {{$post := .PostContent}} <!-- ✅ Save reference before the loop -->
+
+            {{if $post.Comments}}
+            {{range $comment := $post.Comments}}
             <div class="comment">
                 <p class="post-author"><strong>By:</strong> {{$comment.Username}}</p>
                 <p>{{$comment.Content}}</p>
@@ -74,28 +78,28 @@
 
                 <div class="comment-actions">
                     <form action="/api/like_comment" method="post">
-                        <button type="submit"><span>👍</span> 0 Like</button>
+                        <input type="hidden" name="cmntid" value="{{$comment.Id}}">
+                        <input type="hidden" name="postid" value="{{$post.Id}}">
+                        <button type="submit"><span>👍</span> {{$comment.Likes}} Like</button>
                     </form>
                     <form action="/api/dislike_comment" method="post">
-                        <button type="submit"><span>👎</span> 0 Dislike</button>
+                        <input type="hidden" name="cmntid" value="{{$comment.Id}}">
+                        <input type="hidden" name="postid" value="{{$post.Id}}">
+                        <button type="submit"><span>👎</span> {{$comment.Dislikes}} Dislike</button>
                     </form>
                 </div>
-
             </div>
             {{end}}
             {{else}}
             <p>No comments yet. Be the first to comment!</p>
             {{end}}
 
-            {{if .Username}}
-            <form action="/api/comment?postid={{.PostContent.Id}}" method="post" class="comment-form">
+            <form action="/api/comment?postid={{$post.Id}}" method="post" class="comment-form">
                 <textarea name="content" placeholder="Write a comment..."></textarea>
                 <button type="submit">Submit</button>
             </form>
-            {{else}}
-            <p><a href="/login">Login</a> to leave a comment.</p>
-            {{end}}
         </section>
+
     </main>
 
     {{if .Error}}

@@ -52,6 +52,8 @@ func Init() {
 			post_id INTEGER NOT NULL,
 			username TEXT NOT NULL,
 			content TEXT NOT NULL,
+			likes_count INTEGER DEFAULT 0,
+			dislikes_count INTEGER DEFAULT 0,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
 

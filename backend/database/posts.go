@@ -3,10 +3,11 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"forum/backend/models"
 	"log"
 	"strings"
 	"time"
+
+	"forum/backend/models"
 )
 
 func GetPosts(categories []string) []models.Post {
@@ -69,7 +70,6 @@ func GetPostDetails(postId int) models.Post {
 		WHERE id = ?
 	`, postId).Scan(&post.Id, &post.Username, &post.Title, &post.Content,
 		&post.CreatedAt, &post.Likes, &post.Dislikes, &post.CommentsNum)
-
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Printf("no post found with id=%d", postId)
@@ -83,7 +83,7 @@ func GetPostDetails(postId int) models.Post {
 
 	post.Comments, err = getComments(postId)
 	if err != nil {
-		fmt.Println("Error getting comments")
+		fmt.Println("Error getting comments", err)
 	}
 
 	return post
@@ -142,6 +142,7 @@ func GetPostsByCategories(categoryNames []string) []models.Post {
 
 	return posts
 }
+
 func GetProfile(username string) models.Profile {
 	var posts []models.Post
 	rows, err := Db.Query(`
@@ -174,7 +175,7 @@ func GetProfile(username string) models.Profile {
 
 	profile := models.Profile{
 		Username: username,
-		AllPosts:    posts,
+		AllPosts: posts,
 	}
 
 	return profile

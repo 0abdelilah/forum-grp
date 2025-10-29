@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TechBit - User Profile</title>
     <link rel="stylesheet" href="/static/css/Profile.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet" />
-    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Orbitron:wght@700&display=swap"
+        rel="stylesheet" />
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
 
 </head>
+
 <body>
     <!-- Header -->
     <header>
@@ -32,63 +35,61 @@
     <!-- Main Content -->
     <main>
         <div class="container">
-              <section class="profile-header">
-    <img src="../static/user.png" alt="User avatar" />
-    <h2>{{.Profile.Username}}</h2>
-    <p>Full-stack dev who loves clean code and bad puns. Ask me about Python or CSS hacks!</p>
-    <p>Joined: January 2025 | Followers: 128 | Following: 56</p>
-    <div class="profile-actions">
-        <a class="btn btn-primary">
-            <i class="fas fa-user-edit"></i> Edit Profile
-        </a>
-        <a >
-            <i class="fas fa-cog"></i> Settings
-        </a>
-           </div>
-</section>
+            <section class="profile-header">
+                <img src="../static/user.png" alt="User avatar" />
+                <h2>{{.Profile.Username}}</h2>
+                <p>Full-stack dev who loves clean code and bad puns. Ask me about Python or CSS hacks!</p>
+                <p>Joined: January 2025 | Followers: 128 | Following: 56</p>
+                <div class="profile-actions">
+                    <a class="btn btn-primary">
+                        <i class="fas fa-user-edit"></i> Edit Profile
+                    </a>
+                    <a>
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </div>
+            </section>
 
 
             <!-- User Posts Feed -->
             <section class="feed">
-    {{range $Post := .Profile.AllPosts}}
-        <article class="post">
-            <div class="createdAt">
-                <p>{{$Post.CreatedAt}}</p>
-            </div>
 
-            <div class="post-header">
-                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon" />
-                <h3>{{$Post.Title}}</h3>
-            </div>
+                {{range $Post := .Profile.AllPosts}}
+                <a href="/post-detail?postid={{$Post.Id}}" class="post-link">
 
-            <div class="post-content">
-                <p>{{$Post.Content}}</p>
-            </div>
+                    <article class="post">
+                        <div class="createdAt">
+                            <p>{{$Post.CreatedAt}}</p>
+                        </div>
 
-            <div class="post-actions">
-                    <button>
-                        <span>👍 {{$Post.Likes}}Like</span> 
-                    </button>
+                        <div class="post-header">
+                            <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon" />
+                            <h3>{{$Post.Title}}</h3>
+                        </div>
 
-                    <button >
-                        <span>👎 {{$Post.Dislikes}} Dislike</span> 
-                    </button>
+                        <div class="post-content">
+                            <p>{{$Post.Content}}</p>
+                        </div>
 
-                <button>
-                    <span>💬 {{$Post.CommentsNum}}Comments</span> 
-                </button>
-            </div>
+                        <div class="post-actions">
+                            <span>👍 {{$Post.Likes}} Like</span>
 
-            <div class="post-categories">
-                <p>{{$Post.Categories}}</p>
-            </div>
-        </article>
-    {{else}}
-    <div class="profile-section" style="text-align: center; padding: 3rem;">
-        <p style="color: #6c757d; font-size: 1.1rem;">No posts yet. Start sharing your tech journey!</p>
-    </div>
-    {{end}}
-</section>
+                            <span>👎 {{$Post.Dislikes}} Dislike</span>
+
+                            <span>💬 {{$Post.CommentsNum}} Comments</span>
+                        </div>
+
+                        <div class="post-categories">
+                            <p>{{$Post.Categories}}</p>
+                        </div>
+                    </article>
+                    {{else}}
+                    <div class="profile-section" style="text-align: center; padding: 3rem;">
+                        <p style="color: #6c757d; font-size: 1.1rem;">No posts yet. Start sharing your tech journey!</p>
+                    </div>
+                    {{end}}
+            </section>
+            </a>
 
         </div>
     </main>
@@ -112,4 +113,5 @@
         });
     </script>
 </body>
+
 </html>
