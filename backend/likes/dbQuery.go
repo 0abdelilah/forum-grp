@@ -7,22 +7,23 @@ import (
 
 // insert like using postid, username
 func insertLike(postID, username string) error {
+	Db:=databasecreate.Open()
 	var exists int
-	err := database.Db.QueryRow(
+	err := Db.QueryRow(
 		`SELECT 1 FROM likes WHERE post_id = ? AND username = ?`,
 		postID, username,
 	).Scan(&exists)
 
 	if err == nil {
 		// user already liked = remove like
-		_, err = database.Db.Exec(
+		_, err = Db.Exec(
 			`DELETE FROM likes WHERE post_id = ? AND username = ?`,
 			postID, username,
 		)
 		if err != nil {
 			return err
 		}
-		_, err = database.Db.Exec(
+		_, err = Db.Exec(
 			`UPDATE posts SET likes_count = likes_count - 1 WHERE id = ?`,
 			postID,
 		)
@@ -33,7 +34,7 @@ func insertLike(postID, username string) error {
 	}
 
 	// insert like
-	_, err = database.Db.Exec(
+	_, err = Db.Exec(
 		`INSERT INTO likes (username, post_id) VALUES (?, ?)`,
 		username, postID,
 	)
@@ -42,7 +43,7 @@ func insertLike(postID, username string) error {
 	}
 
 	// update counter
-	_, err = database.Db.Exec(
+	_, err = Db.Exec(
 		`UPDATE posts SET likes_count = likes_count + 1 WHERE id = ?`,
 		postID,
 	)
@@ -50,22 +51,23 @@ func insertLike(postID, username string) error {
 }
 
 func insertDislike(postID, username string) error {
+	Db:=databasecreate.Open()
 	var exists int
-	err := database.Db.QueryRow(
+	err := Db.QueryRow(
 		`SELECT 1 FROM dislikes WHERE post_id = ? AND username = ?`,
 		postID, username,
 	).Scan(&exists)
 
 	if err == nil {
 		// user already liked = remove like
-		_, err = database.Db.Exec(
+		_, err = Db.Exec(
 			`DELETE FROM dislikes WHERE post_id = ? AND username = ?`,
 			postID, username,
 		)
 		if err != nil {
 			return err
 		}
-		_, err = database.Db.Exec(
+		_, err = Db.Exec(
 			`UPDATE posts SET dislikes_count = dislikes_count - 1 WHERE id = ?`,
 			postID,
 		)
@@ -76,7 +78,7 @@ func insertDislike(postID, username string) error {
 	}
 
 	// insert like
-	_, err = database.Db.Exec(
+	_, err = Db.Exec(
 		`INSERT INTO dislikes (username, post_id) VALUES (?, ?)`,
 		username, postID,
 	)
@@ -85,7 +87,7 @@ func insertDislike(postID, username string) error {
 	}
 
 	// update counter
-	_, err = database.Db.Exec(
+	_, err = Db.Exec(
 		`UPDATE posts SET dislikes_count = dislikes_count + 1 WHERE id = ?`,
 		postID,
 	)

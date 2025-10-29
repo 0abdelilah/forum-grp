@@ -3,11 +3,10 @@ package home
 import (
 	"database/sql"
 	"fmt"
+	databasecreate "forum/backend/database"
 	"html/template"
 	"log"
 	"net/http"
-
-	"forum/backend/database"
 )
 
 func PageNotFound(w http.ResponseWriter) {
@@ -20,13 +19,14 @@ func PageNotFound(w http.ResponseWriter) {
 }
 
 func GetUsernameFromCookie(r *http.Request, cookie_name string) (string, error) {
+	Db := databasecreate.Open()
 	c, err := r.Cookie(cookie_name)
 	if err != nil {
 		return "", err
 	}
 
 	var username string
-	err = database.Db.QueryRow("SELECT username FROM sessions WHERE id = ? AND expires_at > datetime('now')", c.Value).Scan(&username)
+	err = Db.QueryRow("SELECT username FROM sessions WHERE id = ? AND expires_at > datetime('now')", c.Value).Scan(&username)
 	if err == sql.ErrNoRows {
 		return "", err //
 	}

@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"forum/backend/auth"
-	"forum/backend/database"
+	databasecreate "forum/backend/database"
 )
 
 func main() {
-	database.Init()
+	databasecreate.Init()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /register", auth.RegisterHandlerGet)
