@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	databasecreate "forum/backend/database"
+	"forum/backend/database"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -22,7 +22,6 @@ func LoginHandlerGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
-	Db := databasecreate.Open()
 	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
 	if err != nil {
 		log.Fatal(err)
@@ -43,7 +42,7 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = Db.QueryRow(
+	err = database.Db.QueryRow(
 		`SELECT id, password_hash FROM users WHERE username = ?`,
 		username,
 	).Scan(&userID, &storedHash)
@@ -63,7 +62,7 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 	createdAt := time.Now()
 	expiresAt := createdAt.Add(24 * time.Hour)
 
-	_, err = Db.Exec(`
+	_, err = database.Db.Exec(`
 		INSERT INTO sessions(id, username, created_at, expires_at)
 		VALUES (?, ?, ?, ?)
 	`, sessionID, username, createdAt, expiresAt)

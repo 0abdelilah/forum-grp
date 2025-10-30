@@ -7,8 +7,7 @@ import (
 )
 
 func insertComment(postID, username, content string) error {
-		Db:=databasecreate.Open()
-	_, err := Db.Exec(
+	_, err := database.Db.Exec(
 		`INSERT INTO comments (post_id, username, content) VALUES (?, ?, ?)`,
 		postID, username, content,
 	)
@@ -16,7 +15,7 @@ func insertComment(postID, username, content string) error {
 		return err
 	}
 
-	_, err = Db.Exec(
+	_, err = database.Db.Exec(
 		`UPDATE posts SET comments_count = comments_count + 1 WHERE id = ?`,
 		postID,
 	)
@@ -24,9 +23,8 @@ func insertComment(postID, username, content string) error {
 }
 
 func insertCommentLike(commentID int, username string) error {
-	Db:=databasecreate.Open()
 	var exists int
-	err := Db.QueryRow(
+	err := database.Db.QueryRow(
 		`SELECT 1 FROM comment_likes WHERE comment_id = ? AND username = ?`,
 		commentID, username,
 	).Scan(&exists)
@@ -38,11 +36,11 @@ func insertCommentLike(commentID int, username string) error {
 		return err
 	}
 
-	_, err = Db.Exec(`INSERT INTO comment_likes (username, comment_id) VALUES (?, ?)`, username, commentID)
+	_, err = database.Db.Exec(`INSERT INTO comment_likes (username, comment_id) VALUES (?, ?)`, username, commentID)
 	if err != nil {
 		return err
 	}
 
-	_, err = Db.Exec(`UPDATE comments SET likes_count = likes_count + 1 WHERE id = ?`, commentID)
+	_, err = database.Db.Exec(`UPDATE comments SET likes_count = likes_count + 1 WHERE id = ?`, commentID)
 	return err
 }

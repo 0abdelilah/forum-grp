@@ -18,7 +18,7 @@ func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	PageData := databasecreate.AllPageData(r, "postContent")
+	PageData := database.AllPageData(r, "postContent")
 	if PageData.PostContent.Id == 0 {
 		home.PageNotFound(w)
 		return
@@ -73,8 +73,7 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func InsertPost(username, title, content string, categories []string) error {
-	Db:=databasecreate.Open()
-	res, err := Db.Exec(`
+	res, err := database.Db.Exec(`
 		INSERT INTO posts (username, title, content)
 		VALUES (?, ?, ?)
 	`, username, title, content)

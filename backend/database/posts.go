@@ -1,4 +1,4 @@
-package databasecreate
+package database
 
 import (
 	"database/sql"
@@ -21,7 +21,6 @@ func GetPosts(categories []string) []models.Post {
 
 func GetAllPosts() []models.Post {
 	var posts []models.Post
-	Db := Open()
 
 	rows, err := Db.Query(`
 		SELECT id, title, username, content, created_at, 
@@ -63,7 +62,6 @@ func GetAllPosts() []models.Post {
 
 func GetPostDetails(postId int) models.Post {
 	var post models.Post
-	Db := Open()
 
 	err := Db.QueryRow(`
 		SELECT id, username, title, content, created_at,
@@ -113,7 +111,6 @@ func GetPostsByCategories(categoryNames []string) []models.Post {
 	for i, c := range categoryNames {
 		args[i] = c
 	}
-	Db := Open()
 
 	query := fmt.Sprintf(`
         SELECT DISTINCT p.id, p.title, p.username, p.content, p.created_at,
@@ -147,8 +144,6 @@ func GetPostsByCategories(categoryNames []string) []models.Post {
 }
 
 func GetProfile(username string) models.Profile {
-	Db := Open()
-
 	var posts []models.Post
 	rows, err := Db.Query(`
 		SELECT id, title, username, content, created_at, 

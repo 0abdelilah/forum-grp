@@ -1,13 +1,21 @@
 package home
 
 import (
+	"forum/backend/auth"
+	"forum/backend/database"
 	"html/template"
 	"log"
 	"net/http"
-
-	"forum/backend/auth"
-	databasecreate "forum/backend/database"
 )
+
+func PageNotFound(w http.ResponseWriter) {
+	tmpt, err := template.ParseFiles("./frontend/templates/not-found.html")
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	tmpt.Execute(w, nil)
+}
 
 func HomePageError(w http.ResponseWriter, r *http.Request, Error string) {
 	tmpl, err := template.ParseFiles("./frontend/templates/index.html")
@@ -17,7 +25,7 @@ func HomePageError(w http.ResponseWriter, r *http.Request, Error string) {
 	}
 
 	// Get the normal page data
-	PageData := databasecreate.AllPageData(r, "HomeData")
+	PageData := database.AllPageData(r, "HomeData")
 	PageData.Username, _ = auth.GetUsernameFromCookie(r, "session_token")
 
 	// Add error
@@ -38,7 +46,7 @@ func PostPageError(w http.ResponseWriter, r *http.Request, Error string) {
 	}
 
 	// Get the normal page data
-	PageData := databasecreate.AllPageData(r, "postContent")
+	PageData := database.AllPageData(r, "postContent")
 
 	PageData.Username, _ = auth.GetUsernameFromCookie(r, "session_token")
 	// Add error

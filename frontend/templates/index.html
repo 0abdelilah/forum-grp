@@ -94,14 +94,28 @@
                     </div>
 
                     <div class="post-actions">
+                        <form action="/api/react" method="post">
+    <input type="hidden" name="target_type" value="post">
+    <input type="hidden" name="target_id" value="{{$Post.Id}}">
+    <input type="hidden" name="value" value="1">
+    <button type="submit"><span>👍 {{ $Post.Likes }} </span> Like</button>
+</form>
 
+<form action="/api/react" method="post">
+    <input type="hidden" name="target_type" value="post">
+    <input type="hidden" name="target_id" value="{{$Post.Id}}">
+    <input type="hidden" name="value" value="-1">
+    <button type="submit"><span>👎 {{ $Post.Dislikes }} </span> Dislike</button>
+</form>
+
+<!-- 
                         <form action="/api/like?postid={{$Post.Id}}" method="post">
                             <button type="submit"><span>👍 {{ $Post.Likes }} </span> Like</button>
                         </form>
 
                         <form action="/api/dislike?postid={{$Post.Id}}" method="post">
                             <button type="submit"><span>👎 {{ $Post.Dislikes }} </span> Dislikes</button>
-                        </form>
+                        </form> -->
 
                         <button type="submit"><span>💬 {{$Post.CommentsNum}} </span> Comments</button>
                     </div>

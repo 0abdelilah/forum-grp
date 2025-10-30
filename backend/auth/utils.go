@@ -2,9 +2,8 @@ package auth
 
 import (
 	"database/sql"
+	"forum/backend/database"
 	"net/http"
-
-	databasecreate "forum/backend/database"
 )
 
 func GetUsernameFromCookie(r *http.Request, cookie_name string) (string, error) {
@@ -13,9 +12,8 @@ func GetUsernameFromCookie(r *http.Request, cookie_name string) (string, error) 
 		return "", err
 	}
 
-	Db := databasecreate.Open()
 	var username string
-	err = Db.QueryRow("SELECT username FROM sessions WHERE id = ? AND expires_at > datetime('now')", c.Value).Scan(&username)
+	err = database.Db.QueryRow("SELECT username FROM sessions WHERE id = ? AND expires_at > datetime('now')", c.Value).Scan(&username)
 	if err == sql.ErrNoRows {
 		return "", err //
 	}

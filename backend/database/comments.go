@@ -1,9 +1,8 @@
-package databasecreate
+package database
 
 import "forum/backend/models"
 
 func getComments(postID int) ([]models.Comment, error) {
-	Db := Open()
 	rows, err := Db.Query(
 		`SELECT id, username, content, likes_count, dislikes_count, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC`,
 		postID,

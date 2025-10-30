@@ -1,16 +1,13 @@
-package databasecreate
+package database
 
 import (
+	"forum/backend/models"
 	"log"
 	"strings"
-
-	"forum/backend/models"
 )
 
 func GetAllCategories() []models.Category {
 	var categories []models.Category
-
-	Db := Open()
 
 	rows, err := Db.Query(`SELECT id, name FROM categories`)
 	if err != nil {
@@ -36,7 +33,6 @@ func GetAllCategories() []models.Category {
 
 func getPostCategories(postID int) (string, error) {
 	var categories []string
-	Db := Open()
 	rows, err := Db.Query(`
 		SELECT c.name
 		FROM categories c

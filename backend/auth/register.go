@@ -3,19 +3,19 @@ package auth
 import (
 	"database/sql"
 	"fmt"
+	"forum/backend/database"
 	"html/template"
 	"log"
 	"net/http"
 	"regexp"
 	"strings"
 
-	databasecreate "forum/backend/database"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterHandlerGet(w http.ResponseWriter, r *http.Request) {
 	tmpt, err := template.ParseFiles("./frontend/templates/register.html")
+
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -24,7 +24,7 @@ func RegisterHandlerGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
-	Db := databasecreate.Open()
+
 	tmpt, err := template.ParseFiles("./frontend/templates/register.html")
 	if err != nil {
 		log.Fatal(err)
@@ -50,7 +50,7 @@ func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = Db.Exec(`
+	_, err = database.Db.Exec(`
 	INSERT INTO users(email, username, password_hash)
 	VALUES(?, ?, ?)`,
 		Email, username, hashedPassword,
@@ -65,9 +65,9 @@ func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func validateValues(email, username, password, confirmPassword string) error {
-	Db:=databasecreate.Open()
+	// --- Check if email exists ---
 	var existingEmail string
-	err := Db.QueryRow(`SELECT email FROM users WHERE email = ?`, email).Scan(&existingEmail)
+	err := database.Db.QueryRow(`SELECT email FROM users WHERE email = ?`, email).Scan(&existingEmail)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			fmt.Printf("email database error: %v\n", err)
@@ -90,7 +90,7 @@ func validateValues(email, username, password, confirmPassword string) error {
 
 	// --- Check if username exists ---
 	var existingUsername string
-	err =Db.QueryRow(`SELECT username FROM users WHERE username = ?`, username).Scan(&existingUsername)
+	err = database.Db.QueryRow(`SELECT username FROM users WHERE username = ?`, username).Scan(&existingUsername)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			fmt.Printf("username database error: %v\n", err)

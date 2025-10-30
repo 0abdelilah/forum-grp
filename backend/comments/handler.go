@@ -2,9 +2,10 @@ package comments
 
 import (
 	"fmt"
+	"net/http"
+
 	"forum/backend/auth"
 	"forum/backend/home"
-	"net/http"
 )
 
 func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
