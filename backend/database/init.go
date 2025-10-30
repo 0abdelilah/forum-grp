@@ -63,37 +63,16 @@ func Init() {
 			UNIQUE(post_id, category_id)
 		);`,
 
-		// Comment likes
-		`CREATE TABLE IF NOT EXISTS comment_likes (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT NOT NULL,
-			comment_id INTEGER NOT NULL REFERENCES comments(id),
-			UNIQUE(username, comment_id)
-		);`,
-
-		// Comment dislikes
-		`CREATE TABLE IF NOT EXISTS comment_dislikes (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT NOT NULL,
-			comment_id INTEGER NOT NULL REFERENCES comments(id),
-			UNIQUE(username, comment_id)
-		);`,
-
-		// Likes
 		`CREATE TABLE IF NOT EXISTS likes (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT NOT NULL,
-			post_id INTEGER NOT NULL REFERENCES posts(id),
-			UNIQUE(username, post_id)
-		);`,
-
-		// Disikes
-		`CREATE TABLE IF NOT EXISTS dislikes (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT NOT NULL,
-			post_id INTEGER NOT NULL REFERENCES posts(id),
-			UNIQUE(username, post_id)
-		);`,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    target_type TEXT NOT NULL CHECK(target_type IN ('post','comment')),
+    target_id INTEGER NOT NULL,
+    value INTEGER NOT NULL CHECK(value IN (1, -1)), -- 1 = like, -1 = dislike
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, target_type, target_id),
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);`,
 
 		// Sessions
 		`CREATE TABLE IF NOT EXISTS sessions (
