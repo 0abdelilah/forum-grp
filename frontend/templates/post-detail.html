@@ -121,12 +121,14 @@
                     <input type="hidden" name="target_type" value="comment">
                     <input type="hidden" name="target_id" value="{{$comment.Id}}">
                     <input type="hidden" name="value" value="1">
+                    <br>
                     <button type="submit"><span>👍</span> {{$comment.Likes}} Like</button>
                 </form>
                 <form action="/api/react" method="post">
                     <input type="hidden" name="target_type" value="comment">
                     <input type="hidden" name="target_id" value="{{$comment.Id}}">
                     <input type="hidden" name="value" value="-1">
+                    <br>
                     <button type="submit"><span>👎</span> {{$comment.Dislikes}} Dislike</button>
                 </form>
             </div>

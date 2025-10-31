@@ -9,86 +9,138 @@ import (
 
 var Db *sql.DB
 
+// Init initializes the database connection and creates all tables and defaults.
 func Init() {
+	openDatabase()
+	createAllTables()
+	insertDefaultCategories()
+}
+
+// openDatabase opens the SQLite database connection.
+func openDatabase() {
 	var err error
 	Db, err = sql.Open("sqlite3", "./backend/database/sqlite.db")
 	if err != nil {
 		log.Fatal("DB open error:", err)
 	}
+}
 
-	for _, stmt := range []string{
-		// Users
-		`CREATE TABLE IF NOT EXISTS users (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT UNIQUE,
-			email TEXT UNIQUE,
-			password_hash TEXT NOT NULL
-		);`,
+// createAllTables creates all necessary tables if they don't exist.
+func createAllTables() {
+	createUsersTable()
+	createPostsTable()
+	createCategoriesTable()
+	createCommentsTable()
+	createPostCategoriesTable()
+	createLikesTable()
+	createSessionsTable()
+}
 
-		// Posts
+// createUsersTable creates the users table.
+func createUsersTable() {
+	stmt := `
+	CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		username TEXT UNIQUE,
+		email TEXT UNIQUE,
+		password_hash TEXT NOT NULL
+	);`
+	execStmt(stmt, "users")
+}
 
-		`CREATE TABLE IF NOT EXISTS posts (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT NOT NULL,
-			title TEXT NOT NULL CHECK(length(title) > 0),
-			content TEXT NOT NULL CHECK(length(content) > 0),
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			likes_count INTEGER DEFAULT 0,
-			dislikes_count INTEGER DEFAULT 0,
-			comments_count INTEGER DEFAULT 0
-		);`,
+// createPostsTable creates the posts table.
+func createPostsTable() {
+	stmt := `
+	CREATE TABLE IF NOT EXISTS posts (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		username TEXT NOT NULL,
+		title TEXT NOT NULL CHECK(length(title) > 0),
+		content TEXT NOT NULL CHECK(length(content) > 0),
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		likes_count INTEGER DEFAULT 0,
+		dislikes_count INTEGER DEFAULT 0,
+		comments_count INTEGER DEFAULT 0
+	);`
+	execStmt(stmt, "posts")
+}
 
-		// Categories
+// createCategoriesTable creates the categories table.
+func createCategoriesTable() {
+	stmt := `
+	CREATE TABLE IF NOT EXISTS categories (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT UNIQUE NOT NULL
+	);`
+	execStmt(stmt, "categories")
+}
 
-		`CREATE TABLE IF NOT EXISTS categories (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			name TEXT UNIQUE NOT NULL
-		);`,
+// createCommentsTable creates the comments table.
+func createCommentsTable() {
+	stmt := `
+	CREATE TABLE IF NOT EXISTS comments (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		post_id INTEGER NOT NULL,
+		username TEXT NOT NULL,
+		content TEXT NOT NULL,
+		likes_count INTEGER DEFAULT 0,
+		dislikes_count INTEGER DEFAULT 0,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`
+	execStmt(stmt, "comments")
+}
 
-		// Comments
+// createPostCategoriesTable creates the post_categories table.
+func createPostCategoriesTable() {
+	stmt := `
+	CREATE TABLE IF NOT EXISTS post_categories (
+		post_id INTEGER NOT NULL REFERENCES posts(id),
+		category_id INTEGER NOT NULL REFERENCES categories(id),
+		UNIQUE(post_id, category_id)
+	);`
+	execStmt(stmt, "post_categories")
+}
 
-		`CREATE TABLE IF NOT EXISTS comments (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			post_id INTEGER NOT NULL,
-			username TEXT NOT NULL,
-			content TEXT NOT NULL,
-			likes_count INTEGER DEFAULT 0,
-			dislikes_count INTEGER DEFAULT 0,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-		);`,
+// createLikesTable creates the likes table.
+func createLikesTable() {
+	stmt := `
+	CREATE TABLE IF NOT EXISTS likes (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		username TEXT NOT NULL,
+		target_type TEXT NOT NULL CHECK(target_type IN ('post','comment')),
+		target_id INTEGER NOT NULL,
+		value INTEGER NOT NULL CHECK(value IN (1, -1)), -- 1 = like, -1 = dislike
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		UNIQUE(username, target_type, target_id),
+		FOREIGN KEY(username) REFERENCES users(id) ON DELETE CASCADE
+	);`
+	execStmt(stmt, "likes")
+}
 
-		`CREATE TABLE IF NOT EXISTS post_categories (
-			post_id INTEGER NOT NULL REFERENCES posts(id),
-			category_id INTEGER NOT NULL REFERENCES categories(id),
-			UNIQUE(post_id, category_id)
-		);`,
+// createSessionsTable creates the sessions table.
+func createSessionsTable() {
+	stmt := `
+	CREATE TABLE IF NOT EXISTS sessions (
+		id TEXT PRIMARY KEY,
+		username TEXT NOT NULL,
+		expires_at DATETIME NOT NULL CHECK(expires_at > created_at),
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`
+	execStmt(stmt, "sessions")
+}
 
-		`CREATE TABLE IF NOT EXISTS likes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL ,
-    target_type TEXT NOT NULL CHECK(target_type IN ('post','comment')),
-    target_id INTEGER NOT NULL,
-    value INTEGER NOT NULL CHECK(value IN (1, -1)), -- 1 = like, -1 = dislike
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(username, target_type, target_id),
-    FOREIGN KEY(username) REFERENCES users(id) ON DELETE CASCADE
-);`,
-
-		// Sessions
-		`CREATE TABLE IF NOT EXISTS sessions (
-			id TEXT PRIMARY KEY,
-			username TEXT NOT NULL,
-			expires_at DATETIME NOT NULL CHECK(expires_at > created_at),
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-		);`,
-	} {
-		if _, err := Db.Exec(stmt); err != nil {
-			log.Fatal("Table creation failed:", err)
-		}
-	}
-
+// insertDefaultCategories seeds default categories.
+func insertDefaultCategories() {
 	defaults := []string{"All", "Programming", "Cybersecurity", "Gadgets & Hardware", "Web Development"}
 	for _, c := range defaults {
-		Db.Exec(`INSERT OR IGNORE INTO categories (name) VALUES (?)`, c)
+		if _, err := Db.Exec(`INSERT OR IGNORE INTO categories (name) VALUES (?)`, c); err != nil {
+			log.Println("Failed to insert default category:", c, err)
+		}
+	}
+}
+
+// execStmt executes a SQL statement and logs if it fails.
+func execStmt(stmt string, tableName string) {
+	if _, err := Db.Exec(stmt); err != nil {
+		log.Fatalf("Table creation failed for %s: %v", tableName, err)
 	}
 }
