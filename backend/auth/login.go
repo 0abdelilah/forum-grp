@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"forum/backend/database"
@@ -21,6 +22,10 @@ func LoginHandlerGet(w http.ResponseWriter, r *http.Request) {
 	tmpt.Execute(w, nil)
 }
 
+type ErrorData struct {
+	Error string
+}
+
 func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
 	if err != nil {
@@ -36,9 +41,10 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.FormValue("username")
 	password := r.FormValue("password")
+	username = strings.TrimSpace(username)
 
 	if username == "" || password == "" {
-		tmpt.Execute(w, struct{ Error string }{Error: "Username and password are required"})
+		tmpt.Execute(w, ErrorData{Error: "Username and password cannot be empty"})
 		return
 	}
 
@@ -47,17 +53,19 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 		username,
 	).Scan(&userID, &storedHash)
 	if err != nil {
-		tmpt.Execute(w, struct{ Error string }{Error: "Invalid username or password"})
+		tmpt.Execute(w, ErrorData{Error: "Invalid username or password"})
 		log.Println("Login failed (user not found):", err)
 		return
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password)); err != nil {
-		tmpt.Execute(w, struct{ Error string }{Error: "Invalid username or password"})
-		log.Println("Login failed (wrong password):", err)
+		tmpt.Execute(w, ErrorData{Error: "Invalid username or password"})
 		return
 	}
-
+	_, err = database.Db.Exec("DELETE FROM sessions A WHERE A.username=?", username)
+	if err != nil {
+		log.Println("Error deleting old sessions:", err)
+	}
 	sessionID := uuid.New().String()
 	createdAt := time.Now()
 	expiresAt := createdAt.Add(24 * time.Hour)
@@ -73,10 +81,11 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:    "session_token",
-		Value:   sessionID,
-		Path:    "/",
-		Expires: expiresAt,
+		Name:     "session_token",
+		Value:    sessionID,
+		Path:     "/",
+		Expires:  expiresAt,
+		HttpOnly: true,
 	})
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)

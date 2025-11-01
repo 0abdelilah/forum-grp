@@ -10,6 +10,7 @@ import (
 	"forum/backend/database"
 	"forum/backend/home"
 	"forum/backend/likes"
+	"forum/backend/middleware"
 	"forum/backend/posts"
 )
 
