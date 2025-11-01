@@ -110,7 +110,15 @@ func validateValues(email, username, password, confirmPassword string) error {
 	if password != confirmPassword {
 		return fmt.Errorf("passwords do not match")
 	}
-	if !regexp.MustCompile(`^(?=.*[A-Za-z])(?=.*\d).{8,}$`).MatchString(password) {
+	var hasLetter, hasNumber bool
+	for _, c := range password {
+		if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') {
+			hasLetter = true
+		} else if c >= '0' && c <= '9' {
+			hasNumber = true
+		}
+	}
+	if !hasLetter || !hasNumber {
 		return fmt.Errorf("password must contain at least one letter and one number")
 	}
 
