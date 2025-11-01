@@ -5,14 +5,14 @@ import (
 	"forum/backend/models"
 )
 
-func GetAlllike(db *sql.DB, target string, userID int) ([]models.Likes, error) {
+func GetAlllike(db *sql.DB, target string, username string) ([]models.Likes, error) {
 	rows, err := db.Query(`
-        SELECT id, user_id, target_id, value
+        SELECT id,username, target_id, value
         FROM likes
-        WHERE user_id = ?
+        WHERE username = ?
 		WHERE target_type = ?
         ORDER BY created_at ASC
-    `, userID, target)
+    `, username, target)
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func GetAlllike(db *sql.DB, target string, userID int) ([]models.Likes, error) {
 	var likes []models.Likes
 	for rows.Next() {
 		var l models.Likes
-		if err := rows.Scan(&l.UserId, &l.Target_id, &l.Target_type, &l.Value); err != nil {
+		if err := rows.Scan(&l.Username, &l.Target_id, &l.Target_type, &l.Value); err != nil {
 			return nil, err
 
 		}

@@ -2,44 +2,46 @@ package likes
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
-	"forum/backend/database"
 	"net/http"
+	"strconv"
+
+	"forum/backend/auth"
+	"forum/backend/database"
 )
 
-func GetUserIDFromCookie(r *http.Request, cookieName string) (int, error) {
-	cookie, err := r.Cookie(cookieName)
-	if err != nil {
-		return 0, errors.New("session cookie not found")
-	}
+// func (r *http.Request, cookieName string) (int, error) {
+// 	cookie, err := r.Cookie(cookieName)
+// 	if err != nil {
+// 		return 0, errors.New("session cookie not found")
+// 	}
 
-	sessionToken := cookie.Value
-	if sessionToken == "" {
-		return 0, errors.New("empty session token")
-	}
+// 	sessionToken := cookie.Value
+// 	if sessionToken == "" {
+// 		return 0, errors.New("empty session token")
+// 	}
 
-	var userID int
-	err = database.Db.QueryRow(`
-        SELECT user_id FROM sessions WHERE token = ?
-    `, sessionToken).Scan(&userID)
+// 	var userID int
+// 	err = database.Db.QueryRow(`
+//         SELECT user_id FROM sessions WHERE token = ?
+//     `, sessionToken).Scan(&userID)
 
-	if err == sql.ErrNoRows {
-		return 0, errors.New("invalid session token")
-	}
-	if err != nil {
-		return 0, err
-	}
+// 	if err == sql.ErrNoRows {
+// 		return 0, errors.New("invalid session token")
+// 	}
+// 	if err != nil {
+// 		return 0, err
+// 	}
 
-	return userID, nil
-}
+// 	return userID, nil
+// }
 
 func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
-	  if r.Method != http.MethodPost {
-        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-        return
-    }
-	userID, err := GetUserIDFromCookie(r, "session_token")
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	username, err := auth.GetUsernameFromCookie(r, "session_token")
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -61,8 +63,8 @@ func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
 	} else {
 		intValue = -1
 	}
-
-	err = toggleLikeDislike(userID, targetType, targetID, intValue)
+	tID, _ := strconv.Atoi(targetID)
+	err = toggleLikeDislike(username, targetType, tID, intValue)
 	if err != nil {
 		fmt.Println("Error handling like/dislike:", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -71,12 +73,13 @@ func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusSeeOther)
 }
-func toggleLikeDislike(userID int, targetType, targetID string, value int) error {
+
+func toggleLikeDislike(username string, targetType string, targetID int, value int) error {
 	var existingValue int
 	err := database.Db.QueryRow(`
         SELECT value FROM likes
-        WHERE user_id = ? AND target_type = ? AND target_id = ?`,
-		userID, targetType, targetID,
+        WHERE username = ? AND target_type = ? AND target_id = ?`,
+		username, targetType, targetID,
 	).Scan(&existingValue)
 
 	tableName := ""
@@ -92,9 +95,9 @@ func toggleLikeDislike(userID int, targetType, targetID string, value int) error
 	if err == sql.ErrNoRows {
 		// المستخدم ما دارش reaction من قبل → نضيفه
 		_, err = database.Db.Exec(`
-            INSERT INTO likes (user_id, target_type, target_id, value)
+            INSERT INTO likes (username, target_type, target_id, value)
             VALUES (?, ?, ?, ?)`,
-			userID, targetType, targetID, value)
+			username, targetType, targetID, value)
 		if err != nil {
 			return err
 		}
@@ -118,8 +121,8 @@ func toggleLikeDislike(userID int, targetType, targetID string, value int) error
 		// نفس القيمة → نحيد reaction
 		_, err = database.Db.Exec(`
             DELETE FROM likes
-            WHERE user_id = ? AND target_type = ? AND target_id = ?`,
-			userID, targetType, targetID)
+            WHERE username = ? AND target_type = ? AND target_id = ?`,
+			username, targetType, targetID)
 		if err != nil {
 			return err
 		}
@@ -139,8 +142,8 @@ func toggleLikeDislike(userID int, targetType, targetID string, value int) error
 	_, err = database.Db.Exec(`
         UPDATE likes
         SET value = ?
-        WHERE user_id = ? AND target_type = ? AND target_id = ?`,
-		value, userID, targetType, targetID)
+        WHERE username = ? AND target_type = ? AND target_id = ?`,
+		value, username, targetType, targetID)
 	if err != nil {
 		return err
 	}

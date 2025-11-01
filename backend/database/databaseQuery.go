@@ -19,7 +19,6 @@ func AllPageData(r *http.Request, handle string) models.PageData {
 
 	r.ParseForm()
 	categories := r.Form["categories"]
-
 	username := r.PathValue("username")
 	fmt.Println(username)
 	switch handle {

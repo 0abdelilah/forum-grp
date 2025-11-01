@@ -10,6 +10,7 @@ import (
 	"forum/backend/database"
 	"forum/backend/home"
 	"forum/backend/likes"
+	"forum/backend/middleware"
 	"forum/backend/posts"
 )
 
@@ -17,34 +18,30 @@ func main() {
 	database.Init()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /", home.HomeHandler)
 
-	// Authentication
+	// Public routes
+	mux.HandleFunc("GET /", home.HomeHandler)
 	mux.HandleFunc("GET /register", auth.RegisterHandlerGet)
 	mux.HandleFunc("POST /api/register", auth.RegisterHandlerPost)
-
-	mux.HandleFunc("GET  /login", auth.LoginHandlerGet)
-	mux.HandleFunc("POST  /api/login", auth.LoginHandlerPost)
-
-	mux.HandleFunc("GET  /logout", auth.LogoutHandler)
-
-	// Posts
-	mux.HandleFunc("POST /api/create_post", posts.CreatePostsHandler)
+	mux.HandleFunc("GET /login", auth.LoginHandlerGet)
+	mux.HandleFunc("POST /api/login", auth.LoginHandlerPost)
+	mux.HandleFunc("GET /logout", auth.LogoutHandler)
 	mux.HandleFunc("GET /Profile/{username}", posts.Profile)
-
-	mux.HandleFunc("POST /api/like", likes.LikeHandler)
-	mux.HandleFunc("POST /api/dislike", likes.DislikeHandler)
-
-	mux.HandleFunc("POST /api/comment", comments.CreateCommentHandler)
-
-	mux.HandleFunc("POST /api/like_comment", likes.AddCommentLikeHandler)
-	mux.HandleFunc("POST /api/dislike_comment", likes.AddCommentDislikeHandler)
-
-	// Posts content
 	mux.HandleFunc("GET /post-detail/", posts.SeePostdetail)
-
-	// static files
 	mux.HandleFunc("GET /static/", home.StaticHandler)
+
+	// Protected routes (require authentication)
+	mux.Handle("POST /api/comment",
+		middleware.AuthMiddleware(http.HandlerFunc(comments.CreateCommentHandler)),
+	)
+
+	mux.Handle("POST /api/create_post",
+		middleware.AuthMiddleware(http.HandlerFunc(posts.CreatePostsHandler)),
+	)
+
+	mux.Handle("POST /api/react",
+		middleware.AuthMiddleware(http.HandlerFunc(likes.HandleLikeOrDislike)),
+	)
 
 	fmt.Println("Listening on http://localhost:3001")
 	if err := http.ListenAndServe(":3001", mux); err != nil {
