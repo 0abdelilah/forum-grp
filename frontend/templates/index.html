@@ -24,6 +24,7 @@
         <div class="header-buttons">
             {{if .Username}}
             👋 {{.Username}}
+             <a href="/liked-posts">Liked Posts</a>
             <a href="/logout">Logout</a>
             <a href="/Profile/{{.Username}}">MyProfile</a>
             {{else}}

@@ -23,6 +23,7 @@ func main() {
 	mux.HandleFunc("GET /", home.HomeHandler)
 	mux.HandleFunc("GET /register", auth.RegisterHandlerGet)
 	mux.HandleFunc("POST /api/register", auth.RegisterHandlerPost)
+	mux.HandleFunc("GET /liked-posts", likes.HandleLikedPosts)
 	mux.HandleFunc("GET /login", auth.LoginHandlerGet)
 	mux.HandleFunc("POST /api/login", auth.LoginHandlerPost)
 	mux.HandleFunc("GET /logout", auth.LogoutHandler)

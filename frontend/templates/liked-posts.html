@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Username}} - Liked Posts</title>
+    <link rel="stylesheet" href="/static/css/Profile.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Orbitron:wght@700&display=swap"
+        rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-left">
+            <a href="/">
+                <div class="logo">TD</div>
+                <div class="platform-name">TechDev</div>
+            </a>
+        </div>
+
+        <div class="header-buttons">
+            <a href="/">Home</a>
+            <a href="/profile">Profile</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <section class="profile-header">
+                <img src="/static/user.png" alt="User avatar" />
+                <h2>{{.Username}}</h2>
+                <p>All the posts you've liked recently</p>
+            </section>
+
+            <!-- Liked Posts Feed -->
+            <section class="feed">
+                {{range $Post := .Posts}}
+                <a href="/post-detail?postid={{$Post.Id}}" class="post-link">
+                    <article class="post">
+                        <div class="createdAt">
+                            <p>{{$Post.CreatedAt}}</p>
+                        </div>
+
+                        <div class="post-header">
+                            <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon" />
+                            <h3>{{$Post.Title}}</h3>
+                        </div>
+
+                        <div class="post-content">
+                            <p>{{$Post.Content}}</p>
+                        </div>
+
+                        <div class="post-actions">
+                            <span>👍 {{$Post.Likes}} Like</span>
+                            <span>👎 {{$Post.Dislikes}} Dislike</span>
+                            <span>💬 {{$Post.CommentsNum}} Comments</span>
+                        </div>
+
+                        {{if $Post.Categories}}
+                        <div class="post-categories">
+                            <p>{{$Post.Categories}}</p>
+                        </div>
+                        {{end}}
+                    </article>
+                </a>
+                {{else}}
+                <div class="profile-section" style="text-align: center; padding: 3rem;">
+                    <p style="color: #6c757d; font-size: 1.1rem;">You haven’t liked any posts yet 😅</p>
+                </div>
+                {{end}}
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TechDev. All Rights Reserved. Keep the code flowing!</p>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.post').forEach(post => {
+            post.addEventListener('mouseenter', () => {
+                post.style.transform = 'translateY(-4px)';
+            });
+            post.addEventListener('mouseleave', () => {
+                post.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+
+</html>

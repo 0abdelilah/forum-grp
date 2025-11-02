@@ -1,59 +1,75 @@
 package database
 
 import (
-	"database/sql"
 	"forum/backend/models"
+	"log"
+	"time"
 )
 
-func GetAlllike(db *sql.DB, target string, username string) ([]models.Likes, error) {
-	rows, err := db.Query(`
-        SELECT id,username, target_id, value
+func GetAlllike(val int, target string, username string) []models.LikedPosts {
+	var posts []models.LikedPosts
+
+	rows, err := Db.Query(`
+        SELECT target_id
         FROM likes
-        WHERE username = ?
-		WHERE target_type = ?
+        WHERE username = ? AND target_type = ? AND value = ?
         ORDER BY created_at ASC
-    `, username, target)
+    `, username, target, val)
 	if err != nil {
-		return nil, err
+		log.Printf("failed to query likes: %v", err)
+		return nil
 	}
 	defer rows.Close()
-	var likes []models.Likes
+
 	for rows.Next() {
-		var l models.Likes
-		if err := rows.Scan(&l.Username, &l.Target_id, &l.Target_type, &l.Value); err != nil {
-			return nil, err
-
+		var targetID int
+		if err := rows.Scan(&targetID); err != nil {
+			log.Printf("error scanning like: %v", err)
+			continue
 		}
-		likes = append(likes, l)
 
+		likedPosts := GetAllLikedPosts(targetID)
+		posts = append(posts, likedPosts...)
 	}
-	return likes, nil
 
+	return posts
 }
 
-// func GetAllliketarget(db *sql.DB, Target_type string, Target_id int) ([]models.LikesID, error) {
+func GetAllLikedPosts(id int)[] models.LikedPosts {
+	var posts []models.LikedPosts
 
-// 	rows, err := db.Query(`
-//         SELECT user_id, target_id, value,id
-//         FROM likes
-//       WHERE target_id = ?
-// 	  WHERE target_type = ?
-//         ORDER BY created_at ASC
-//     `, Target_id, Target_type)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer rows.Close()
-// 	var likes []models.LikesID
-// 	for rows.Next() {
-// 		var l models.LikesID
-// 		if err := rows.Scan(&l.UserId, &l.Target_id, &l.Value, &l.Id); err != nil {
-// 			return nil, err
+	rows, err := Db.Query(`
+		SELECT id, title, username, content, created_at,
+		       likes_count, dislikes_count, comments_count
+		FROM posts
+		WHERE id = ?
+		ORDER BY created_at DESC
+	`, id)
+	if err != nil {
+		log.Printf("failed to query posts: %v", err)
+		return nil
+	}
+	defer rows.Close()
 
-// 		}
-// 		likes = append(likes, l)
+	for rows.Next() {
+		var p models.LikedPosts
+		if err := rows.Scan(&p.Id, &p.Title, &p.Username, &p.Content,
+			&p.CreatedAt, &p.Likes, &p.Dislikes, &p.CommentsNum); err != nil {
+			log.Printf("error scanning post row: %v", err)
+			continue
+		}
 
-// 	}
-// 	return likes, nil
+		p.Categories, err = getPostCategories(p.Id)
+		if err != nil {
+			log.Printf("error getting categories for post %d: %v", p.Id, err)
+		}
 
-// }
+		if t, err := time.Parse(time.RFC3339, p.CreatedAt); err == nil {
+			p.CreatedAt = t.Format("02 Jan 2006 15:04:05")
+		}
+
+		posts = append(posts, p)
+	}
+
+	return posts
+}
