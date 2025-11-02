@@ -61,26 +61,31 @@
                         <div class="createdAt">
                             <p>{{$Post.CreatedAt}}</p>
                         </div>
-
                         <div class="post-header">
                             <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon" />
                             <h3>{{$Post.Title}}</h3>
                         </div>
-
+                        
                         <div class="post-content">
                             <p>{{$Post.Content}}</p>
                         </div>
-
+                        
                         <div class="post-actions">
                             <span>👍 {{$Post.Likes}} Like</span>
-
+                            
                             <span>👎 {{$Post.Dislikes}} Dislike</span>
-
+                            
                             <span>💬 {{$Post.CommentsNum}} Comments</span>
                         </div>
-
+                        
                         <div class="post-categories">
                             <p>{{$Post.Categories}}</p>
+                        </div>
+                        <div class="post-actions">
+                            <form action="/api/Delete/{{$Post.Id}}" method="post" style="flex: 1; margin: 0 2px;">
+                                <br>
+                                <button type="submit"><span>🗑️</span> Delete Post</button>
+                            </form>
                         </div>
                     </article>
                     {{else}}
@@ -97,7 +102,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 TechBit. All Rights Reserved. Keep the code flowing!</p>
+            <p>&copy; 2025 TechDev. All Rights Reserved. Keep the code flowing!</p>
         </div>
     </footer>
 

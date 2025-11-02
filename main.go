@@ -42,6 +42,10 @@ func main() {
 	mux.Handle("POST /api/react",
 		middleware.AuthMiddleware(http.HandlerFunc(likes.HandleLikeOrDislike)),
 	)
+	mux.Handle("POST /api/Delete/{Postid}",
+		middleware.AuthMiddleware(http.HandlerFunc(posts.PostDelete)),
+    )
+
 
 	fmt.Println("Listening on http://localhost:3001")
 	if err := http.ListenAndServe(":3001", mux); err != nil {

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechDev</title>
+    <title>TechDev - Post Detail</title>
     <link rel="stylesheet" href="/static/css/index.css">
     <link rel="stylesheet" href="/static/css/shared.css">
     <link rel="stylesheet" href="/static/css/post-detail.css">
@@ -25,7 +25,6 @@
             <span class="username">👋 {{.Username}}</span>
             <a href="/logout">Logout</a>
             <a href="/">Home</a>
-
             {{else}}
             <a href="/login">Login</a>
             <a href="/register">Register</a>
@@ -36,40 +35,37 @@
     <!-- Post Detail -->
     <main class="post-detail">
         <article class="post-card">
-
-            <div class="post-header">
-                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon">
-            </div>
-
-            <p class="post-author"><strong>By:</strong> {{.PostContent.Username}}</p>
+            <p class="post-author">
+                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Post Icon" onerror="this.style.display='none'">
+                <strong>By:</strong> {{.PostContent.Username}}
+            </p>
             <h1 class="post-title">{{.PostContent.Title}}</h1>
             <p class="post-date">{{.PostContent.CreatedAt}}</p>
 
             <div class="post-body">
-                <p>{{.PostContent.Content}}</p>
+                {{.PostContent.Content | html}}
             </div>
-<div class="post-actions">
-    <form action="/api/react" method="post">
-        <input type="hidden" name="target_type" value="post">
-        <input type="hidden" name="target_id" value="{{.PostContent.Id}}">
-        <input type="hidden" name="value" value="1">
-        <button type="submit"><span>👍</span> {{.PostContent.Likes}} Like</button>
-    </form>
-    <form action="/api/react" method="post">
-        <input type="hidden" name="target_type" value="post">
-        <input type="hidden" name="target_id" value="{{.PostContent.Id}}">
-        <input type="hidden" name="value" value="-1">
-        <button type="submit"><span>👎</span> {{.PostContent.Dislikes}} Dislike</button>
-    </form>
-</div>
-            <!-- <div class="post-actions">
-                <form action="/api/like?postid={{.PostContent.Id}}&page=postdetails" method="post">
+
+            <div class="post-actions">
+                <form action="/api/react" method="post">
+                    <input type="hidden" name="target_type" value="post">
+                    <input type="hidden" name="target_id" value="{{.PostContent.Id}}">
+                    <input type="hidden" name="value" value="1">
                     <button type="submit"><span>👍</span> {{.PostContent.Likes}} Like</button>
                 </form>
-                <form action="/api/dislike?postid={{.PostContent.Id}}&page=postdetails" method="post">
+                <form action="/api/react" method="post">
+                    <input type="hidden" name="target_type" value="post">
+                    <input type="hidden" name="target_id" value="{{.PostContent.Id}}">
+                    <input type="hidden" name="value" value="-1">
                     <button type="submit"><span>👎</span> {{.PostContent.Dislikes}} Dislike</button>
                 </form>
-            </div> -->
+                {{if eq .PostContent.Username .Username}}
+                <form action="/api/Delete/{{.PostContent.Id}}" method="post" style="flex: 1; margin: 0 2px;">
+                    <input type="hidden" name="path" value="PostDeleteDetail">
+                    <button type="submit" class="delete-post-btn">🗑️ Delete Post</button>
+                </form>
+                {{end}}
+            </div>
 
             <div class="post-categories">
                 <p>{{.PostContent.Categories}}</p>
@@ -77,88 +73,71 @@
         </article>
 
         <!-- Comments Section -->
-        <!-- <section id="comments">
+        {{$post := .PostContent}} <!-- Define $post reference -->
+        <section id="comments">
             <h2>Comments ({{.PostContent.CommentsNum}})</h2>
 
-            {{$post := .PostContent}} <!-- ✅ Save reference before the loop -->
-<!-- 
-            {{if $post.Comments}}
-            {{range $comment := $post.Comments}}
+            {{if .PostContent.Comments}}
+            {{range $comment := .PostContent.Comments}}
             <div class="comment">
-                <p class="post-author"><strong>By:</strong> {{$comment.Username}}</p>
-                <p>{{$comment.Content}}</p>
-                <small>{{$comment.CreatedAt}}</small>
+                <div class="comment-header">
+                    <p class="post-author"><strong>By:</strong> {{$comment.Username}}</p>
+                    <small>{{$comment.CreatedAt}}</small>
+                </div>
+                <p>{{$comment.Content | html}}</p>
 
                 <div class="comment-actions">
-                    <form action="/api/like_comment" method="post">
-                        <input type="hidden" name="cmntid" value="{{$comment.Id}}">
-                        <input type="hidden" name="postid" value="{{$post.Id}}">
+                    <form action="/api/react" method="post">
+                        <input type="hidden" name="target_type" value="comment">
+                        <input type="hidden" name="target_id" value="{{$comment.Id}}">
+                        <input type="hidden" name="value" value="1">
                         <button type="submit"><span>👍</span> {{$comment.Likes}} Like</button>
                     </form>
-                    <form action="/api/dislike_comment" method="post">
-                        <input type="hidden" name="cmntid" value="{{$comment.Id}}">
-                        <input type="hidden" name="postid" value="{{$post.Id}}">
+                    <form action="/api/react" method="post">
+                        <input type="hidden" name="target_type" value="comment">
+                        <input type="hidden" name="target_id" value="{{$comment.Id}}">
+                        <input type="hidden" name="value" value="-1">
                         <button type="submit"><span>👎</span> {{$comment.Dislikes}} Dislike</button>
                     </form>
                 </div>
             </div>
             {{end}}
             {{else}}
-            <p>No comments yet. Be the first to comment!</p>
-            {{end}} --> -->
-<section id="comments">
-    <h2>Comments ({{$post.CommentsNum}})</h2>
-
-    {{if $post.Comments}}
-        {{range $comment := $post.Comments}}
-        <div class="comment">
-            <p class="post-author"><strong>By:</strong> {{$comment.Username}}</p>
-            <p>{{$comment.Content}}</p>
-            <small>{{$comment.CreatedAt}}</small>
-
-            <div class="comment-actions">
-                <form action="/api/react" method="post">
-                    <input type="hidden" name="target_type" value="comment">
-                    <input type="hidden" name="target_id" value="{{$comment.Id}}">
-                    <input type="hidden" name="value" value="1">
-                    <br>
-                    <button type="submit"><span>👍</span> {{$comment.Likes}} Like</button>
-                </form>
-                <form action="/api/react" method="post">
-                    <input type="hidden" name="target_type" value="comment">
-                    <input type="hidden" name="target_id" value="{{$comment.Id}}">
-                    <input type="hidden" name="value" value="-1">
-                    <br>
-                    <button type="submit"><span>👎</span> {{$comment.Dislikes}} Dislike</button>
-                </form>
+            <div class="no-comments">
+                <p>No comments yet. Be the first to comment!</p>
             </div>
-        </div>
-        {{end}}
-    {{else}}
-        <p>No comments yet. Be the first to comment!</p>
-    {{end}}
-            <form action="/api/comment?postid={{$post.Id}}" method="post" class="comment-form">
-                <textarea name="content" placeholder="Write a comment..."></textarea>
-                <button type="submit">Submit</button>
+            {{end}}
+
+            <form action="/api/comment?postid={{.PostContent.Id}}" method="post" class="comment-form">
+                <textarea name="content" placeholder="Write a comment..." required></textarea>
+                <button type="submit">Submit Comment</button>
             </form>
         </section>
-
     </main>
 
     {{if .Error}}
     <div class="toast toast-error" id="toast">{{.Error}}</div>
-    <script>
-        setTimeout(() => {
-            const toast = document.getElementById('toast');
-            if (toast) toast.classList.add('hide');
-        }, 3000);
-    </script>
     {{end}}
 
     <!-- Footer -->
     <footer>
         <p>&copy; 2025 TechDev. Made with ❤️ and ☕.</p>
     </footer>
+
+    <!-- JavaScript for Toast (if error exists) -->
+    {{if .Error}}
+    <script>
+        setTimeout(() => {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    if (toast) toast.style.display = 'none';
+                }, 500); // Match CSS transition
+            }
+        }, 3000);
+    </script>
+    {{end}}
 </body>
 
 </html>

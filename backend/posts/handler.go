@@ -3,6 +3,8 @@ package posts
 import (
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"text/template"
 
 	"forum/backend/auth"
@@ -102,5 +104,47 @@ func InsertPost(username, title, content string, categories []string) error {
 		}
 	}
 
+	return nil
+}
+
+func PostDelete(w http.ResponseWriter, r *http.Request) {
+	username, err := auth.GetUsernameFromCookie(r, "session_token")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println("Failed to parse form")
+		return
+	}
+	PostId, _ := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/api/Delete/"))
+    if err := r.ParseForm(); err != nil {
+        http.Error(w, "Bad request", http.StatusBadRequest)
+        return
+    }
+	parentpath:=r.FormValue("path")
+	// id:=r.FormValue("id")
+	// fmt.Println("the id",id)
+	// fmt.Println("parentpath:",parentpath)
+	// fmt.Println("the Id", PostId)
+	// fmt.Println("The name", username)
+	err = Deletepost(username, PostId)
+	if err != nil {
+		fmt.Println("there an error:", err)
+	}
+	if parentpath=="PostDeteleDetail"{
+	   http.Redirect(w,r,"/",http.StatusSeeOther)
+	}
+	http.Redirect(w,r,fmt.Sprintf("/Profile/%v",username),http.StatusSeeOther)
+}
+
+func Deletepost(usarname string, Postid int) error {
+	_, err := database.Db.Exec("Delete from  posts WHERE id = ? AND username = ?", Postid, usarname)
+	if err != nil {
+		return err
+	}
 	return nil
 }
