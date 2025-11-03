@@ -131,18 +131,32 @@ func PostDelete(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("parentpath:",parentpath)
 	// fmt.Println("the Id", PostId)
 	// fmt.Println("The name", username)
-	err = Deletepost(username, PostId)
+	err = Deletepost( PostId)
 	if err != nil {
 		fmt.Println("there an error:", err)
 	}
-	if parentpath=="PostDeteleDetail"{
-	   http.Redirect(w,r,"/",http.StatusSeeOther)
+		fmt.Println(parentpath)
+	if parentpath == "PostDeleteDetail" {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
-	http.Redirect(w,r,fmt.Sprintf("/Profile/%v",username),http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/Profile/%v", username), http.StatusSeeOther)
 }
 
-func Deletepost(usarname string, Postid int) error {
-	_, err := database.Db.Exec("Delete from  posts WHERE id = ? AND username = ?", Postid, usarname)
+func Deletepost(Postid int) error {
+	_, err := database.Db.Exec("delete from comments where id =?", Postid)
+	if err != nil {
+		return (err)
+	}
+	_, err = database.Db.Exec("Delete from  posts WHERE id = ?", Postid)
+	if err != nil {
+		return err
+	}
+	_, err = database.Db.Exec("delete from post_categories where post_id = ?", Postid)
+	if err != nil {
+		return err
+	}
+	_, err = database.Db.Exec("delete from likes where target_id =?", Postid)
 	if err != nil {
 		return err
 	}

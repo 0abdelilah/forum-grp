@@ -24,7 +24,6 @@ func openDatabase() {
 		log.Fatal("DB open error:", err)
 	}
 }
-
 // createAllTables creates all necessary tables if they don't exist.
 func createAllTables() {
 	createUsersTable()
@@ -84,7 +83,8 @@ func createCommentsTable() {
 		content TEXT NOT NULL,
 		likes_count INTEGER DEFAULT 0,
 		dislikes_count INTEGER DEFAULT 0,
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 	);`
 	execStmt(stmt, "comments")
 }
@@ -95,7 +95,8 @@ func createPostCategoriesTable() {
 	CREATE TABLE IF NOT EXISTS post_categories (
 		post_id INTEGER NOT NULL REFERENCES posts(id),
 		category_id INTEGER NOT NULL REFERENCES categories(id),
-		UNIQUE(post_id, category_id)
+		UNIQUE(post_id, category_id),
+		FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 	);`
 	execStmt(stmt, "post_categories")
 }
@@ -107,11 +108,10 @@ func createLikesTable() {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		username TEXT NOT NULL,
 		target_type TEXT NOT NULL CHECK(target_type IN ('post','comment')),
-		target_id INTEGER NOT NULL,
+		target_id INTEGER NOT NULL REFERENCES posts(id),
 		value INTEGER NOT NULL CHECK(value IN (1, -1)), -- 1 = like, -1 = dislike
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		UNIQUE(username, target_type, target_id),
-		FOREIGN KEY(username) REFERENCES users(id) ON DELETE CASCADE
+		UNIQUE(username, target_type, target_id)
 	);`
 	execStmt(stmt, "likes")
 }

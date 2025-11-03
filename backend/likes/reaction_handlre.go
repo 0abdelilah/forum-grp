@@ -55,6 +55,7 @@ func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
 
 	targetType := r.FormValue("target_type") // "post" أو "comment"
 	targetID := r.FormValue("target_id")
+	fmt.Println("The post is",targetID)
 	value := r.FormValue("value")
 
 	var intValue int
