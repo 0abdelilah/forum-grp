@@ -1,5 +1,6 @@
 package models
-type Error struct{
+
+type Error struct {
 	MassageError string
-	Errorstatus int
+	Errorstatus  int
 }

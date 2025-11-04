@@ -29,7 +29,7 @@ func main() {
 	mux.HandleFunc("GET /Profile/{username}", posts.Profile)
 	mux.HandleFunc("GET /post-detail/", posts.SeePostdetail)
 	mux.HandleFunc("GET /static/", home.StaticHandler)
-mux.HandleFunc("GET /liked-posts", likes.HandleLikedPosts)
+	mux.HandleFunc("GET /liked-posts", likes.HandleLikedPosts)
 	// Protected routes (require authentication)
 	mux.Handle("POST /api/comment",
 		middleware.AuthMiddleware(http.HandlerFunc(comments.CreateCommentHandler)),
@@ -44,8 +44,7 @@ mux.HandleFunc("GET /liked-posts", likes.HandleLikedPosts)
 	)
 	mux.Handle("POST /api/Delete/{Postid}",
 		middleware.AuthMiddleware(http.HandlerFunc(posts.PostDelete)),
-    )
-
+	)
 
 	fmt.Println("Listening on http://localhost:3001")
 	if err := http.ListenAndServe(":3001", mux); err != nil {

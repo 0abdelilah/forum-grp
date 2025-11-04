@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"forum/backend/database"
+	"forum/backend/models"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -37,14 +38,14 @@ func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
 
 	err = validateValues(Email, username, password, confirmPassword)
 	if err != nil {
-		tmpt.Execute(w, struct{ Error string }{Error: strings.Title(err.Error())})
+		tmpt.Execute(w, models.ErrorData{Error: err.Error()})
 		fmt.Println(err)
 		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		tmpt.Execute(w, struct{ Error string }{Error: "Internal server error, try again later"})
+		tmpt.Execute(w, models.ErrorData{Error: "Internal server error, try again later"})
 		log.Println("Error hashing password:", err)
 		return
 	}
@@ -55,8 +56,7 @@ func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
 		Email, username, hashedPassword,
 	)
 	if err != nil {
-		tmpt.Execute(w, struct{ Error string }{Error: "Internal server error, try again later"})
-		fmt.Println(err)
+		tmpt.Execute(w, models.ErrorData{Error: "Internal server error, try again later"})
 		return
 	}
 
