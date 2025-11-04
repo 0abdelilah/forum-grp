@@ -712,6 +712,7 @@ footer {
 
 /* Mobile devices */
 @media (max-width: 768px) {
+    
     header {
         padding: 0.75rem 1rem;
         position: relative; /* For absolute positioning of dropdown */
@@ -955,6 +956,7 @@ footer {
         <div class="header-buttons">
             {{if .Username}}
             👋 {{.Username}}
+            <a href="/liked-posts">Liked Posts</a>
             <a href="/logout">Logout</a>
             <a href="/Profile/{{.Username}}">MyProfile</a>
             {{else}}
@@ -1039,17 +1041,12 @@ footer {
     <button type="submit"><span>👎 {{ $Post.Dislikes }} </span> Dislike</button>
 </form>
 
-<!-- 
-                        <form action="/api/like?postid={{$Post.Id}}" method="post">
-                            <button type="submit"><span>👍 {{ $Post.Likes }} </span> Like</button>
-                        </form>
 
-                        <form action="/api/dislike?postid={{$Post.Id}}" method="post">
-                            <button type="submit"><span>👎 {{ $Post.Dislikes }} </span> Dislikes</button>
-                        </form> -->
 
                         <button type="submit"><span>💬 {{$Post.CommentsNum}} </span> Comments</button>
                     </div>
+                    <br>
+                    <br>
                     <div class="post_categories">
                         <p>{{$Post.Categories}}</p>
                     </div>

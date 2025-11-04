@@ -29,7 +29,7 @@ func main() {
 	mux.HandleFunc("GET /Profile/{username}", posts.Profile)
 	mux.HandleFunc("GET /post-detail/", posts.SeePostdetail)
 	mux.HandleFunc("GET /static/", home.StaticHandler)
-
+mux.HandleFunc("GET /liked-posts", likes.HandleLikedPosts)
 	// Protected routes (require authentication)
 	mux.Handle("POST /api/comment",
 		middleware.AuthMiddleware(http.HandlerFunc(comments.CreateCommentHandler)),

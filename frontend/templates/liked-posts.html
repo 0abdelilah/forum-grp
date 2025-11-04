@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TechBit - User Profile</title>
+    <title>{{.Username}} - Liked Posts</title>
     <link rel="stylesheet" href="/static/css/Profile.css">
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Orbitron:wght@700&display=swap"
         rel="stylesheet" />
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-
-
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 </head>
 
 <body>
@@ -28,7 +28,7 @@
 
         <div class="header-buttons">
             <a href="/">Home</a>
-            <a href="/liked-posts">Liked Posts</a>
+            <a href="/Profile/{{.Username}}">MyProfile</a>
             <a href="/logout">Logout</a>
         </div>
     </header>
@@ -37,59 +37,48 @@
     <main>
         <div class="container">
             <section class="profile-header">
-                <img src="../static/user.png" alt="User avatar" />
-                <h2>{{.Profile.Username}}</h2>
-                <p>Full-stack dev who loves clean code and bad puns. Ask me about Python or CSS hacks!</p>
-                <p>Joined: January 2025 | Followers: 128 | Following: 56</p>
-
+                <img src="/static/user.png" alt="User avatar" />
+                <h2>{{.Username}}</h2>
+                <p>All the posts you've liked recently</p>
             </section>
 
-
-            <!-- User Posts Feed -->
+            <!-- Liked Posts Feed -->
             <section class="feed">
-
-                {{range $Post := .Profile.AllPosts}}
+                {{range $Post := .Posts}}
                 <a href="/post-detail?postid={{$Post.Id}}" class="post-link">
-
                     <article class="post">
                         <div class="createdAt">
                             <p>{{$Post.CreatedAt}}</p>
                         </div>
+
                         <div class="post-header">
                             <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon" />
                             <h3>{{$Post.Title}}</h3>
                         </div>
-                        
+
                         <div class="post-content">
                             <p>{{$Post.Content}}</p>
                         </div>
-                        
+
                         <div class="post-actions">
                             <span>👍 {{$Post.Likes}} Like</span>
-                            
                             <span>👎 {{$Post.Dislikes}} Dislike</span>
-                            
                             <span>💬 {{$Post.CommentsNum}} Comments</span>
                         </div>
-                        
+
+                        {{if $Post.Categories}}
                         <div class="post-categories">
                             <p>{{$Post.Categories}}</p>
                         </div>
-                        <div class="post-actions">
-                            <form action="/api/Delete/{{$Post.Id}}" method="post" style="flex: 1; margin: 0 2px;">
-                                <br>
-                                <button type="submit"><span>🗑️</span> Delete Post</button>
-                            </form>
-                        </div>
+                        {{end}}
                     </article>
-                    {{else}}
-                    <div class="profile-section" style="text-align: center; padding: 3rem;">
-                        <p style="color: #6c757d; font-size: 1.1rem;">No posts yet. Start sharing your tech journey!</p>
-                    </div>
-                    {{end}}
+                </a>
+                {{else}}
+                <div class="profile-section" style="text-align: center; padding: 3rem;">
+                    <p style="color: #6c757d; font-size: 1.1rem;">You haven’t liked any posts yet 😅</p>
+                </div>
+                {{end}}
             </section>
-            </a>
-
         </div>
     </main>
 
@@ -101,7 +90,6 @@
     </footer>
 
     <script>
-        // Optional: Add smooth hover effects or analytics
         document.querySelectorAll('.post').forEach(post => {
             post.addEventListener('mouseenter', () => {
                 post.style.transform = 'translateY(-4px)';
