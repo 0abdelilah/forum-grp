@@ -105,7 +105,7 @@ func createPostCategoriesTable() {
 func createLikesTable() {
 	stmt := `
 	CREATE TABLE IF NOT EXISTS likes (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		id INTEGER  REFERENCES posts(id) ,
 		username TEXT NOT NULL,
 		target_type TEXT NOT NULL CHECK(target_type IN ('post','comment')),
 		target_id INTEGER NOT NULL REFERENCES posts(id),

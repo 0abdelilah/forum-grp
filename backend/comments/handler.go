@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"forum/backend/auth"
-	"forum/backend/home"
+	"forum/backend/posts"
 )
 
 func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +20,7 @@ func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = r.ParseForm()
 	if err != nil {
-		home.PostPageError(w, r, "Failed to parse form")
+		posts.PostPageError(w, r, "Failed to parse form")
 		return
 	}
 
@@ -28,13 +28,13 @@ func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("content")
 
 	if len(content) < 1 || len(content) > 300 {
-		home.PostPageError(w, r, "Comment must be between 1 and 300 characters")
+		posts.PostPageError(w, r, "Comment must be between 1 and 300 characters")
 		return
 	}
 
 	err = insertComment(postID, username, content)
 	if err != nil {
-		home.PostPageError(w, r, "Internal server error, try later")
+		posts.PostPageError(w, r, "Internal server error, try later")
 		fmt.Println(err)
 		return
 	}
