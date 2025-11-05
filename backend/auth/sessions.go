@@ -11,12 +11,17 @@ import (
 )
 
 func NotFakeSession(str string) bool {
-	var CHECK string
-	err := database.Db.QueryRow(`SELECT username FROM sessions WHERE id = ?`, str).Scan(&CHECK)
+	var expiresAt time.Time
+	err := database.Db.QueryRow(`SELECT expires_at FROM sessions WHERE id = ?`, str).Scan(&expiresAt)
 	if err != nil {
 		return false
 	}
-	return CHECK != ""
+	if expiresAt.Before(time.Now()) {
+		_, _ = database.Db.Exec(`DELETE FROM sessions WHERE id = ?`, str)
+		return false
+	}
+
+	return true
 }
 
 func CreateSession(username string, w http.ResponseWriter) error {
