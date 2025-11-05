@@ -53,7 +53,6 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 	).Scan(&Login.PasswordHash, &Login.Username)
 	if err != nil {
 		tmpt.Execute(w, models.ErrorData{Error: "Invalid username or password"})
-		log.Println("Login failed (user not found):", err)
 		return
 	}
 
@@ -76,7 +75,6 @@ func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 	`, sessionID, Login.Username, createdAt, expiresAt)
 	if err != nil {
 		tmpt.Execute(w, models.ErrorData{Error: "Could not create session, try again later"})
-		log.Println("Error inserting session:", err)
 		return
 	}
 

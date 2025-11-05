@@ -4,7 +4,7 @@ type ErrorData struct {
 	Error string
 }
 type LoginData struct {
-	UserID       int
+	Email        string
 	Username     string
 	PasswordHash string
 	LoginInput   string

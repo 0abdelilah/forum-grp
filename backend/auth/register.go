@@ -30,30 +30,28 @@ func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 		return
 	}
-
-	Email := r.FormValue("email")
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+	var Input models.LoginData
+	Input.Email = r.FormValue("email")
+	Input.Username = r.FormValue("username")
+	Input.Password = r.FormValue("password")
 	confirmPassword := r.FormValue("confirmpassword")
 
-	err = validateValues(Email, username, password, confirmPassword)
+	err = validateValues(Input.Email, Input.Username, Input.Password, confirmPassword)
 	if err != nil {
 		tmpt.Execute(w, models.ErrorData{Error: err.Error()})
-		fmt.Println(err)
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(Input.Password), bcrypt.DefaultCost)
 	if err != nil {
 		tmpt.Execute(w, models.ErrorData{Error: "Internal server error, try again later"})
-		log.Println("Error hashing password:", err)
 		return
 	}
 
 	_, err = database.Db.Exec(`
 	INSERT INTO users(email, username, password_hash)
 	VALUES(?, ?, ?)`,
-		Email, username, hashedPassword,
+		Input.Email, Input.Username, hashedPassword,
 	)
 	if err != nil {
 		tmpt.Execute(w, models.ErrorData{Error: "Internal server error, try again later"})
@@ -88,7 +86,7 @@ func validateValues(email, username, password, confirmPassword string) error {
 		return fmt.Errorf("username must be between 4 and 20 characters")
 	}
 	if !regexp.MustCompile(`^[a-zA-Z0-9_-]+$`).MatchString(username) {
-		return fmt.Errorf("The username must contain only letters, numbers, hyphens and underscores.")
+		return fmt.Errorf("Username can only use letters, numbers, - and _")
 	}
 
 	// --- Check if username exists ---

@@ -78,7 +78,6 @@ button {
     color: #e8ecef;
     font-weight: 500;
     cursor: pointer;
-    transition: transform 0.2s ease, background 0.3s ease;
 }
 
 button:hover {
@@ -104,10 +103,17 @@ button:hover {
     color: #fff;
     text-decoration: underline;
 }
+.Error {
+    color: #ff4757;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    text-align: center;
+}
 
-@media (max-width: 400px) {
+@media (max-width: 480px) {
     div {
-        min-width: 90%;
+       
+        max-width: 80%;
         padding: 28px 20px;
     }
 
