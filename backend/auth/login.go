@@ -1,25 +1,26 @@
 package auth
 
 import (
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
 	Errorhandel "forum/backend/Errors"
 	"forum/backend/database"
 	"forum/backend/models"
 
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func LoginHandlerGet(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("session_token")
+	cookies, err := r.Cookie("session_token")
 	if err == nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
+		if NotFakeSession(cookies.Value) {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
 	}
 	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
 	if err != nil {
@@ -31,60 +32,56 @@ func LoginHandlerGet(w http.ResponseWriter, r *http.Request) {
 
 func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
 	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
-	var Login models.LoginData
 	if err != nil {
-		Errorhandel.Errordirect(w, "Internal Server Error ", http.StatusInternalServerError)
+		Errorhandel.Errordirect(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	r.ParseForm()
-	Login.LoginInput = r.FormValue("username")
-	Login.Password = r.FormValue("password")
-	Login.LoginInput = strings.TrimSpace(Login.LoginInput)
+	if err := r.ParseForm(); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		tmpt.Execute(w, models.ErrorData{Error: "Invalid form data"})
+		return
+	}
 
-	if Login.LoginInput == "" || Login.Password == "" {
+	var login models.LoginData
+	login.LoginInput = strings.TrimSpace(r.FormValue("username"))
+	login.Password = r.FormValue("password")
+
+	if login.LoginInput == "" || login.Password == "" {
+		w.WriteHeader(http.StatusBadRequest)
 		tmpt.Execute(w, models.ErrorData{Error: "Username and password cannot be empty"})
 		return
 	}
 
 	err = database.Db.QueryRow(
-		`SELECT id, password_hash , username FROM users WHERE username = ? OR email = ?`,
-		Login.LoginInput, Login.LoginInput,
-	).Scan(&Login.PasswordHash, &Login.Username)
+		`SELECT username, password_hash FROM users WHERE username = ? OR email = ?`,
+		login.LoginInput, login.LoginInput,
+	).Scan(&login.Username, &login.PasswordHash)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusUnauthorized)
+			tmpt.Execute(w, models.ErrorData{Error: "Invalid username or password"})
+			return
+		} else {
+			log.Println("DB error:", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			tmpt.Execute(w, models.ErrorData{Error: "Internal server error"})
+			return
+		}
+	}
+
+	if err = bcrypt.CompareHashAndPassword([]byte(login.PasswordHash), []byte(login.Password)); err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
 		tmpt.Execute(w, models.ErrorData{Error: "Invalid username or password"})
 		return
 	}
 
-	if err = bcrypt.CompareHashAndPassword([]byte(Login.PasswordHash), []byte(Login.Password)); err != nil {
-		tmpt.Execute(w, models.ErrorData{Error: "Invalid username or password"})
-		return
-	}
-	_, err = database.Db.Exec("DELETE FROM sessions A WHERE A.username=?", Login.LoginInput)
+	err = CreateSession(login.Username, w)
 	if err != nil {
-		log.Println("Error deleting old sessions:", err)
-	}
-	sessionID := uuid.New().String()
-	createdAt := time.Now()
-
-	expiresAt := createdAt.Add(24 * time.Hour)
-
-	_, err = database.Db.Exec(`
-		INSERT INTO sessions(id, username, created_at, expires_at)
-		VALUES (?, ?, ?, ?)
-	`, sessionID, Login.Username, createdAt, expiresAt)
-	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		tmpt.Execute(w, models.ErrorData{Error: "Could not create session, try again later"})
 		return
 	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
-		Value:    sessionID,
-		Path:     "/",
-		Expires:  expiresAt,
-		HttpOnly: true,
-	})
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

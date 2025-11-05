@@ -2,8 +2,9 @@ package auth
 
 import (
 	"database/sql"
-	"forum/backend/database"
 	"net/http"
+
+	"forum/backend/database"
 )
 
 func GetUsernameFromCookie(r *http.Request, cookie_name string) (string, error) {
