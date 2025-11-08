@@ -52,24 +52,24 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("content")
 
 	if len(strings.Trim(title, " ")) < 1 || len(title) > 90 {
-		home.HomePageError(w, r, "Title must be between 1 and 90 characters")
+		home.HomePageError(w, r, "Title must be between 1 and 90 characters" ,http.StatusBadRequest)
 		return
 	}
 
 	if len(strings.Trim(content, " ")) < 1 || len(content) > 300 {
-		home.HomePageError(w, r, "Content must be between 1 and 300 characters")
+		home.HomePageError(w, r, "Content must be between 1 and 300 characters",http.StatusBadRequest)
 		return
 	}
 
 	// test if working
 	if valid, err := verifyCategories(categories); !valid {
-		home.HomePageError(w, r, err.Error())
+		home.HomePageError(w, r, err.Error(),http.StatusBadRequest)
 		return
 	}
 
-	err = InsertPost(username, title, content, categories)
+	err = InsertPost(username, strings.Trim(title, " "), strings.Trim(content, " "), categories)
 	if err != nil {
-		home.HomePageError(w, r, "Internal Server error, try later")
+		home.HomePageError(w, r, "Internal Server error, try later",http.StatusInternalServerError)
 		return
 	}
 
@@ -98,6 +98,7 @@ func PostPageError(w http.ResponseWriter, r *http.Request, Error string) {
 }
 
 func InsertPost(username, title, content string, categories []string) error {
+	fmt.Println(len(title))
 	res, err := database.Db.Exec(`
 		INSERT INTO posts (username, title, content)
 		VALUES (?, ?, ?)

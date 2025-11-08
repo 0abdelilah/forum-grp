@@ -18,13 +18,13 @@ import (
 // 	tmpt.Execute(w, nil)
 // }
 
-func HomePageError(w http.ResponseWriter, r *http.Request, Error string) {
+func HomePageError(w http.ResponseWriter, r *http.Request, Error string ,statuscode int) {
 	tmpl, err := template.ParseFiles("./frontend/templates/index.html")
 	if err != nil {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-
+	w.WriteHeader(statuscode)
 	// Get the normal page data
 	PageData := database.AllPageData(r, "HomeData")
 	PageData.Username, _ = auth.GetUsernameFromCookie(r, "session_token")
