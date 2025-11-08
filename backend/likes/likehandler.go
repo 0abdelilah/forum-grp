@@ -16,7 +16,7 @@ func HandleLikedPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	likedPosts := database.GetAlllike(1, "post", username)
+	likedPosts := database.GetAlllike(1,  username)
 
 	data := struct {
 		Username string

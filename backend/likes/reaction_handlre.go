@@ -53,7 +53,7 @@ func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	targetType := r.FormValue("target_type") // "post" أو "comment"
+	targetType := r.FormValue("target_type") 
 	targetID := r.FormValue("target_id")
 	fmt.Println("The post is",targetID)
 	value := r.FormValue("value")
@@ -77,39 +77,41 @@ func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
 
 func toggleLikeDislike(username string, targetType string, targetID int, value int) error {
 	var existingValue int
-	err := database.Db.QueryRow(`
-        SELECT value FROM likes
-        WHERE username = ? AND target_type = ? AND target_id = ?`,
-		username, targetType, targetID,
-	).Scan(&existingValue)
+	var query string
+	var args []interface{}
+	var tableName string
+	var likeColumn string
 
-	tableName := ""
 	switch targetType {
 	case "post":
+		query = "SELECT value FROM likes WHERE username = ? AND post_id = ?"
+		args = []interface{}{username, targetID}
 		tableName = "posts"
+		likeColumn = "post_id"
 	case "comment":
+		query = "SELECT value FROM likes WHERE username = ? AND comment_id = ?"
+		args = []interface{}{username, targetID}
 		tableName = "comments"
+		likeColumn = "comment_id"
 	default:
 		return fmt.Errorf("unknown target type: %s", targetType)
 	}
 
+	err := database.Db.QueryRow(query, args...).Scan(&existingValue)
+
+
 	if err == sql.ErrNoRows {
-		// المستخدم ما دارش reaction من قبل → نضيفه
-		_, err = database.Db.Exec(`
-            INSERT INTO likes (username, target_type, target_id, value)
-            VALUES (?, ?, ?, ?)`,
-			username, targetType, targetID, value)
+		insertQuery := fmt.Sprintf("INSERT INTO likes (username, %s, value) VALUES (?, ?, ?)", likeColumn)
+		_, err = database.Db.Exec(insertQuery, username, targetID, value)
 		if err != nil {
 			return err
 		}
 
-		// تحديث العدادات مباشرة
+
 		if value == 1 {
-			_, err = database.Db.Exec(fmt.Sprintf(
-				"UPDATE %s SET likes_count = likes_count + 1 WHERE id = ?", tableName), targetID)
+			_, err = database.Db.Exec(fmt.Sprintf("UPDATE %s SET likes_count = likes_count + 1 WHERE id = ?", tableName), targetID)
 		} else {
-			_, err = database.Db.Exec(fmt.Sprintf(
-				"UPDATE %s SET dislikes_count = dislikes_count + 1 WHERE id = ?", tableName), targetID)
+			_, err = database.Db.Exec(fmt.Sprintf("UPDATE %s SET dislikes_count = dislikes_count + 1 WHERE id = ?", tableName), targetID)
 		}
 		return err
 	}
@@ -117,45 +119,35 @@ func toggleLikeDislike(username string, targetType string, targetID int, value i
 	if err != nil {
 		return err
 	}
+
 
 	if existingValue == value {
-		// نفس القيمة → نحيد reaction
-		_, err = database.Db.Exec(`
-            DELETE FROM likes
-            WHERE username = ? AND target_type = ? AND target_id = ?`,
-			username, targetType, targetID)
+		deleteQuery := fmt.Sprintf("DELETE FROM likes WHERE username = ? AND %s = ?", likeColumn)
+		_, err = database.Db.Exec(deleteQuery, username, targetID)
 		if err != nil {
 			return err
 		}
 
-		// تحديث العدادات مباشرة
 		if value == 1 {
-			_, err = database.Db.Exec(fmt.Sprintf(
-				"UPDATE %s SET likes_count = likes_count - 1 WHERE id = ?", tableName), targetID)
+			_, err = database.Db.Exec(fmt.Sprintf("UPDATE %s SET likes_count = likes_count - 1 WHERE id = ?", tableName), targetID)
 		} else {
-			_, err = database.Db.Exec(fmt.Sprintf(
-				"UPDATE %s SET dislikes_count = dislikes_count - 1 WHERE id = ?", tableName), targetID)
+			_, err = database.Db.Exec(fmt.Sprintf("UPDATE %s SET dislikes_count = dislikes_count - 1 WHERE id = ?", tableName), targetID)
 		}
 		return err
 	}
 
-	// كانت مختلفة → نبدلها (من like إلى dislike أو العكس)
-	_, err = database.Db.Exec(`
-        UPDATE likes
-        SET value = ?
-        WHERE username = ? AND target_type = ? AND target_id = ?`,
-		value, username, targetType, targetID)
+
+	updateQuery := fmt.Sprintf("UPDATE likes SET value = ? WHERE username = ? AND %s = ?", likeColumn)
+	_, err = database.Db.Exec(updateQuery, value, username, targetID)
 	if err != nil {
 		return err
 	}
 
-	// تحديث العدادات مباشرة
 	if value == 1 {
-		_, err = database.Db.Exec(fmt.Sprintf(
-			"UPDATE %s SET likes_count = likes_count + 1, dislikes_count = dislikes_count - 1 WHERE id = ?", tableName), targetID)
+		_, err = database.Db.Exec(fmt.Sprintf("UPDATE %s SET likes_count = likes_count + 1, dislikes_count = dislikes_count - 1 WHERE id = ?", tableName), targetID)
 	} else {
-		_, err = database.Db.Exec(fmt.Sprintf(
-			"UPDATE %s SET dislikes_count = dislikes_count + 1, likes_count = likes_count - 1 WHERE id = ?", tableName), targetID)
+		_, err = database.Db.Exec(fmt.Sprintf("UPDATE %s SET dislikes_count = dislikes_count + 1, likes_count = likes_count - 1 WHERE id = ?", tableName), targetID)
 	}
+
 	return err
 }

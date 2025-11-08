@@ -6,15 +6,15 @@ import (
 	"time"
 )
 
-func GetAlllike(val int, target string, username string) []models.Post {
+func GetAlllike(val int, username string) []models.Post {
 	var posts []models.Post
 
 	rows, err := Db.Query(`
-        SELECT target_id
+        SELECT post_id
         FROM likes
-        WHERE username = ? AND target_type = ? AND value = ?
+        WHERE username = ? AND value = ?
         ORDER BY created_at ASC
-    `, username, target, val)
+    `, username , val)
 	if err != nil {
 		log.Printf("failed to query likes: %v", err)
 		return nil

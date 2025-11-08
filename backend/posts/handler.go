@@ -165,23 +165,7 @@ func PostDelete(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, fmt.Sprintf("/Profile/%v", username), http.StatusSeeOther)
 }
-
 func Deletepost(Postid int) error {
-	_, err := database.Db.Exec("delete from comments where id =?", Postid)
-	if err != nil {
-		return (err)
-	}
-	_, err = database.Db.Exec("Delete from  posts WHERE id = ?", Postid)
-	if err != nil {
-		return err
-	}
-	_, err = database.Db.Exec("delete from post_categories where post_id = ?", Postid)
-	if err != nil {
-		return err
-	}
-	_, err = database.Db.Exec("delete from likes where target_id =?", Postid)
-	if err != nil {
-		return err
-	}
-	return nil
+    _, err := database.Db.Exec("DELETE FROM posts WHERE id = ?", Postid)
+    return err
 }

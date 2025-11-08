@@ -24,8 +24,11 @@ func openDatabase() {
 		log.Fatal("DB open error:", err)
 	}
 }
+
 // createAllTables creates all necessary tables if they don't exist.
 func createAllTables() {
+	Db.Exec("PRAGMA foreign_keys = ON")
+
 	createUsersTable()
 	createPostsTable()
 	createCategoriesTable()
@@ -104,15 +107,18 @@ func createPostCategoriesTable() {
 // createLikesTable creates the likes table.
 func createLikesTable() {
 	stmt := `
-	CREATE TABLE IF NOT EXISTS likes (
-		id INTEGER  REFERENCES posts(id) ,
-		username TEXT NOT NULL,
-		target_type TEXT NOT NULL CHECK(target_type IN ('post','comment')),
-		target_id INTEGER NOT NULL REFERENCES posts(id),
-		value INTEGER NOT NULL CHECK(value IN (1, -1)), -- 1 = like, -1 = dislike
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		UNIQUE(username, target_type, target_id)
-	);`
+CREATE TABLE IF NOT EXISTS likes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    post_id INTEGER,
+    comment_id INTEGER,
+    value INTEGER NOT NULL CHECK(value IN (1, -1)), -- 1 = like, -1 = dislike
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE,
+    UNIQUE(username, post_id, comment_id)
+);
+`
 	execStmt(stmt, "likes")
 }
 
