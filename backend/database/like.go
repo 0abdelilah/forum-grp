@@ -1,52 +1,25 @@
 package database
 
 import (
-	"forum/backend/models"
 	"log"
 	"time"
+
+	"forum/backend/models"
 )
 
 func GetAlllike(val int, username string) []models.Post {
 	var posts []models.Post
 
 	rows, err := Db.Query(`
-        SELECT post_id
-        FROM likes
-        WHERE username = ? AND value = ?
-        ORDER BY created_at ASC
-    `, username , val)
+		SELECT p.id, p.title, p.username, p.content, 
+		       p.created_at, p.likes_count, p.dislikes_count, p.comments_count
+		FROM posts AS p
+		INNER JOIN likes AS l ON p.id = l.post_id
+		WHERE l.username = ? AND l.value = ?
+		ORDER BY l.created_at ASC
+	`, username, val)
 	if err != nil {
-		log.Printf("failed to query likes: %v", err)
-		return nil
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var targetID int
-		if err := rows.Scan(&targetID); err != nil {
-			log.Printf("error scanning like: %v", err)
-			continue
-		}
-
-		likedPosts := GetAllLikedPosts(targetID)
-		posts = append(posts, likedPosts...)
-	}
-
-	return posts
-}
-
-func GetAllLikedPosts(id int)[] models.Post {
-	var posts []models.Post
-
-	rows, err := Db.Query(`
-		SELECT id, title, username, content, created_at,
-		       likes_count, dislikes_count, comments_count
-		FROM posts
-		WHERE id = ?
-		ORDER BY created_at DESC
-	`, id)
-	if err != nil {
-		log.Printf("failed to query posts: %v", err)
+		log.Printf("failed to query liked posts: %v", err)
 		return nil
 	}
 	defer rows.Close()
@@ -55,7 +28,7 @@ func GetAllLikedPosts(id int)[] models.Post {
 		var p models.Post
 		if err := rows.Scan(&p.Id, &p.Title, &p.Username, &p.Content,
 			&p.CreatedAt, &p.Likes, &p.Dislikes, &p.CommentsNum); err != nil {
-			log.Printf("error scanning post row: %v", err)
+			log.Printf("error scanning joined row: %v", err)
 			continue
 		}
 
