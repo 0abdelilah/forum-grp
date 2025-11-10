@@ -1,6 +1,8 @@
 package likes
 
 import (
+	"database/sql"
+	"fmt"
 	"net/http"
 	"text/template"
 
@@ -11,14 +13,14 @@ import (
 )
 
 func HandleLikedPosts(w http.ResponseWriter, r *http.Request) {
-	username, _ := auth.GetUsernameFromCookie(r, "session_token")
-	if username == "" {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
+	if ErroFromcookie.Error != nil && ErroFromcookie.Error != sql.ErrNoRows && fmt.Sprintf("%v", ErroFromcookie.Error) != "http: named cookie not present" {
+		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-
 	likedPosts, err := database.GetAlllike(1, username)
 	if err != nil {
+		fmt.Println("err",err)
 		Errorhandel.Errordirect(w, "InternalServerError", http.StatusInternalServerError)
 	}
 

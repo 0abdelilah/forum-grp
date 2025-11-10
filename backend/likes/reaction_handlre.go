@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	Errorhandel "forum/backend/Errors"
 	"forum/backend/auth"
 	"forum/backend/database"
 )
@@ -41,21 +42,21 @@ func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	username, err := auth.GetUsernameFromCookie(r, "session_token")
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
+	if ErroFromcookie.Error != nil&&ErroFromcookie.Error != sql.ErrNoRows && fmt.Sprintf("%v", ErroFromcookie.Error) != "http: named cookie not present" {
+		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Failed to parse form", http.StatusBadRequest)
 		return
 	}
 
-	targetType := r.FormValue("target_type") 
+	targetType := r.FormValue("target_type")
 	targetID := r.FormValue("target_id")
-	fmt.Println("The post is",targetID)
+	fmt.Println("The post is", targetID)
 	value := r.FormValue("value")
 
 	var intValue int
@@ -99,14 +100,12 @@ func toggleLikeDislike(username string, targetType string, targetID int, value i
 
 	err := database.Db.QueryRow(query, args...).Scan(&existingValue)
 
-
 	if err == sql.ErrNoRows {
 		insertQuery := fmt.Sprintf("INSERT INTO likes (username, %s, value) VALUES (?, ?, ?)", likeColumn)
 		_, err = database.Db.Exec(insertQuery, username, targetID, value)
 		if err != nil {
 			return err
 		}
-
 
 		if value == 1 {
 			_, err = database.Db.Exec(fmt.Sprintf("UPDATE %s SET likes_count = likes_count + 1 WHERE id = ?", tableName), targetID)
@@ -119,7 +118,6 @@ func toggleLikeDislike(username string, targetType string, targetID int, value i
 	if err != nil {
 		return err
 	}
-
 
 	if existingValue == value {
 		deleteQuery := fmt.Sprintf("DELETE FROM likes WHERE username = ? AND %s = ?", likeColumn)
@@ -135,7 +133,6 @@ func toggleLikeDislike(username string, targetType string, targetID int, value i
 		}
 		return err
 	}
-
 
 	updateQuery := fmt.Sprintf("UPDATE likes SET value = ? WHERE username = ? AND %s = ?", likeColumn)
 	_, err = database.Db.Exec(updateQuery, value, username, targetID)

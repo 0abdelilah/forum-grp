@@ -1,6 +1,7 @@
 package posts
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -28,19 +29,24 @@ func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	PageData.Username, _ = auth.GetUsernameFromCookie(r, "session_token")
+	Username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
+	PageData.Username = Username
+	if ErroFromcookie.Error != nil &&ErroFromcookie.Error != sql.ErrNoRows && fmt.Sprintf("%v", ErroFromcookie.Error) != "http: named cookie not present" {
+		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 
 	PostsTemplete.Execute(w, PageData)
 }
 
 func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
-	username, err := auth.GetUsernameFromCookie(r, "session_token")
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
+	if ErroFromcookie.Error != nil&& ErroFromcookie.Error != sql.ErrNoRows && fmt.Sprintf("%v", ErroFromcookie.Error) != "http: named cookie not present" {
+		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Println("Failed to parse form")
@@ -52,24 +58,24 @@ func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("content")
 
 	if len(strings.Trim(title, " ")) < 1 || len(title) > 90 {
-		home.HomePageError(w, r, "Title must be between 1 and 90 characters" ,http.StatusBadRequest)
+		home.HomePageError(w, r, "Title must be between 1 and 90 characters", http.StatusBadRequest)
 		return
 	}
 
 	if len(strings.Trim(content, " ")) < 1 || len(content) > 300 {
-		home.HomePageError(w, r, "Content must be between 1 and 300 characters",http.StatusBadRequest)
+		home.HomePageError(w, r, "Content must be between 1 and 300 characters", http.StatusBadRequest)
 		return
 	}
 
 	// test if working
 	if valid, err := verifyCategories(categories); !valid {
-		home.HomePageError(w, r, err.Error(),http.StatusBadRequest)
+		home.HomePageError(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	err = InsertPost(username, strings.Trim(title, " "), strings.Trim(content, " "), categories)
 	if err != nil {
-		home.HomePageError(w, r, "Internal Server error, try later",http.StatusInternalServerError)
+		home.HomePageError(w, r, "Internal Server error, try later", http.StatusInternalServerError)
 		return
 	}
 
@@ -131,13 +137,14 @@ func InsertPost(username, title, content string, categories []string) error {
 }
 
 func PostDelete(w http.ResponseWriter, r *http.Request) {
-	username, err := auth.GetUsernameFromCookie(r, "session_token")
-	if err != nil {
+	username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
+
+	if ErroFromcookie.Error != nil && ErroFromcookie.ErrorType != "Sql" {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
-	err = r.ParseForm()
+	err := r.ParseForm()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Println("Failed to parse form")
@@ -165,7 +172,8 @@ func PostDelete(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, fmt.Sprintf("/Profile/%v", username), http.StatusSeeOther)
 }
+
 func Deletepost(Postid int) error {
-    _, err := database.Db.Exec("DELETE FROM posts WHERE id = ?", Postid)
-    return err
+	_, err := database.Db.Exec("DELETE FROM posts WHERE id = ?", Postid)
+	return err
 }
