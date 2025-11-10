@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"text/template"
 
+	Errorhandel "forum/backend/Errors"
 	"forum/backend/auth"
 	"forum/backend/database"
 	"forum/backend/models"
@@ -16,7 +17,10 @@ func HandleLikedPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	likedPosts := database.GetAlllike(1,  username)
+	likedPosts, err := database.GetAlllike(1, username)
+	if err != nil {
+		Errorhandel.Errordirect(w, "InternalServerError", http.StatusInternalServerError)
+	}
 
 	data := struct {
 		Username string
@@ -26,6 +30,9 @@ func HandleLikedPosts(w http.ResponseWriter, r *http.Request) {
 		Posts:    likedPosts,
 	}
 
-	tmpl := template.Must(template.ParseFiles("./frontend/templates/liked-posts.html"))
+	tmpl, err := template.ParseFiles("./frontend/templates/liked-posts.html")
+	if err != nil {
+		Errorhandel.Errordirect(w, "InternalServerError", http.StatusInternalServerError)
+	}
 	tmpl.Execute(w, data)
 }
