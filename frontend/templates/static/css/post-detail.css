@@ -1,13 +1,11 @@
-/* Post Detail Page - Responsive and Smooth Enhancements */
-/* Integrates with the overall site theme (dark mode, transitions, responsiveness) */
-
 .post-detail {
+    color: #e8ecef;
     max-width: 700px;
     width: 100%;
     margin: 3rem auto;
-    padding: 0 1rem; /* Reduced padding for better mobile fit */
+    padding: 0 1rem;
     box-sizing: border-box;
-    animation: fadeInUp 0.4s ease-out; /* Smooth entrance animation */
+    animation: fadeInUp 0.4s ease-out;
 }
 
 .post-card {
@@ -16,8 +14,10 @@
     border-radius: 14px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     position: relative;
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
-    overflow: hidden; /* Prevent content overflow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Smooth hover effect */
+    overflow: hidden;
+    /* Prevent content overflow */
 }
 
 .post-card:hover {
@@ -31,12 +31,9 @@
     color: #f8f9fa;
     margin-bottom: 0.5rem;
     line-height: 1.3;
-    overflow-wrap: break-word; /* Handle long titles */
+    overflow-wrap: break-word;
+    /* Handle long titles */
     transition: color 0.2s ease;
-}
-
-.post-title:hover {
-    color: #1a73e8; /* Subtle color shift on hover */
 }
 
 .post-author {
@@ -67,53 +64,50 @@
 
 /* Body */
 .post-body {
-    margin-top: 1rem;
-    line-height: 1.7;
     color: #cdd2d7;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     overflow-wrap: break-word;
-    word-break: break-word; /* Better handling for long words/URLs */
-    white-space: pre-wrap; /* Preserve formatting */
+    word-break: break-word;
+    white-space: pre-wrap;
 }
 
-/* Actions */
+.post-body p {
+    color: #adb5bd;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
 .post-actions {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1.5rem;
-    gap: 0.5rem; /* Added gap for better spacing */
-    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 0.5rem;
+    flex-direction: row;
+    justify-content: space-evenly;
 }
 
 .post-actions button {
-    flex: 1;
-    min-width: 100px; /* Prevent buttons from shrinking too much */
-    margin: 0 2px; /* Reduced margin */
+    padding: 10px 16px;
     border: none;
     border-radius: 8px;
-    padding: 10px 16px; /* Slightly more padding for touch targets */
     background: #2a2f35;
     color: #ccc;
     cursor: pointer;
     font-weight: 500;
-    transition: all 0.3s ease; /* Smoother transition */
+    transition: all 0.3s ease;
     box-sizing: border-box;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.post-actions button:hover,
-.post-actions button:focus {
+/* Hover / focus / active */
+.post-actions button:hover {
     background: #1a73e8;
     color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(26, 115, 232, 0.3); /* Glow effect */
+    box-shadow: 0 4px 8px rgba(26, 115, 232, 0.3);
     outline: none;
-}
-
-.post-actions button:active {
-    transform: translateY(0); /* Pressed state */
 }
 
 /* Categories */
@@ -167,7 +161,8 @@
     border-radius: 8px;
     margin-bottom: 1rem;
     transition: background 0.2s ease, transform 0.2s ease;
-    border-left: 3px solid transparent; /* For subtle animation */
+    border-left: 3px solid transparent;
+    /* For subtle animation */
 }
 
 .comment:hover {
@@ -255,12 +250,46 @@
     transform: translateY(0);
 }
 
+.comment-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.comment-actions button {
+    margin-top: 30%;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #1b1f23;
+    color: #ccc;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Hover / focus / active */
+.comment-actions button:hover {
+    background: #1a73e8;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(26, 115, 232, 0.3);
+    outline: none;
+}
+
+
 /* Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -272,6 +301,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -294,7 +324,8 @@
     }
 
     .post-actions {
-        flex-direction: column; /* Stack buttons on tablets */
+        flex-direction: column;
+        /* Stack buttons on tablets */
         gap: 0.75rem;
     }
 
@@ -332,7 +363,8 @@
     }
 
     .post-date {
-        position: static; /* Stack on mobile */
+        position: static;
+        /* Stack on mobile */
         margin-top: 0.5rem;
         text-align: right;
     }
@@ -356,7 +388,8 @@
     }
 
     .comment-form button {
-        width: 100%; /* Full width on mobile */
+        width: 100%;
+        /* Full width on mobile */
         align-self: stretch;
     }
 
@@ -384,7 +417,8 @@
     }
 
     .post-actions button {
-        padding: 12px; /* Larger touch targets */
+        padding: 12px;
+        /* Larger touch targets */
         font-size: 0.95rem;
     }
 
@@ -401,23 +435,5 @@
 
     #comments h2 {
         font-size: 1.1rem;
-    }
-}
-
-/* Ensure compatibility with overall body styles (if integrated) */
-.post-detail {
-    color: #e8ecef; /* Inherit from body */
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* Ultra-wide screens */
-@media (min-width: 1600px) {
-    .post-detail {
-        max-width: 800px;
-        padding: 0 2rem;
-    }
-
-    .post-card {
-        padding: 3rem;
     }
 }
