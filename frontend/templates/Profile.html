@@ -7,29 +7,27 @@
     <title>TechBit - User Profile</title>
     <link rel="stylesheet" href="/static/css/Profile.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Orbitron:wght@700&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet" />
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-
-
 </head>
 
 <body>
     <!-- Header -->
     <header>
-        <div class="header-left">
-            <a href="/">
-                <div class="logo">TD</div>
-                <div class="platform-name">TechDev</div>
-            </a>
-        </div>
-
         <div class="header-buttons">
-            <a href="/">Home</a>
-            <a href="/liked-posts">Liked Posts</a>
+            {{if .Username}}
+            <p>👋 {{.Username}}</p>
             <a href="/logout">Logout</a>
+            <a href="/Profile/{{.Username}}" class="icon-button">
+                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Profile icon">
+            </a>
+
+            {{else}}
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            {{end}}
         </div>
     </header>
 
@@ -92,13 +90,6 @@
 
         </div>
     </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 TechDev. All Rights Reserved. Keep the code flowing!</p>
-        </div>
-    </footer>
 
     <script>
         // Optional: Add smooth hover effects or analytics

@@ -1,3 +1,7 @@
-[younsse] Docker  compose
-[nabil] fix your loging
-[hello]
+
+backend:
+    show title as title and username as username in index.html
+    sanitize xss on backend (title & content, comment)
+    in backend of Profile.html, send username in template
+
+fix trashbin style in profile.html
