@@ -16,6 +16,10 @@ import (
 )
 
 func SeePostdetail(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	PostsTemplete, err := template.ParseFiles("./frontend/templates/post-detail.html")
 	if err != nil {
 		fmt.Println(err)
@@ -40,6 +44,10 @@ func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	username, err := auth.GetUsernameFromCookie(r, "session_token")
 	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err) != "http: named cookie not present" {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
@@ -142,6 +150,10 @@ func InsertPost(username, title, content string, categories []string) error {
 }
 
 func PostDelete(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	username, err := auth.GetUsernameFromCookie(r, "session_token")
 
 	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err) != "http: named cookie not present" {

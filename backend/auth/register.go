@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 
+	Errorhandel "forum/backend/Errors"
 	"forum/backend/database"
 	"forum/backend/models"
 
@@ -16,6 +17,10 @@ import (
 )
 
 func RegisterHandlerGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	tmpt, err := template.ParseFiles("./frontend/templates/register.html")
 	if err != nil {
 		log.Printf("template parse error: %v", err)
@@ -26,6 +31,10 @@ func RegisterHandlerGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterHandlerPost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	tmpt, err := template.ParseFiles("./frontend/templates/register.html")
 	if err != nil {
 		log.Printf("template parse error: %v", err)

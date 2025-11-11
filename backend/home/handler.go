@@ -15,6 +15,10 @@ import (
 
 // the Home function
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	if r.URL.Path != "/" {
 		Errorhandel.Errordirect(w, "Page not found", http.StatusNotFound)
 		return
@@ -39,9 +43,16 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 // serve static files
 func StaticHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	path := "./frontend/templates/" + strings.TrimSuffix(r.URL.Path, "/")
-	if f, err := os.Stat(path); err != nil || f.IsDir() {
+	if f, err := os.Stat(path); err != nil {
 		Errorhandel.Errordirect(w, "Page Not Found", http.StatusNotFound)
+		return
+	} else if f.IsDir() {
+		Errorhandel.Errordirect(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 	http.ServeFile(w, r, path)

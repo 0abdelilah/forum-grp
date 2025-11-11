@@ -15,6 +15,10 @@ import (
 )
 
 func LoginHandlerGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
 	if err != nil {
 		Errorhandel.Errordirect(w, "Internal Server Error ", http.StatusInternalServerError)
@@ -24,6 +28,10 @@ func LoginHandlerGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
 	if err != nil {
 		Errorhandel.Errordirect(w, "Internal Server Error", http.StatusInternalServerError)

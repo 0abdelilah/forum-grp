@@ -11,6 +11,10 @@ import (
 )
 
 func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	postid := r.URL.Query().Get("postid")
 	path := "/post-detail/?postid=" + postid
 

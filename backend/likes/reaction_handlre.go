@@ -81,6 +81,7 @@ func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 	fmt.Println("4")
 }
 

@@ -12,6 +12,10 @@ import (
 )
 
 func Profile(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	MyProfile, err := template.ParseFiles("./frontend/templates/Profile.html")
 	if err != nil {
 		fmt.Println(err)
