@@ -16,7 +16,7 @@ import (
 // the Home function
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		Errorhandel.Errordirect(w, "Page not bnvbnvbn", http.StatusNotFound)
+		Errorhandel.Errordirect(w, "Page not found", http.StatusNotFound)
 		return
 	}
 	tmpl, err := template.ParseFiles("./frontend/templates/index.html")

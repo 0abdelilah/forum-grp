@@ -31,7 +31,7 @@ func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 
 	Username, err := auth.GetUsernameFromCookie(r, "session_token")
 	PageData.Username = Username
-	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err.Error) != "http: named cookie not present" {
+	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err) != "http: named cookie not present" {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -41,7 +41,7 @@ func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 
 func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
 	username, err := auth.GetUsernameFromCookie(r, "session_token")
-	if err.Error != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err.Error) != "http: named cookie not present" {
+	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err) != "http: named cookie not present" {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -92,7 +92,12 @@ func PostPageError(w http.ResponseWriter, r *http.Request, Error string) {
 	// Get the normal page data
 	PageData := database.AllPageData(r, "postContent")
 
-	PageData.Username, _ = auth.GetUsernameFromCookie(r, "session_token")
+	PageData.Username, err = auth.GetUsernameFromCookie(r, "session_token")
+	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err) != "http: named cookie not present" {
+		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 	// Add error
 	PageData.Error = Error
 
@@ -139,7 +144,7 @@ func InsertPost(username, title, content string, categories []string) error {
 func PostDelete(w http.ResponseWriter, r *http.Request) {
 	username, err := auth.GetUsernameFromCookie(r, "session_token")
 
-	if err.Error != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err.Error) != "http: named cookie not present" {
+	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err) != "http: named cookie not present" {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

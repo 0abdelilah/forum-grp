@@ -16,12 +16,17 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			if err == errors.New("http: named cookie not present") || err == sql.ErrNoRows {
 				http.Redirect(w, r, "/login", http.StatusSeeOther)
 				return
-			} else if username != "" {
+			} else if username == "" {
 				http.Redirect(w, r, "/login", http.StatusSeeOther)
 				return
 			}
 
-			Errorhandel.Errordirect(w, "InternalServerError", http.StatusInternalServerError)
+			Errorhandel.Errordirect(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if username == "" {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
 		}
 
 		next.ServeHTTP(w, r)

@@ -15,7 +15,7 @@ func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	path := "/post-detail/?postid=" + postid
 
 	username, err := auth.GetUsernameFromCookie(r, "session_token")
-	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err.Error) != "http: named cookie not present" {
+	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err) != "http: named cookie not present" {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

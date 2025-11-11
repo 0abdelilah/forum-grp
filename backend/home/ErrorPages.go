@@ -1,12 +1,15 @@
 package home
 
 import (
-	Errorhandel "forum/backend/Errors"
-	"forum/backend/auth"
-	"forum/backend/database"
+	"database/sql"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+
+	Errorhandel "forum/backend/Errors"
+	"forum/backend/auth"
+	"forum/backend/database"
 )
 
 // func PageNotFound(w http.ResponseWriter) {
@@ -18,7 +21,7 @@ import (
 // 	tmpt.Execute(w, nil)
 // }
 
-func HomePageError(w http.ResponseWriter, r *http.Request, Error string ,statuscode int) {
+func HomePageError(w http.ResponseWriter, r *http.Request, Error string, statuscode int) {
 	tmpl, err := template.ParseFiles("./frontend/templates/index.html")
 	if err != nil {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
@@ -27,7 +30,11 @@ func HomePageError(w http.ResponseWriter, r *http.Request, Error string ,statusc
 	w.WriteHeader(statuscode)
 	// Get the normal page data
 	PageData := database.AllPageData(r, "HomeData")
-	PageData.Username, _ = auth.GetUsernameFromCookie(r, "session_token")
+	PageData.Username, err = auth.GetUsernameFromCookie(r, "session_token")
+	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err) != "http: named cookie not present" {
+		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 
 	// Add error
 	PageData.Error = Error
@@ -37,6 +44,3 @@ func HomePageError(w http.ResponseWriter, r *http.Request, Error string ,statusc
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 	}
 }
-
-
-

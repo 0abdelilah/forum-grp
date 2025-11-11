@@ -90,10 +90,13 @@
                     <div class="createdAt">
                         <p style="color: #adb5bd;">{{$Post.CreatedAt}}</p>
                     </div>
-
                     <div class="post-header">
                         <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon">
+                        <div class="post-author">
+                            <strong>By:</strong> {{$Post.Username}}
+                        </div>
                     </div>
+
 
                     <div class="post-content">
                         <h3>{{$Post.Title}}</h3>
@@ -128,7 +131,6 @@
         </main>
     </div>
 
-
     {{if .Error}}
     <div class="toast toast-error" id="toast">
         {{.Error}}
@@ -140,6 +142,4 @@
         }, 3000); // hide after 2s
     </script>
     {{end}}
-
-
 </body>

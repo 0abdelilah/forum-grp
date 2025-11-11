@@ -36,7 +36,7 @@ func GetAllPosts() []models.Post {
 
 	for rows.Next() {
 		var p models.Post
-		if err := rows.Scan(&p.Id, &p.Username, &p.Title, &p.Content,
+		if err := rows.Scan(&p.Id, &p.Title, &p.Username, &p.Content,
 			&p.CreatedAt, &p.Likes, &p.Dislikes, &p.CommentsNum); err != nil {
 			log.Printf("error scanning post row: %v", err)
 			continue

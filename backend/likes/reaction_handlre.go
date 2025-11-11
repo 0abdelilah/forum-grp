@@ -48,11 +48,14 @@ func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("1")
 	err = r.ParseForm()
 	if err != nil {
 		http.Error(w, "Failed to parse form", http.StatusBadRequest)
 		return
 	}
+
+	fmt.Println("2")
 
 	targetType := r.FormValue("target_type")
 	targetID := r.FormValue("target_id")
@@ -65,15 +68,20 @@ func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
 	} else {
 		intValue = -1
 	}
-	tID, _ := strconv.Atoi(targetID)
+	fmt.Println("3")
+
+	tID, err := strconv.Atoi(targetID)
+	if err != nil {
+		fmt.Println("err atoi")
+		return
+	}
 	err = toggleLikeDislike(username, targetType, tID, intValue)
 	if err != nil {
 		fmt.Println("Error handling like/dislike:", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-
-	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusSeeOther)
+	fmt.Println("4")
 }
 
 func toggleLikeDislike(username string, targetType string, targetID int, value int) error {

@@ -8,7 +8,7 @@ body {
     flex-direction: column;
 }
 
-h2{
+h2 {
     margin-bottom: 2%;
 }
 
@@ -107,12 +107,34 @@ main {
 }
 
 .post {
+    position: relative;
     background-color: #212529;
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
 }
+
+.delete-form {
+    position: absolute;
+    top: 20px;
+    right: 10px;
+}
+
+.delete-btn {
+    background-color: transparent;
+    border: none;
+    font-size: 1.1rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+    transform: scale(1.05);
+}
+
 
 .post:hover {
     transform: translateY(-4px);
@@ -282,4 +304,14 @@ main {
 
 .btn:hover {
     animation: wiggle 0.3s ease;
+}
+
+.profile-section {
+    text-align: center;
+    padding: 3rem;
+}
+
+.profile-section p {
+    color: #6c757d;
+    font-size: 1.1rem;
 }

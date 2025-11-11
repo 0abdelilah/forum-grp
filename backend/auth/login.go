@@ -2,7 +2,6 @@ package auth
 
 import (
 	"database/sql"
-	"errors"
 	"html/template"
 	"log"
 	"net/http"
@@ -16,16 +15,6 @@ import (
 )
 
 func LoginHandlerGet(w http.ResponseWriter, r *http.Request) {
-	username, err := GetUsernameFromCookie(r, "session_token")
-	if err != nil {
-		if err != sql.ErrNoRows && err != errors.New("http: named cookie not present") {
-			Errorhandel.Errordirect(w, "InternalServerError", http.StatusInternalServerError)
-			return
-		}
-	} else if username != "" {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
 	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
 	if err != nil {
 		Errorhandel.Errordirect(w, "Internal Server Error ", http.StatusInternalServerError)
