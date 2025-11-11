@@ -10,19 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func NotFakeSession(str string) bool {
-	var expiresAt time.Time
-	err := database.Db.QueryRow(`SELECT expires_at FROM sessions WHERE id = ?`, str).Scan(&expiresAt)
-	if err != nil {
-		return false
-	}
-	if expiresAt.Before(time.Now()) {
-		_, _ = database.Db.Exec(`DELETE FROM sessions WHERE id = ?`, str)
-		return false
-	}
 
-	return true
-}
 
 func CreateSession(username string, w http.ResponseWriter) error {
 	// Delete old sessions
@@ -52,5 +40,13 @@ func CreateSession(username string, w http.ResponseWriter) error {
 		HttpOnly: true,
 	})
 
+	return nil
+}
+
+func DeleteSessionByID(id string) error {
+	_, err := database.Db.Exec("DELETE FROM sessions WHERE username = ?", id)
+	if err != nil {
+		return err
+	}
 	return nil
 }

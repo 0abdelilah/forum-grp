@@ -16,7 +16,7 @@ import (
 // the Home function
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		Errorhandel.Errordirect(w, "Page not Found", http.StatusNotFound)
+		Errorhandel.Errordirect(w, "Page not bnvbnvbn", http.StatusNotFound)
 		return
 	}
 	tmpl, err := template.ParseFiles("./frontend/templates/index.html")
@@ -25,9 +25,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	PageData := database.AllPageData(r, "HomeData")
-	username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
+	username, err := auth.GetUsernameFromCookie(r, "session_token")
 	PageData.Username = username
-	if ErroFromcookie.Error != nil&&ErroFromcookie.Error != sql.ErrNoRows && fmt.Sprintf("%v", ErroFromcookie.Error) != "http: named cookie not present" {
+	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err) != "http: named cookie not present" {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

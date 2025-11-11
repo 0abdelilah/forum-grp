@@ -1,35 +1,36 @@
 package auth
 
 import (
-	"database/sql"
 	"net/http"
+	"time"
 
 	"forum/backend/database"
 )
-	type ErroFromcookie struct{
-		Error error
-		ErrorType string
-	}
-func GetUsernameFromCookie(r *http.Request, cookie_name string) (string, ErroFromcookie) {
-	var ErroFromcookie ErroFromcookie
 
-	c, err := r.Cookie(cookie_name)
+func GetUsernameFromCookie(r *http.Request, cookieName string) (string, error) {
+	c, err := r.Cookie(cookieName)
 	if err != nil {
-		ErroFromcookie.Error=err
-		ErroFromcookie.ErrorType="cookie"
-		return "", ErroFromcookie
+		return "", err
 	}
+
 	var username string
-	err = database.Db.QueryRow("SELECT username FROM sessions WHERE id = ? AND expires_at > datetime('now')", c.Value).Scan(&username)
-	if err == sql.ErrNoRows {
-		ErroFromcookie.Error=err
-		ErroFromcookie.ErrorType="Sql"
-		return "", ErroFromcookie //
-	}
+	var expiresAt time.Time
+
+	err = database.Db.QueryRow(
+		"SELECT username, expires_at FROM sessions WHERE id = ?",
+		c.Value,
+	).Scan(&username, &expiresAt)
 	if err != nil {
-		ErroFromcookie.Error=err
-		ErroFromcookie.ErrorType="Sqlinternal"
-		return "", ErroFromcookie
+		return "", err
 	}
-	return username, ErroFromcookie
+
+	if expiresAt.Before(time.Now()) {
+		err := DeleteSessionByID(c.Value)
+		if err != nil {
+			return "", err
+		}
+		return "", nil
+	}
+
+	return username, nil
 }

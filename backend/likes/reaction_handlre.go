@@ -42,13 +42,13 @@ func HandleLikeOrDislike(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
-	if ErroFromcookie.Error != nil&&ErroFromcookie.Error != sql.ErrNoRows && fmt.Sprintf("%v", ErroFromcookie.Error) != "http: named cookie not present" {
+	username, err := auth.GetUsernameFromCookie(r, "session_token")
+	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err) != "http: named cookie not present" {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	err := r.ParseForm()
+	err = r.ParseForm()
 	if err != nil {
 		http.Error(w, "Failed to parse form", http.StatusBadRequest)
 		return

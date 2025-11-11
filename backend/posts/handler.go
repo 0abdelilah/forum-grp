@@ -29,9 +29,9 @@ func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
+	Username, err := auth.GetUsernameFromCookie(r, "session_token")
 	PageData.Username = Username
-	if ErroFromcookie.Error != nil &&ErroFromcookie.Error != sql.ErrNoRows && fmt.Sprintf("%v", ErroFromcookie.Error) != "http: named cookie not present" {
+	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err.Error) != "http: named cookie not present" {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -40,13 +40,13 @@ func SeePostdetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePostsHandler(w http.ResponseWriter, r *http.Request) {
-	username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
-	if ErroFromcookie.Error != nil&& ErroFromcookie.Error != sql.ErrNoRows && fmt.Sprintf("%v", ErroFromcookie.Error) != "http: named cookie not present" {
+	username, err := auth.GetUsernameFromCookie(r, "session_token")
+	if err.Error != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err.Error) != "http: named cookie not present" {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	err := r.ParseForm()
+	err = r.ParseForm()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Println("Failed to parse form")
@@ -137,14 +137,14 @@ func InsertPost(username, title, content string, categories []string) error {
 }
 
 func PostDelete(w http.ResponseWriter, r *http.Request) {
-	username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
+	username, err := auth.GetUsernameFromCookie(r, "session_token")
 
-	if ErroFromcookie.Error != nil && ErroFromcookie.ErrorType != "Sql" {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	if err.Error != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err.Error) != "http: named cookie not present" {
+		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	err := r.ParseForm()
+	err = r.ParseForm()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Println("Failed to parse form")

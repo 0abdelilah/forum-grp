@@ -14,13 +14,13 @@ func CreateCommentHandler(w http.ResponseWriter, r *http.Request) {
 	postid := r.URL.Query().Get("postid")
 	path := "/post-detail/?postid=" + postid
 
-	username, ErroFromcookie := auth.GetUsernameFromCookie(r, "session_token")
-	if ErroFromcookie.Error != nil&&ErroFromcookie.Error != sql.ErrNoRows && fmt.Sprintf("%v", ErroFromcookie.Error) != "http: named cookie not present" {
+	username, err := auth.GetUsernameFromCookie(r, "session_token")
+	if err != nil && err != sql.ErrNoRows && fmt.Sprintf("%v", err.Error) != "http: named cookie not present" {
 		Errorhandel.Errordirect(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	err := r.ParseForm()
+	err = r.ParseForm()
 	if err != nil {
 		posts.PostPageError(w, r, "Failed to parse form")
 		return
