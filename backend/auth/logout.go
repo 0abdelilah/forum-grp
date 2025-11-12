@@ -1,12 +1,18 @@
 package auth
 
 import (
-	"forum/backend/database"
 	"net/http"
 	"time"
+
+	Errorhandel "forum/backend/Errors"
+	"forum/backend/database"
 )
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)

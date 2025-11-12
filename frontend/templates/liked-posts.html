@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{.Username}} - Liked Posts</title>
     <link rel="stylesheet" href="/static/css/Profile.css">
+    <link rel="stylesheet" href="/static/css/shared.css">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Orbitron:wght@700&display=swap"
@@ -27,17 +28,26 @@
         </div>
 
         <div class="header-buttons">
-            <a href="/">Home</a>
-            <a href="/profile">Profile</a>
+            {{if .Username}}
+            <p>👋 {{.Username}}</p>
             <a href="/logout">Logout</a>
+            <a href="/Profile/{{.Username}}" class="icon-button">
+                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Profile icon">
+            </a>
+
+            {{else}}
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            {{end}}
         </div>
+
     </header>
 
     <!-- Main Content -->
     <main>
         <div class="container">
             <section class="profile-header">
-                <img src="/static/user.png" alt="User avatar" />
+                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Profile icon">
                 <h2>{{.Username}}</h2>
                 <p>All the posts you've liked recently</p>
             </section>
@@ -82,23 +92,6 @@
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 TechDev. All Rights Reserved. Keep the code flowing!</p>
-        </div>
-    </footer>
-
-    <script>
-        document.querySelectorAll('.post').forEach(post => {
-            post.addEventListener('mouseenter', () => {
-                post.style.transform = 'translateY(-4px)';
-            });
-            post.addEventListener('mouseleave', () => {
-                post.style.transform = 'translateY(0)';
-            });
-        });
-    </script>
 </body>
 
 </html>

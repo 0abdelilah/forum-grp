@@ -1,3 +1,9 @@
-[younsse] Docker  compose
-[nabil] fix your loging
-[hello]
+
+backend:
+    sanitize xss on backend (title & content, comment)
+
+fix trashbin style in profile.html
+clean error page
+users can delete post that doesnt belong to them
+center everything in index.html
+support tablets responsivity

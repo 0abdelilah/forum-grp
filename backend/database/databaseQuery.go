@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -20,7 +19,7 @@ func AllPageData(r *http.Request, handle string) models.PageData {
 	r.ParseForm()
 	categories := r.Form["categories"]
 	username := r.PathValue("username")
-	fmt.Println(username)
+	// fmt.Println(username)
 	switch handle {
 	case "HomeData":
 		posts := GetPosts(categories)
@@ -31,7 +30,7 @@ func AllPageData(r *http.Request, handle string) models.PageData {
 		return models.PageData{PostContent: post}
 	case "Profile":
 		Profile := GetProfile(username)
-		fmt.Println(Profile)
+		// fmt.Println(Profile)
 		return models.PageData{Profile: Profile}
 	default:
 		return models.PageData{}

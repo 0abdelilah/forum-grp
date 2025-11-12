@@ -6,12 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechDev</title>
     <link rel="stylesheet" href="/static/css/index.css">
-    <script src="/static/js/posts.js"></script>
+    <script src="/static/js/popup.js"></script>
     <link rel="stylesheet" href="/static/css/shared.css">
 </head>
 
 <body>
-
     <!-- Header -->
     <header>
         <div class="header-left">
@@ -23,21 +22,28 @@
 
         <div class="header-buttons">
             {{if .Username}}
-            👋 {{.Username}}
-             <a href="/liked-posts">Liked Posts</a>
+            <p>👋 {{.Username}}</p>
             <a href="/logout">Logout</a>
-            <a href="/Profile/{{.Username}}">MyProfile</a>
+            <a href="/Profile/{{.Username}}" class="icon-button">
+                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Profile icon">
+            </a>
+
             {{else}}
             <a href="/login">Login</a>
             <a href="/register">Register</a>
             {{end}}
+        </div>
     </header>
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Left Sidebar -->
         <aside class="sidebar-left">
-            <h2>Categories</h2>
+
+            <h2>Filter by:</h2>
+            <a href="/liked-posts">Liked Posts</a>
+
+            <h3>Categories</h3>
             <form action="/" method="get">
                 <label><input type="checkbox" name="categories" value="Programming"> Programming</label>
                 <label><input type="checkbox" name="categories" value="Cybersecurity"> Cybersecurity</label>
@@ -84,10 +90,13 @@
                     <div class="createdAt">
                         <p style="color: #adb5bd;">{{$Post.CreatedAt}}</p>
                     </div>
-
                     <div class="post-header">
                         <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Bug icon">
+                        <div class="post-author">
+                            <strong>By:</strong> {{$Post.Username}}
+                        </div>
                     </div>
+
 
                     <div class="post-content">
                         <h3>{{$Post.Title}}</h3>
@@ -96,30 +105,23 @@
 
                     <div class="post-actions">
                         <form action="/api/react" method="post">
-    <input type="hidden" name="target_type" value="post">
-    <input type="hidden" name="target_id" value="{{$Post.Id}}">
-    <input type="hidden" name="value" value="1">
-    <button type="submit"><span>👍 {{ $Post.Likes }} </span> Like</button>
-</form>
-
-<form action="/api/react" method="post">
-    <input type="hidden" name="target_type" value="post">
-    <input type="hidden" name="target_id" value="{{$Post.Id}}">
-    <input type="hidden" name="value" value="-1">
-    <button type="submit"><span>👎 {{ $Post.Dislikes }} </span> Dislike</button>
-</form>
-
-<!-- 
-                        <form action="/api/like?postid={{$Post.Id}}" method="post">
+                            <input type="hidden" name="target_type" value="post">
+                            <input type="hidden" name="target_id" value="{{$Post.Id}}">
+                            <input type="hidden" name="value" value="1">
                             <button type="submit"><span>👍 {{ $Post.Likes }} </span> Like</button>
                         </form>
 
-                        <form action="/api/dislike?postid={{$Post.Id}}" method="post">
-                            <button type="submit"><span>👎 {{ $Post.Dislikes }} </span> Dislikes</button>
-                        </form> -->
+                        <form action="/api/react" method="post">
+                            <input type="hidden" name="target_type" value="post">
+                            <input type="hidden" name="target_id" value="{{$Post.Id}}">
+                            <input type="hidden" name="value" value="-1">
+                            <button type="submit"><span>👎 {{ $Post.Dislikes }} </span> Dislike</button>
+                        </form>
 
                         <button type="submit"><span>💬 {{$Post.CommentsNum}} </span> Comments</button>
                     </div>
+                    <br>
+                    <br>
                     <div class="post_categories">
                         <p>{{$Post.Categories}}</p>
                     </div>
@@ -128,7 +130,6 @@
             {{end}}
         </main>
     </div>
-
 
     {{if .Error}}
     <div class="toast toast-error" id="toast">
@@ -141,10 +142,4 @@
         }, 3000); // hide after 2s
     </script>
     {{end}}
-
-
-    <!-- Footer -->
-    <footer>
-        <p style="color: white;">&copy; 2025 TechDev. made with ❤️ and ☕.</p>
-    </footer>
 </body>

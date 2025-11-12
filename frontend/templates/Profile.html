@@ -6,14 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TechBit - User Profile</title>
     <link rel="stylesheet" href="/static/css/Profile.css">
+    <link rel="stylesheet" href="/static/css/shared.css">
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Orbitron:wght@700&display=swap"
         rel="stylesheet" />
-
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-
-
 </head>
 
 <body>
@@ -27,8 +26,17 @@
         </div>
 
         <div class="header-buttons">
-            <a href="/">Home</a>
+            {{if .Username}}
+            <p>👋 {{.Username}}</p>
             <a href="/logout">Logout</a>
+            <a href="/Profile/{{.Username}}" class="icon-button">
+                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Profile icon">
+            </a>
+
+            {{else}}
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            {{end}}
         </div>
     </header>
 
@@ -36,19 +44,16 @@
     <main>
         <div class="container">
             <section class="profile-header">
-                <img src="../static/user.png" alt="User avatar" />
+                <img src="https://draculatheme.com/icons/used/pack-9/033-bug.svg" alt="Profile icon">
                 <h2>{{.Profile.Username}}</h2>
-                <p>Full-stack dev who loves clean code and bad puns. Ask me about Python or CSS hacks!</p>
-                <p>Joined: January 2025 | Followers: 128 | Following: 56</p>
-                <div class="profile-actions">
-                    <a class="btn btn-primary">
-                        <i class="fas fa-user-edit"></i> Edit Profile
-                    </a>
-                    <a>
-                        <i class="fas fa-cog"></i> Settings
-                    </a>
-                </div>
             </section>
+
+            {{if eq .Profile.Username .Username}}
+            <h2>Your Posts</h2>
+
+            {{else}}
+            <h2>{{.Profile.Username}}'s Posts</h2>
+            {{end}}
 
 
             <!-- User Posts Feed -->
@@ -58,6 +63,20 @@
                 <a href="/post-detail?postid={{$Post.Id}}" class="post-link">
 
                     <article class="post">
+                        {{if eq $Post.Username .Username}}
+                        <form action="/api/Delete/{{$Post.Id}}" method="post" class="delete-form">
+                            <button type="submit" class="delete-btn" title="Delete Post">
+                                <!-- Trash / Bin SVG -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"
+                                    fill="red">
+                                    <path
+                                        d="M9 3v1H4v2h16V4h-5V3H9zm1 5v11h2V8h-2zm4 0v11h2V8h-2zm-7 13h10a2 2 0 0 0 2-2V7H6v12a2 2 0 0 0 2 2z" />
+                                </svg>
+                            </button>
+                        </form>
+                        {{end}}
+
+
                         <div class="createdAt">
                             <p>{{$Post.CreatedAt}}</p>
                         </div>
@@ -73,9 +92,7 @@
 
                         <div class="post-actions">
                             <span>👍 {{$Post.Likes}} Like</span>
-
                             <span>👎 {{$Post.Dislikes}} Dislike</span>
-
                             <span>💬 {{$Post.CommentsNum}} Comments</span>
                         </div>
 
@@ -84,34 +101,14 @@
                         </div>
                     </article>
                     {{else}}
-                    <div class="profile-section" style="text-align: center; padding: 3rem;">
-                        <p style="color: #6c757d; font-size: 1.1rem;">No posts yet. Start sharing your tech journey!</p>
+                    <div class="profile-section">
+                        <p>No posts yet.</p>
                     </div>
                     {{end}}
             </section>
             </a>
-
         </div>
     </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 TechBit. All Rights Reserved. Keep the code flowing!</p>
-        </div>
-    </footer>
-
-    <script>
-        // Optional: Add smooth hover effects or analytics
-        document.querySelectorAll('.post').forEach(post => {
-            post.addEventListener('mouseenter', () => {
-                post.style.transform = 'translateY(-4px)';
-            });
-            post.addEventListener('mouseleave', () => {
-                post.style.transform = 'translateY(0)';
-            });
-        });
-    </script>
 </body>
 
 </html>

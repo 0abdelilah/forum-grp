@@ -1,92 +1,88 @@
 package auth
 
 import (
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
 	"strings"
-	"time"
 
+	Errorhandel "forum/backend/Errors"
 	"forum/backend/database"
+	"forum/backend/models"
 
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func LoginHandlerGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
 	if err != nil {
-		log.Fatal(err)
+		Errorhandel.Errordirect(w, "Internal Server Error ", http.StatusInternalServerError)
 		return
 	}
 	tmpt.Execute(w, nil)
 }
 
-type ErrorData struct {
-	Error string
-}
-
 func LoginHandlerPost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		Errorhandel.Errordirect(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	tmpt, err := template.ParseFiles("./frontend/templates/login.html")
 	if err != nil {
-		log.Fatal(err)
+		Errorhandel.Errordirect(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	var (
-		userID     int
-		storedHash string
-	)
+	if err := r.ParseForm(); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		tmpt.Execute(w, models.ErrorData{Error: "Invalid form data"})
+		return
+	}
 
-	r.ParseForm()
-	username := r.FormValue("username")
-	password := r.FormValue("password")
-	username = strings.TrimSpace(username)
+	var login models.LoginData
+	login.LoginInput = strings.TrimSpace(r.FormValue("username"))
+	login.Password = r.FormValue("password")
 
-	if username == "" || password == "" {
-		tmpt.Execute(w, ErrorData{Error: "Username and password cannot be empty"})
+	if login.LoginInput == "" || login.Password == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		tmpt.Execute(w, models.ErrorData{Error: "Username and password cannot be empty"})
 		return
 	}
 
 	err = database.Db.QueryRow(
-		`SELECT id, password_hash FROM users WHERE username = ?`,
-		username,
-	).Scan(&userID, &storedHash)
+		`SELECT username, password_hash FROM users WHERE username = ? OR email = ?`,
+		login.LoginInput, login.LoginInput,
+	).Scan(&login.Username, &login.PasswordHash)
 	if err != nil {
-		tmpt.Execute(w, ErrorData{Error: "Invalid username or password"})
-		log.Println("Login failed (user not found):", err)
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusUnauthorized)
+			tmpt.Execute(w, models.ErrorData{Error: "Invalid username or password"})
+			return
+		} else {
+			log.Println("DB error:", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			tmpt.Execute(w, models.ErrorData{Error: "Internal server error"})
+			return
+		}
+	}
+
+	if err = bcrypt.CompareHashAndPassword([]byte(login.PasswordHash), []byte(login.Password)); err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		tmpt.Execute(w, models.ErrorData{Error: "Invalid username or password"})
 		return
 	}
 
-	if err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password)); err != nil {
-		tmpt.Execute(w, ErrorData{Error: "Invalid username or password"})
+	err = CreateSession(login.Username, w)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		tmpt.Execute(w, models.ErrorData{Error: "Could not create session, try again later"})
 		return
 	}
-	_, err = database.Db.Exec("DELETE FROM sessions A WHERE A.username=?", username)
-	if err != nil {
-		log.Println("Error deleting old sessions:", err)
-	}
-	sessionID := uuid.New().String()
-	createdAt := time.Now()
-	expiresAt := createdAt.Add(24 * time.Hour)
-
-	_, err = database.Db.Exec(`
-		INSERT INTO sessions(id, username, created_at, expires_at)
-		VALUES (?, ?, ?, ?)
-	`, sessionID, username, createdAt, expiresAt)
-	if err != nil {
-		tmpt.Execute(w, struct{ Error string }{Error: "Could not create session, try again later"})
-		log.Println("Error inserting session:", err)
-		return
-	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
-		Value:    sessionID,
-		Path:     "/",
-		Expires:  expiresAt,
-		HttpOnly: true,
-	})
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

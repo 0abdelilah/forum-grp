@@ -1,75 +1,58 @@
 package database
 
 import (
-	"forum/backend/models"
+	"database/sql"
 	"log"
 	"time"
+
+	"forum/backend/models"
 )
 
-func GetAlllike(val int, target string, username string) []models.LikedPosts {
-	var posts []models.LikedPosts
+///
+func GetAlllike(val int, username string) ([]models.Post, error) {
+	var posts []models.Post
 
 	rows, err := Db.Query(`
-        SELECT target_id
-        FROM likes
-        WHERE username = ? AND target_type = ? AND value = ?
-        ORDER BY created_at ASC
-    `, username, target, val)
+		SELECT p.id, p.title, p.username, p.content, 
+		       p.created_at, p.likes_count, p.dislikes_count, p.comments_count
+		FROM likes AS l
+		JOIN posts AS p on l.post_id = p.id
+		WHERE l.username = ? AND l.value = ?
+		ORDER BY p.created_at DESC
+	`, username, val)
+	if err == sql.ErrNoRows {
+		log.Printf("failed to query liked posts: %v", err)
+
+		return nil, nil
+	}
 	if err != nil {
-		log.Printf("failed to query likes: %v", err)
-		return nil
+		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var targetID int
-		if err := rows.Scan(&targetID); err != nil {
-			log.Printf("error scanning like: %v", err)
-			continue
-		}
+		var p models.Post
 
-		likedPosts := GetAllLikedPosts(targetID)
-		posts = append(posts, likedPosts...)
-	}
-
-	return posts
-}
-
-func GetAllLikedPosts(id int)[] models.LikedPosts {
-	var posts []models.LikedPosts
-
-	rows, err := Db.Query(`
-		SELECT id, title, username, content, created_at,
-		       likes_count, dislikes_count, comments_count
-		FROM posts
-		WHERE id = ?
-		ORDER BY created_at DESC
-	`, id)
-	if err != nil {
-		log.Printf("failed to query posts: %v", err)
-		return nil
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var p models.LikedPosts
 		if err := rows.Scan(&p.Id, &p.Title, &p.Username, &p.Content,
 			&p.CreatedAt, &p.Likes, &p.Dislikes, &p.CommentsNum); err != nil {
-			log.Printf("error scanning post row: %v", err)
+			log.Printf("error scanning joined row: %v", err)
 			continue
 		}
 
 		p.Categories, err = getPostCategories(p.Id)
 		if err != nil {
 			log.Printf("error getting categories for post %d: %v", p.Id, err)
+			return nil, err
 		}
 
 		if t, err := time.Parse(time.RFC3339, p.CreatedAt); err == nil {
 			p.CreatedAt = t.Format("02 Jan 2006 15:04:05")
+			
+		}else {
+			return nil, err
 		}
-
 		posts = append(posts, p)
 	}
 
-	return posts
+	return posts, nil
 }
