@@ -46,7 +46,7 @@ func main() {
 	)
 
 	fmt.Println("Listening on http://localhost:3001")
-	if err := http.ListenAndServe(":3001", nil); err != nil {
+	if err := http.ListenAndServe(":3002", nil); err != nil {
 		log.Println(err)
 	}
 }

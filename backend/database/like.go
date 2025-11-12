@@ -14,14 +14,14 @@ func GetAlllike(val int, username string) ([]models.Post, error) {
 	rows, err := Db.Query(`
 		SELECT p.id, p.title, p.username, p.content, 
 		       p.created_at, p.likes_count, p.dislikes_count, p.comments_count
-		FROM posts AS p		p.Categories, err = getPostCategories(p.Id)
-
-		INNER JOIN likes AS l ON p.id = l.post_id
+		FROM likes AS l
+		JOIN posts AS p on l.post_id = p.id
 		WHERE l.username = ? AND l.value = ?
-		ORDER BY l.created_at ASC
+		ORDER BY p.created_at DESC
 	`, username, val)
 	if err == sql.ErrNoRows {
 		log.Printf("failed to query liked posts: %v", err)
+
 		return nil, nil
 	}
 	if err != nil {
@@ -31,6 +31,7 @@ func GetAlllike(val int, username string) ([]models.Post, error) {
 
 	for rows.Next() {
 		var p models.Post
+
 		if err := rows.Scan(&p.Id, &p.Title, &p.Username, &p.Content,
 			&p.CreatedAt, &p.Likes, &p.Dislikes, &p.CommentsNum); err != nil {
 			log.Printf("error scanning joined row: %v", err)
@@ -45,9 +46,10 @@ func GetAlllike(val int, username string) ([]models.Post, error) {
 
 		if t, err := time.Parse(time.RFC3339, p.CreatedAt); err == nil {
 			p.CreatedAt = t.Format("02 Jan 2006 15:04:05")
+			
+		}else {
 			return nil, err
 		}
-
 		posts = append(posts, p)
 	}
 

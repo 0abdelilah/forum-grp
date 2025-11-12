@@ -24,6 +24,7 @@ func HandleLikedPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	likedPosts, err := database.GetAlllike(1, username)
 	if err != nil {
+	
 		fmt.Println("err", err)
 		Errorhandel.Errordirect(w, "InternalServerError", http.StatusInternalServerError)
 	}
