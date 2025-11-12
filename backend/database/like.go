@@ -8,6 +8,7 @@ import (
 	"forum/backend/models"
 )
 
+///
 func GetAlllike(val int, username string) ([]models.Post, error) {
 	var posts []models.Post
 

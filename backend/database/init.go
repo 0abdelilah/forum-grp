@@ -32,6 +32,9 @@ func openDatabase() {
 }
 
 // setupDatabase creates all tables and inserts defaults in one transaction.
+
+
+
 func setupDatabase() error {
 	tx, err := Db.Begin()
 	if err != nil {
